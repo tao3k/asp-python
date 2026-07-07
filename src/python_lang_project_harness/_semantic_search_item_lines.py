@@ -42,6 +42,18 @@ def owner_item_payload_lines(
 
 
 def _header_line(
+    owner_path: str, item_query: str, payload: dict[str, Any], names_only: bool
+) -> str:
+    return _search_owner_header_line(
+        owner_path, item_query, payload, names_only
+    ).replace(
+        "[search-owner]",
+        "[query-item]",
+        1,
+    )
+
+
+def _search_owner_header_line(
     owner_path: str,
     item_query: str,
     payload: dict[str, Any],

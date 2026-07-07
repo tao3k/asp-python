@@ -1,6 +1,7 @@
 harness = "pytest"
 test = "tests/unit/harness/test_software_criterion_snapshots.py"
 snapshot = "software_criteria/control_flow_v1"
+phase = "cold"
 target_total = "25ms"
 max_total = "100ms"
 observed_total = "19ms"
