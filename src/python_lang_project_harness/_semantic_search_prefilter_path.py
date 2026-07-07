@@ -15,9 +15,8 @@ def path_only_term_capped_matches(
 ) -> tuple[str, ...] | None:
     """Return path-ranked matches when every query term appears in owner paths."""
 
-    if (
-        not terms
-        or not all(path_match_scan.matches_by_term.get(term) for term in terms)
+    if not terms or not all(
+        path_match_scan.matches_by_term.get(term) for term in terms
     ):
         return None
     matched: list[str] = []

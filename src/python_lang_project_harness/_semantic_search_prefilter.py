@@ -112,7 +112,7 @@ def _prefilter_with_tools(
         elapsed_ms = round((time.perf_counter() - started) * 1000)
         return PythonSearchPrefilterResult(
             paths=selected,
-            total_files=len(source_matched_files),
+            total_files=len(matched_source_files),
             term_capped_files=len(set(source_only_term_capped)),
             matched_files=len(selected),
             elapsed_ms=elapsed_ms,
