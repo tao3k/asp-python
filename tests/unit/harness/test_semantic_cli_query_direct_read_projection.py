@@ -49,6 +49,4 @@ def test_query_from_hook_line_range_code_rejects_source_locator_hint(
 
     assert exit_code == 3
     assert stdout.getvalue() == ""
-    assert (
-        "source locator hints are not executable selectors" in capsys.readouterr().err
-    )
+    assert "status=selector-not-materialized" in capsys.readouterr().err

@@ -41,6 +41,4 @@ def test_cli_query_direct_source_read_code_rejects_source_window(
 
     assert exit_code == 3
     assert stdout.getvalue() == ""
-    assert (
-        "source locator hints are not executable selectors" in capsys.readouterr().err
-    )
+    assert "status=selector-not-materialized" in capsys.readouterr().err

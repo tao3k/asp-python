@@ -44,7 +44,8 @@ import-names = ["pkg"]
     exit_code = run_cli(
         [
             "query",
-            "src/pkg/catalog.py",
+            "--selector",
+            "python://src/pkg/catalog.py#item/function/python_search_view_descriptors",
             "--term",
             "python_search_view_descriptors",
             "--code",
@@ -107,9 +108,10 @@ import-names = ["pkg"]
     exit_code = run_cli(
         [
             "query",
-            "src/pkg/catalog.py",
+            "--selector",
+            "python://src/pkg/catalog.py#item/function/python_view_descriptors",
             "--term",
-            "python_view_descriptors|python_view_index",
+            "python_view_descriptors",
             "--code",
             "--workspace",
             str(tmp_path),
@@ -120,17 +122,37 @@ import-names = ["pkg"]
     output = stdout.getvalue()
     assert exit_code == 0
     assert "return list[5] items=dict[3] name=workspace" in output
-    assert "return dict[5] workspace=dict[1] prime=dict[1]" in output
     assert "'capabilities':" not in output
     assert "truncated=true" not in output
+
+    index_stdout = io.StringIO()
+    index_exit_code = run_cli(
+        [
+            "query",
+            "--selector",
+            "python://src/pkg/catalog.py#item/function/python_view_index",
+            "--term",
+            "python_view_index",
+            "--code",
+            "--workspace",
+            str(tmp_path),
+        ],
+        stdout=index_stdout,
+    )
+    index_output = index_stdout.getvalue()
+    assert index_exit_code == 0
+    assert "return dict[5] workspace=dict[1] prime=dict[1]" in index_output
+    assert "'capabilities':" not in index_output
+    assert "truncated=true" not in index_output
 
     json_stdout = io.StringIO()
     json_exit_code = run_cli(
         [
             "query",
-            "src/pkg/catalog.py",
+            "--selector",
+            "python://src/pkg/catalog.py#item/function/python_view_descriptors",
             "--term",
-            "python_view_descriptors|python_view_index",
+            "python_view_descriptors",
             "--json",
             "--workspace",
             str(tmp_path),
@@ -138,9 +160,30 @@ import-names = ["pkg"]
         stdout=json_stdout,
     )
 
+    index_json_stdout = io.StringIO()
+    index_json_exit_code = run_cli(
+        [
+            "query",
+            "--selector",
+            "python://src/pkg/catalog.py#item/function/python_view_index",
+            "--term",
+            "python_view_index",
+            "--json",
+            "--workspace",
+            str(tmp_path),
+        ],
+        stdout=index_json_stdout,
+    )
+
     packet = json.loads(json_stdout.getvalue())
-    code_by_name = {match["name"]: match["code"] for match in packet["matches"]}
+    index_packet = json.loads(index_json_stdout.getvalue())
+    code_by_name = {
+        match["name"]: match["code"]
+        for current_packet in (packet, index_packet)
+        for match in current_packet["matches"]
+    }
     assert json_exit_code == 0
+    assert index_json_exit_code == 0
     assert (
         "return list[5] items=dict[3] name=workspace"
         in code_by_name["python_view_descriptors"]
@@ -149,6 +192,9 @@ import-names = ["pkg"]
         "return dict[5] workspace=dict[1] prime=dict[1]"
         in code_by_name["python_view_index"]
     )
-    for match in packet["matches"]:
-        rendered = "\n".join(row["text"] for row in match["projection"]["renderedRows"])
-        assert rendered == match["code"]
+    for current_packet in (packet, index_packet):
+        for match in current_packet["matches"]:
+            rendered = "\n".join(
+                row["text"] for row in match["projection"]["renderedRows"]
+            )
+            assert rendered == match["code"]

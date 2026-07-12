@@ -32,7 +32,7 @@ def test_query_from_hook_line_range_code_rejects_source_locator_hint(
     )
 
     assert exit_code == 3
-    assert "source locator hints are not executable selectors" in stderr.getvalue()
+    assert "status=selector-not-materialized" in stderr.getvalue()
 
 
 def test_query_file_selector_code_requires_parser_owned_identity(
@@ -63,4 +63,4 @@ def test_query_file_selector_code_requires_parser_owned_identity(
     )
 
     assert exit_code == 3
-    assert "source locator hints are not executable selectors" in stderr.getvalue()
+    assert "status=selector-not-materialized" in stderr.getvalue()

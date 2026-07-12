@@ -113,14 +113,16 @@ def test_protocol_search_lexical_query_uses_fast_frontier(
     rendered = stdout.getvalue()
     assert stderr.getvalue() == ""
     assert exit_code == 0
-    assert rendered.startswith("[search-lexical] q=hookruntime,execute querySet=2")
+    assert rendered.startswith(
+        "[search-lexical] q=hookruntime,execute view=hits querySet=2"
+    )
     assert "Q=query:term(hookruntime,execute)!lexical" in rendered
     assert "entries=owner-query(O,Q=>items+tests+dependency-usage)" in rendered
     assert "rank=Q,O,T frontier=Q.lexical,O.owner,T.tests" in rendered
     assert "|seed " not in rendered
 
 
-def test_protocol_search_lexical_query_uses_rglob_prefilter_without_tools(
+def test_protocol_search_lexical_query_uses_native_prefilter_without_tools(
     tmp_path: Path,
     monkeypatch,
 ) -> None:
@@ -172,7 +174,9 @@ def test_protocol_search_lexical_query_uses_rglob_prefilter_without_tools(
     rendered = stdout.getvalue()
     assert stderr.getvalue() == ""
     assert exit_code == 0
-    assert rendered.startswith("[search-lexical] q=hookruntime,execute querySet=2")
+    assert rendered.startswith(
+        "[search-lexical] q=hookruntime,execute view=hits querySet=2"
+    )
     assert "Q=query:term(hookruntime,execute)!lexical" in rendered
     assert "O=owner:path(src/pkg/hook_runtime.py)!owner" in rendered
     assert "entries=owner-query(O,Q=>items+tests+dependency-usage)" in rendered
