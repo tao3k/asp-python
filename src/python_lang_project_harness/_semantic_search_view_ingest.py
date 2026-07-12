@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING, Any
 
 from ._semantic_search_common import header
 from ._semantic_search_ingest import ingest_hits
-from ._semantic_search_model import MAX_FZF_HITS
+from ._semantic_search_model import MAX_LEXICAL_HITS
 from ._semantic_search_owners import owners_for_paths
 from ._semantic_search_view_actions import hit_next_actions
 
@@ -23,7 +23,7 @@ def ingest_payload(
     """Build stdin ingest payloads."""
 
     detection, hits = ingest_hits(facts, project_root, stdin)
-    hits = hits[:MAX_FZF_HITS]
+    hits = hits[:MAX_LEXICAL_HITS]
     next_actions = hit_next_actions(hits)
     notes = _ingest_notes(detection, hits)
     if not hits and _empty_stdin(detection):

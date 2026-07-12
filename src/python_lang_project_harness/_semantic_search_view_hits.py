@@ -18,12 +18,12 @@ from ._semantic_search_owners import (
     test_edges,
 )
 from ._semantic_search_view_actions import hit_next_actions
-from ._semantic_search_view_fzf_queries import (
+from ._semantic_search_view_lexical_queries import (
     fair_merged_text_hits,
-    fzf_query_hits_by_term,
+    lexical_query_hits_by_term,
     normalized_query_terms,
 )
-from ._semantic_search_view_fzf_synthesis import (
+from ._semantic_search_view_lexical_synthesis import (
     avoid_next_actions,
     owner_resolution,
     query_coverage,
@@ -77,20 +77,12 @@ def text_payload(
     project_root: Path,
     options: PythonSemanticSearchOptions,
 ) -> dict[str, Any]:
-    """Build parser-visible fzf search payloads."""
+    """Build parser-visible lexical search payloads."""
 
-    is_fzf = options.view == "fzf"
     query_terms = normalized_query_terms(options)
-    if is_fzf:
-        from ._semantic_search_view_fzf_queries import fuzzy_fzf_query_hits_by_term
-
-        hits_by_term = fuzzy_fzf_query_hits_by_term(
-            report, facts, project_root, query_terms, options.owner_path
-        )
-    else:
-        hits_by_term = fzf_query_hits_by_term(
-            report, facts, project_root, query_terms, options.owner_path
-        )
+    hits_by_term = lexical_query_hits_by_term(
+        report, facts, project_root, query_terms, options.owner_path
+    )
     hits = fair_merged_text_hits(hits_by_term)
     owner_paths = dedupe(
         [
@@ -110,15 +102,13 @@ def text_payload(
     )
     return {
         "header": header(
-            "fzf",
+            "lexical",
             {
                 "q": options.query or ",".join(query_terms),
                 "querySet": len(query_terms) if options.query_set else None,
-                "selector": ("fuzzy-set" if is_fzf else "exact-set")
-                if options.query_set
-                else None,
-                "mode": "fuzzy" if is_fzf else None,
-                "backend": "provider" if is_fzf else None,
+                "selector": "lexical-set" if options.query_set else None,
+                "mode": "lexical",
+                "backend": "provider",
                 "scopeOwner": options.owner_path,
                 "own": len(owner_paths),
                 "hit": len(hits),

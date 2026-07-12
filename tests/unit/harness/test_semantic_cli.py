@@ -45,7 +45,7 @@ def test_cli_agent_doctor_json_advertises_semantic_language_provider(
     assert "search/workspace" in registration["methods"]
     assert "search/callsite" in registration["methods"]
     assert "search/public-external-types" in registration["methods"]
-    assert "search/fzf" in registration["methods"]
+    assert "search/lexical" in registration["methods"]
     assert "agent/doctor" in registration["methods"]
     assert "agent/guide" in registration["methods"]
     assert "agent/install" not in registration["methods"]
@@ -60,10 +60,10 @@ def test_cli_agent_doctor_json_advertises_semantic_language_provider(
         for descriptor in registration["methodDescriptors"]
     )
     assert any(
-        descriptor["method"] == "search/fzf"
+        descriptor["method"] == "search/lexical"
         and descriptor["acceptedPipes"] == ["owner", "tests"]
         and descriptor["supportsQuerySet"] is True
-        and descriptor["acceptedQuerySetSelectors"] == ["fuzzy-set"]
+        and descriptor["acceptedQuerySetSelectors"] == ["lexical-set"]
         and descriptor["querySetScopes"] == ["project", "owner"]
         for descriptor in registration["methodDescriptors"]
     )
@@ -148,7 +148,7 @@ def test_cli_agent_guide_prints_provider_owned_searchflow(tmp_path: Path) -> Non
     assert "trailing . is the project root" not in rendered
     assert "--code --workspace" not in rendered
     assert (
-        "asp python search fzf <query> owner tests "
+        "asp python search lexical <query> owner tests "
         "--workspace <workspace-root> --view seeds"
     ) in rendered
     assert "--view metadata is document-only for asp md/org query" in rendered

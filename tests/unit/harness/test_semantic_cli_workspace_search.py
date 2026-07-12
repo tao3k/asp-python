@@ -62,7 +62,15 @@ def test_cli_search_workspace_prime_and_text_pipe(tmp_path: Path) -> None:
     )
     assert (
         run_cli(
-            ["search", "fzf", "build", "owner", "tests", "--workspace", str(tmp_path)],
+            [
+                "search",
+                "lexical",
+                "build",
+                "owner",
+                "tests",
+                "--workspace",
+                str(tmp_path),
+            ],
             stdout=text_stdout,
         )
         == 0
@@ -98,9 +106,29 @@ def test_cli_search_workspace_prime_and_text_pipe(tmp_path: Path) -> None:
     assert owner_packet["searchSynthesis"]["scope"] == "owner"
     assert owner_packet["searchSynthesis"]["ownerPath"] == "src/pkg/service.py"
     assert owner_packet["searchSynthesis"]["incomingOwners"] >= 1
-    assert text.startswith("[search-fzf] q=build")
+    assert text.startswith("[search-lexical] q=build")
     assert "|owner src/pkg/service.py" in text
     assert "|edge O:src/pkg/service.py -test-> O:tests/test_service.py" in text
+
+
+def test_cli_search_workspace_seeds_uses_metadata_route(tmp_path: Path) -> None:
+    write_search_fixture(tmp_path)
+
+    stdout = io.StringIO()
+    assert (
+        run_cli(
+            ["search", "workspace", "--view", "seeds", "--workspace", str(tmp_path)],
+            stdout=stdout,
+        )
+        == 0
+    )
+
+    workspace = stdout.getvalue()
+    assert workspace.startswith("[search-workspace]")
+    assert (
+        "|note kind=runtime-prefilter message=workspace-seed-metadata-route"
+        in workspace
+    )
 
 
 def test_cli_search_deps_exposes_manifest_topology_only(tmp_path: Path) -> None:

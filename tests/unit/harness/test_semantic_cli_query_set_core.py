@@ -25,10 +25,10 @@ def test_cli_search_text_query_set_and_flag_like_literal_query(
     query_set_exit = run_cli(
         [
             "search",
-            "fzf",
-            "--query-set",
+            "lexical",
+            "--query",
             "build",
-            "--query-set",
+            "--query",
             "Session",
             "owner",
             "tests",
@@ -42,10 +42,10 @@ def test_cli_search_text_query_set_and_flag_like_literal_query(
     query_set_json_exit = run_cli(
         [
             "search",
-            "fzf",
-            "--query-set",
+            "lexical",
+            "--query",
             "build",
-            "--query-set",
+            "--query",
             "Session",
             "owner",
             "tests",
@@ -62,7 +62,7 @@ def test_cli_search_text_query_set_and_flag_like_literal_query(
         flag_like_exit = run_cli(
             [
                 "search",
-                "fzf",
+                "lexical",
                 "--json",
                 "--view",
                 "seeds",
@@ -74,8 +74,8 @@ def test_cli_search_text_query_set_and_flag_like_literal_query(
 
     rendered = query_set_stdout.getvalue()
     assert query_set_exit == 0
-    assert rendered.startswith('[search-fzf] q="build,Session" querySet=2')
-    assert "selector=fuzzy-set" in rendered
+    assert rendered.startswith('[search-lexical] q="build,Session" querySet=2')
+    assert "selector=lexical-set" in rendered
     assert "scopeOwner=src/pkg/service.py" in rendered
     assert "|query build " in rendered
     assert "|query Session " in rendered
@@ -97,7 +97,7 @@ def test_cli_search_text_query_set_and_flag_like_literal_query(
     assert packet["query"] == "build,Session"
     assert [term["value"] for term in packet["querySet"]] == ["build", "Session"]
     assert packet["queryComposition"]["mode"] == "query-set"
-    assert packet["queryComposition"]["selector"] == "fuzzy-set"
+    assert packet["queryComposition"]["selector"] == "lexical-set"
     assert packet["queryComposition"]["merge"] == [
         "nodes",
         "edges",
@@ -109,7 +109,7 @@ def test_cli_search_text_query_set_and_flag_like_literal_query(
     ]
     assert packet["queryComposition"]["scope"]["ownerPath"] == "src/pkg/service.py"
     assert packet["header"]["fields"]["querySet"] == 2
-    assert packet["header"]["fields"]["selector"] == "fuzzy-set"
+    assert packet["header"]["fields"]["selector"] == "lexical-set"
     assert packet["header"]["fields"]["scopeOwner"] == "src/pkg/service.py"
     assert [query["value"] for query in packet["queryCoverage"]] == [
         "build",
@@ -122,7 +122,7 @@ def test_cli_search_text_query_set_and_flag_like_literal_query(
             "status": "workspace-owner",
             "realOwner": True,
             "ownerPath": "src/pkg/service.py",
-            "reason": "parser-visible owner selected by fzf search",
+            "reason": "parser-visible owner selected by lexical search",
         }
     ]
     assert packet["searchSynthesis"]["seeds"] == [
@@ -138,4 +138,4 @@ def test_cli_search_text_query_set_and_flag_like_literal_query(
 
     if compact_graph_renderer_available():
         assert flag_like_exit == 0
-        assert flag_like_stdout.getvalue().startswith("[search-fzf] q=--json")
+        assert flag_like_stdout.getvalue().startswith("[search-lexical] q=--json")

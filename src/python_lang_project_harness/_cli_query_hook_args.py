@@ -5,6 +5,8 @@ from __future__ import annotations
 import re
 from collections.abc import Sequence
 
+from ._semantic_selector_identity import python_structural_selector_owner_path
+
 
 def normalize_query_surfaces(value: str | None) -> tuple[tuple[str, ...], str | None]:
     """Normalize shared hook query surfaces into py-harness search pipes."""
@@ -55,6 +57,9 @@ def owner_path_from_query_selector(selector: str | None) -> str | None:
     normalized = selector.replace("\\", "/").removeprefix("owner:")
     if any(marker in normalized for marker in ("*", "{", "}")):
         return None
+    structural_owner_path = python_structural_selector_owner_path(selector)
+    if structural_owner_path is not None:
+        return structural_owner_path
     return re.sub(r":[1-9][0-9]*(?:[:-][1-9][0-9]*)?$", "", normalized)
 
 

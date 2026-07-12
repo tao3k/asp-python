@@ -40,7 +40,9 @@ def test_dev_command_log_records_ordered_active_context_events(
     monkeypatch.delenv("SEMANTIC_PROTOCOL_SESSION_ID", raising=False)
     monkeypatch.delenv("SEMANTIC_PROTOCOL_HOOK_RUN_ID", raising=False)
 
-    log = start_dev_command_log(["search", "fzf", "metadata", str(project)], project)
+    log = start_dev_command_log(
+        ["search", "lexical", "metadata", str(project)], project
+    )
     log.finish(0)
 
     command_dir = trace / "python" / "py-harness" / "commands"

@@ -86,7 +86,7 @@ def _payload_for_view(
             return import_payload(report, facts, project_root, query)
         case "tests":
             return tests_payload(report, facts, project_root, query)
-        case "fzf":
+        case "lexical":
             return text_payload(report, facts, project_root, options)
         case "reasoning":
             from ._semantic_search_reasoning import reasoning_payload

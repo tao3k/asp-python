@@ -157,8 +157,8 @@ def _render_fast_protocol_command(
     stdin: str,
 ) -> str | None:
     from ._semantic_graph_facts import render_semantic_graph_facts
-    from ._semantic_search_fzf_fast import render_fast_fzf_seed_search
     from ._semantic_search_ingest_fast import render_fast_empty_ingest_search
+    from ._semantic_search_lexical_fast import render_fast_lexical_seed_search
     from ._semantic_search_owner_fast import render_fast_owner_seed_search
     from ._semantic_search_prime_fast import render_fast_prime_search
 
@@ -169,7 +169,7 @@ def _render_fast_protocol_command(
         lambda: render_fast_empty_ingest_search(args, project_root, stdin),
         lambda: render_fast_prime_search(args, project_root),
         lambda: render_fast_owner_seed_search(args, project_root),
-        lambda: render_fast_fzf_seed_search(args, project_root),
+        lambda: render_fast_lexical_seed_search(args, project_root),
     )
     for render in renderers:
         rendered = render()

@@ -1,4 +1,4 @@
-"""Fast compact frontiers for Python search fzf seed view."""
+"""Fast compact frontiers for Python lexical seed views."""
 
 from __future__ import annotations
 
@@ -8,12 +8,14 @@ from ._cli_args import ProtocolArgs
 from ._semantic_search_prefilter import prefilter_python_text_search_paths
 
 
-def render_fast_fzf_seed_search(args: ProtocolArgs, project_root: Path) -> str | None:
-    """Render fzf owner seeds without parsing candidate modules."""
+def render_fast_lexical_seed_search(
+    args: ProtocolArgs, project_root: Path
+) -> str | None:
+    """Render lexical owner seeds without parsing candidate modules."""
 
-    if not _supports_fast_fzf_seed_search(args):
+    if not _supports_fast_lexical_seed_search(args):
         return None
-    query_terms = _fast_fzf_query_terms(args)
+    query_terms = _fast_lexical_query_terms(args)
     prefilter = prefilter_python_text_search_paths(
         project_root,
         query_terms,
@@ -22,24 +24,24 @@ def render_fast_fzf_seed_search(args: ProtocolArgs, project_root: Path) -> str |
     if prefilter is None or not prefilter.paths:
         return None
     owners = tuple(_relative_owner_path(path, project_root) for path in prefilter.paths)
-    return _render_fast_fzf_seed_text(query_terms, owners, prefilter.runtime_cost())
+    return _render_fast_lexical_seed_text(query_terms, owners, prefilter.runtime_cost())
 
 
-def _supports_fast_fzf_seed_search(args: ProtocolArgs) -> bool:
+def _supports_fast_lexical_seed_search(args: ProtocolArgs) -> bool:
     return (
         args.command == "search"
-        and args.view == "fzf"
+        and args.view == "lexical"
         and args.render_mode == "seeds"
         and not args.json
         and not args.code_only
-        and bool(_fast_fzf_query_terms(args))
+        and bool(_fast_lexical_query_terms(args))
         and args.pipes in {("owner",), ("owner", "tests")}
         and args.item_query is None
         and args.dependency is None
     )
 
 
-def _fast_fzf_query_terms(args: ProtocolArgs) -> tuple[str, ...]:
+def _fast_lexical_query_terms(args: ProtocolArgs) -> tuple[str, ...]:
     if args.query_set:
         return args.query_set
     if args.query:
@@ -54,13 +56,13 @@ def _relative_owner_path(path: Path, root: Path) -> str:
         return path.as_posix()
 
 
-def _render_fast_fzf_seed_text(
+def _render_fast_lexical_seed_text(
     query_terms: tuple[str, ...],
     owners: tuple[str, ...],
     runtime_cost: dict[str, object],
 ) -> str:
     query = ",".join(query_terms)
-    declarations = [f"Q=query:term({query})!fzf"]
+    declarations = [f"Q=query:term({query})!lexical"]
     edges = ["Q:matches"]
     rank = ["Q"]
     for index, owner in enumerate(owners, start=1):
@@ -74,8 +76,8 @@ def _render_fast_fzf_seed_text(
     return "\n".join(
         [
             (
-                f"[search-fzf] q={query} querySet={len(query_terms)} "
-                "selector=fuzzy-set view=hits alg=query-set-owner-resolution"
+                f"[search-lexical] q={query} querySet={len(query_terms)} "
+                "selector=lexical-set view=hits alg=query-set-owner-resolution"
             ),
             "legend: ID=kind:role(value)!next; edge SRC>{DST:rel}; frontier ID.next",
             "aliases: graph:{G=search,Q=query,O=owner,T=test}",
@@ -95,7 +97,7 @@ def _frontier(rank: list[str]) -> str:
 
 def _frontier_kind(item: str) -> str:
     if item == "Q":
-        return "fzf"
+        return "lexical"
     if item.startswith("T"):
         return "tests"
     return "owner"

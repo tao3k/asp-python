@@ -1,4 +1,4 @@
-"""Semantic CLI fzf protocol tests."""
+"""Semantic CLI lexical protocol tests."""
 
 from __future__ import annotations
 
@@ -10,21 +10,19 @@ from semantic_search_fixture import require_compact_graph_renderer, write_search
 from python_lang_project_harness._cli import run_cli
 
 
-def test_cli_search_fzf_query_set(tmp_path: Path) -> None:
+def test_cli_search_lexical_query_set(tmp_path: Path) -> None:
     write_search_fixture(tmp_path)
     stdout = io.StringIO()
     exit_code = run_cli(
         [
             "search",
-            "fzf",
-            "--query-set",
+            "lexical",
+            "--query",
             "build",
-            "--query-set",
+            "--query",
             "Session",
             "owner",
             "tests",
-            "--owner",
-            "src/pkg/service.py",
             "--workspace",
             str(tmp_path),
         ],
@@ -32,31 +30,31 @@ def test_cli_search_fzf_query_set(tmp_path: Path) -> None:
     )
     rendered = stdout.getvalue()
     assert exit_code == 0
-    assert rendered.startswith('[search-fzf] q="build,Session" querySet=2')
-    assert "selector=fuzzy-set" in rendered
-    assert "scopeOwner=src/pkg/service.py" in rendered
-    assert "|seed owner:src/pkg/service.py" in rendered
-    assert "|next owner:src/pkg/service.py,tests:src/pkg/service.py" in rendered
+    assert rendered.startswith('[search-lexical] q="build,Session" querySet=2')
+    assert "selector=lexical-set" in rendered
     for line in rendered.splitlines():
         if line.startswith("|seed "):
             assert ",owner:" not in line
             assert ",tests:" not in line
 
 
-def test_cli_search_fzf_matches_path_only_candidate(tmp_path: Path) -> None:
+def test_cli_search_lexical_matches_path_only_candidate(tmp_path: Path) -> None:
     require_compact_graph_renderer()
     write_search_fixture(tmp_path)
     path_owner = tmp_path / "src" / "pkg" / "hook_runtime.py"
     path_owner.write_text(
-        '"""Path-only fuzzy owner."""\n\ndef execute() -> None:\n    pass\n',
+        '"""Path-only lexical owner."""\n\ndef execute() -> None:\n    pass\n',
         encoding="utf-8",
     )
     stdout = io.StringIO()
     exit_code = run_cli(
         [
             "search",
-            "fzf",
+            "lexical",
+            "--query",
             "hookruntime",
+            "--query",
+            "execute",
             "owner",
             "tests",
             "--view",
@@ -68,13 +66,13 @@ def test_cli_search_fzf_matches_path_only_candidate(tmp_path: Path) -> None:
     )
     rendered = stdout.getvalue()
     assert exit_code == 0
-    assert rendered.startswith("[search-fzf] q=hookruntime")
+    assert rendered.startswith("[search-lexical] q=hookruntime,execute")
     assert "O=owner:path(src/pkg/hook_runtime.py)!owner" in rendered
-    assert "rank=Q,O,T frontier=Q.fzf,O.owner,T.tests" in rendered
+    assert "rank=Q,O,T frontier=Q.lexical,O.owner,T.tests" in rendered
     assert "|seed " not in rendered
 
 
-def test_protocol_search_fzf_positional_query_uses_fast_frontier(
+def test_protocol_search_lexical_query_uses_fast_frontier(
     tmp_path: Path,
 ) -> None:
     from python_lang_project_harness._cli_args import ProtocolArgs
@@ -83,14 +81,17 @@ def test_protocol_search_fzf_positional_query_uses_fast_frontier(
     write_search_fixture(tmp_path)
     path_owner = tmp_path / "src" / "pkg" / "hook_runtime.py"
     path_owner.write_text(
-        '"""Path-only fuzzy owner."""\n\ndef execute() -> None:\n    pass\n',
+        '"""Path-only lexical owner."""\n\ndef execute() -> None:\n    pass\n',
         encoding="utf-8",
     )
     args = ProtocolArgs.parse(
         [
             "search",
-            "fzf",
+            "lexical",
+            "--query",
             "hookruntime",
+            "--query",
+            "execute",
             "owner",
             "tests",
             "--view",
@@ -112,14 +113,14 @@ def test_protocol_search_fzf_positional_query_uses_fast_frontier(
     rendered = stdout.getvalue()
     assert stderr.getvalue() == ""
     assert exit_code == 0
-    assert rendered.startswith("[search-fzf] q=hookruntime querySet=1")
-    assert "Q=query:term(hookruntime)!fzf" in rendered
+    assert rendered.startswith("[search-lexical] q=hookruntime,execute querySet=2")
+    assert "Q=query:term(hookruntime,execute)!lexical" in rendered
     assert "entries=owner-query(O,Q=>items+tests+dependency-usage)" in rendered
-    assert "rank=Q,O,T frontier=Q.fzf,O.owner,T.tests" in rendered
+    assert "rank=Q,O,T frontier=Q.lexical,O.owner,T.tests" in rendered
     assert "|seed " not in rendered
 
 
-def test_protocol_search_fzf_positional_query_uses_rglob_prefilter_without_tools(
+def test_protocol_search_lexical_query_uses_rglob_prefilter_without_tools(
     tmp_path: Path,
     monkeypatch,
 ) -> None:
@@ -139,14 +140,17 @@ def test_protocol_search_fzf_positional_query_uses_rglob_prefilter_without_tools
     write_search_fixture(tmp_path)
     path_owner = tmp_path / "src" / "pkg" / "hook_runtime.py"
     path_owner.write_text(
-        '"""Path-only fuzzy owner."""\n\ndef execute() -> None:\n    pass\n',
+        '"""Path-only lexical owner."""\n\ndef execute() -> None:\n    pass\n',
         encoding="utf-8",
     )
     args = ProtocolArgs.parse(
         [
             "search",
-            "fzf",
+            "lexical",
+            "--query",
             "hookruntime",
+            "--query",
+            "execute",
             "owner",
             "tests",
             "--view",
@@ -168,14 +172,13 @@ def test_protocol_search_fzf_positional_query_uses_rglob_prefilter_without_tools
     rendered = stdout.getvalue()
     assert stderr.getvalue() == ""
     assert exit_code == 0
-    assert rendered.startswith("[search-fzf] q=hookruntime querySet=1")
-    assert "Q=query:term(hookruntime)!fzf" in rendered
+    assert rendered.startswith("[search-lexical] q=hookruntime,execute querySet=2")
+    assert "Q=query:term(hookruntime,execute)!lexical" in rendered
     assert "O=owner:path(src/pkg/hook_runtime.py)!owner" in rendered
     assert "entries=owner-query(O,Q=>items+tests+dependency-usage)" in rendered
-    assert '|note kind=runtime-prefilter message="rglob path prefilter' in rendered
 
 
-def test_protocol_search_fzf_source_query_uses_rglob_source_without_tools(
+def test_protocol_search_lexical_source_query_uses_rglob_source_without_tools(
     tmp_path: Path,
     monkeypatch,
 ) -> None:
@@ -209,8 +212,11 @@ def test_protocol_search_fzf_source_query_uses_rglob_source_without_tools(
     args = ProtocolArgs.parse(
         [
             "search",
-            "fzf",
+            "lexical",
+            "--query",
             "run_query_command",
+            "--query",
+            "command",
             "owner",
             "tests",
             "--view",
@@ -232,8 +238,10 @@ def test_protocol_search_fzf_source_query_uses_rglob_source_without_tools(
     rendered = stdout.getvalue()
     assert stderr.getvalue() == ""
     assert exit_code == 0
-    assert rendered.startswith("[search-fzf] q=run_query_command querySet=1")
-    assert "Q=query:term(run_query_command)!fzf" in rendered
+    assert rendered.startswith(
+        "[search-lexical] q=run_query_command,command querySet=2"
+    )
+    assert "Q=query:term(run_query_command,command)!lexical" in rendered
     assert "O=owner:path(src/pkg/cli_query.py)!owner" in rendered
     assert "entries=owner-query(O,Q=>items+tests+dependency-usage)" in rendered
     assert "rglob-source" in rendered

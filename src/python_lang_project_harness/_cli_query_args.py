@@ -57,7 +57,7 @@ def _query_args_result(
     if is_broad_hook_query(state.from_hook, state.selector, state.terms):
         return args_type(
             "search",
-            view="fzf",
+            view="lexical",
             query=",".join(state.terms),
             query_set=tuple(state.terms),
             project_root=_query_project_root(state),
@@ -107,7 +107,7 @@ def _query_args_error(state: QueryParseState) -> str | None:
         if state.names_only and state.terms:
             return (
                 "query --names-only requires an owner selector; workspace term discovery is "
-                "`search fzf '<term>' owner --workspace <workspace-root> --view seeds`"
+                "`search lexical '<term>' owner --workspace <workspace-root> --view seeds`"
             )
         return "query requires an owner path"
     if not state.terms and state.from_hook != "owner-local-projection":

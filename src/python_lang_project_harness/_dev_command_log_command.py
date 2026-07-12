@@ -17,7 +17,6 @@ VALUE_OPTIONS = {
     "--from-hook",
     "--package",
     "--query",
-    "--query-set",
     "--selector",
     "--term",
     "--view",
@@ -28,7 +27,7 @@ SEARCH_PIPES = {
     "deps",
     "docs",
     "features",
-    "fzf",
+    "lexical",
     "items",
     "owner",
     "owners",
@@ -80,7 +79,7 @@ def normalize_command(argv: list[str]) -> NormalizedCommand:
     )
     render_mode = option_value(args, "--view")
     query_set_count = sum(
-        1 for arg in args if arg == "--query-set" or arg.startswith("--query-set=")
+        1 for arg in args if arg == "--query" or arg.startswith("--query=")
     )
     pipes = tuple(sorted({normalize_token(arg) for arg in args} & SEARCH_PIPES))
     view = (

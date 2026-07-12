@@ -48,7 +48,7 @@ def _attach_query_set(
         {
             "value": term,
             "kind": "text",
-            "selector": "fuzzy" if options.view == "fzf" else "exact",
+            "selector": "lexical" if options.view == "lexical" else "exact",
         }
         for term in _normalized_query_set(options.query_set)
     ]
@@ -62,7 +62,7 @@ def _attach_query_set(
         packet["queryComposition"] = {
             "mode": "query-set",
             "view": options.view,
-            "selector": "fuzzy-set" if options.view == "fzf" else "exact-set",
+            "selector": "lexical-set" if options.view == "lexical" else "exact-set",
             **({} if scope is None else {"scope": scope}),
             "merge": [
                 "nodes",

@@ -59,7 +59,7 @@ def knowledge_payload(
         "hits": hits,
         "findings": [],
         "nextActions": [
-            {"kind": "fzf", "target": query or axis},
+            {"kind": "lexical", "target": query or axis},
             {"kind": "owner", "target": "."},
         ],
         "notes": [

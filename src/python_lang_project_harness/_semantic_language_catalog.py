@@ -117,15 +117,15 @@ def python_search_view_descriptors() -> list[dict[str, Any]]:
             capabilities=[_python("pytest-test-owner-search")],
         ),
         _view(
-            "fzf",
+            "lexical",
             requires_query=True,
             accepted_pipes=["owner", "tests"],
             supports_query_set=True,
-            accepted_query_set_selectors=["fuzzy-set"],
+            accepted_query_set_selectors=["lexical-set"],
             query_set_scopes=["project", "owner"],
             capabilities=[
-                _semantic("finder-fuzzy-candidate-search"),
-                _python("parser-visible-source-fuzzy-search"),
+                _semantic("lexical-candidate-search"),
+                _python("parser-visible-source-lexical-search"),
             ],
             ingest_required_for=[
                 _ingest("non-parser-text"),

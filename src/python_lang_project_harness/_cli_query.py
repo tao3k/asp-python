@@ -8,6 +8,7 @@ from typing import TYPE_CHECKING, Any, TextIO
 
 from ._semantic_search_item_lines import owner_item_query_lines
 from ._semantic_search_items import owner_item_semantic_query_packet
+from ._semantic_selector_identity import python_structural_selector_owner_path
 
 if TYPE_CHECKING:
     from ._cli_args import ProtocolArgs
@@ -43,9 +44,14 @@ def run_query_command(
         )
         return 0
 
-    if _selector_looks_like_source_locator_hint(args.selector) or (
-        args.code_only and _selector_looks_like_owner_path_hint(args.selector)
-    ):
+    if args.code_only and not _selector_is_structural(args.selector):
+        raise ValueError(
+            "query requires parser-owned structural selector identity; "
+            "status=selector-not-materialized "
+            "reason=non-structural-selector "
+            "nextAction=refresh-parser-projection"
+        )
+    if _selector_looks_like_source_locator_hint(args.selector):
         raise ValueError(
             "query requires parser-owned selector identity; "
             "source locator hints are not executable selectors"
@@ -109,12 +115,22 @@ def _selector_has_line_range(selector: str | None, owner_path: str) -> bool:
     return normalized.startswith(f"{owner_path}:")
 
 
+def _selector_is_structural(selector: str | None) -> bool:
+    if selector is None:
+        return False
+    normalized = selector.strip()
+    return normalized.startswith("python://") and "#item/" in normalized
+
+
 def _selector_owner_path(selector: str | None) -> str | None:
     if selector is None:
         return None
     normalized = selector.replace("\\", "/").removeprefix("owner:")
     if any(marker in normalized for marker in ("*", "{", "}")):
         return None
+    structural_owner_path = python_structural_selector_owner_path(selector)
+    if structural_owner_path is not None:
+        return structural_owner_path
     path_and_start, separator, end_text = normalized.rpartition(":")
     if not separator:
         return None

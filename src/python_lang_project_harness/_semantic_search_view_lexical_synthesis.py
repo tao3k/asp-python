@@ -25,7 +25,7 @@ def owner_resolution(owner_paths: list[str]) -> list[dict[str, Any]]:
             "status": "workspace-owner",
             "realOwner": True,
             "ownerPath": owner_path,
-            "reason": "parser-visible owner selected by fzf search",
+            "reason": "parser-visible owner selected by lexical search",
         }
         for owner_path in owner_paths[:8]
     ]

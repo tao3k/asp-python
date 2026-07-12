@@ -7,6 +7,30 @@ from pathlib import Path
 
 from ._cli_args import ProtocolArgs
 
+_KNOWLEDGE_VIEWS = frozenset(
+    {
+        "env",
+        "runtime-source",
+        "lang",
+        "std",
+        "capability",
+        "extension",
+        "pattern",
+        "compare",
+    }
+)
+_QUERY_PREFILTER_VIEWS = frozenset(
+    {
+        "api",
+        "callsite",
+        "import",
+        "public-external-types",
+        "policy",
+        "symbol",
+        "tests",
+    }
+)
+
 
 def _render_search_code_only(packet: dict[str, object]) -> str:
     items = packet.get("items", ())
@@ -53,6 +77,18 @@ def _run_search_harness(
                 "dependency": args.query or "",
             },
         }
+    workspace_seed_report = _run_workspace_seed_metadata_search(project_root, args)
+    if workspace_seed_report is not None:
+        return workspace_seed_report, {
+            "reason": "workspace-seed-metadata-route",
+            "fields": {"paths": 0, "view": args.view or ""},
+        }
+    metadata_report = _run_metadata_only_search(project_root, args)
+    if metadata_report is not None:
+        return metadata_report, {
+            "reason": "knowledge-metadata-route",
+            "fields": {"paths": 0, "view": args.view or ""},
+        }
     from ._rule_packs import resolve_project_harness_config
 
     config = resolve_project_harness_config(
@@ -60,7 +96,7 @@ def _run_search_harness(
         None,
         rule_packs=None,
     )
-    if args.command != "search" or args.view != "fzf":
+    if args.command != "search":
         from ._runner import run_python_project_harness
 
         return run_python_project_harness(project_root, config=config), None
@@ -68,9 +104,13 @@ def _run_search_harness(
         from ._runner import run_python_project_harness
 
         return run_python_project_harness(project_root, config=config), None
+    query_terms = _prefilter_query_terms(args)
+    if query_terms is None:
+        from ._runner import run_python_project_harness
+
+        return run_python_project_harness(project_root, config=config), None
     from ._semantic_search_prefilter import prefilter_python_text_search_paths
 
-    query_terms = args.query_set or (() if args.query is None else (args.query,))
     prefilter = prefilter_python_text_search_paths(
         project_root,
         query_terms,
@@ -83,6 +123,23 @@ def _run_search_harness(
     return _run_prefiltered_text_search(project_root, prefilter.paths), (
         prefilter.runtime_cost()
     )
+
+
+def _prefilter_query_terms(args: ProtocolArgs) -> tuple[str, ...] | None:
+    if args.view == "lexical":
+        return args.query_set or (
+            () if args.query is None else tuple(args.query.split())
+        )
+    if (
+        args.view == "reasoning"
+        and args.query == "query-deps"
+        and args.item_query is not None
+        and args.dependency is not None
+    ):
+        return (args.item_query, args.dependency)
+    if args.view in _QUERY_PREFILTER_VIEWS and args.query is not None:
+        return (args.query,)
+    return None
 
 
 def _run_exact_owner_items_search(
@@ -127,6 +184,46 @@ def _run_metadata_dependency_search(
         or args.view not in {"dependency", "deps"}
         or args.query is None
         or "::" in args.query
+    ):
+        return None
+    from ._project_metadata import read_python_project_metadata
+
+    return _TextSearchReport(
+        modules=(),
+        project_scope=_TextSearchScope(
+            project_root=project_root,
+            project_metadata=read_python_project_metadata(project_root),
+            fallback_paths=(project_root,),
+        ),
+        root_paths=(str(project_root),),
+    )
+
+
+def _run_metadata_only_search(
+    project_root: Path, args: ProtocolArgs
+) -> _TextSearchReport | None:
+    if args.command != "search" or args.view not in _KNOWLEDGE_VIEWS:
+        return None
+    from ._project_metadata import read_python_project_metadata
+
+    return _TextSearchReport(
+        modules=(),
+        project_scope=_TextSearchScope(
+            project_root=project_root,
+            project_metadata=read_python_project_metadata(project_root),
+            fallback_paths=(project_root,),
+        ),
+        root_paths=(str(project_root),),
+    )
+
+
+def _run_workspace_seed_metadata_search(
+    project_root: Path, args: ProtocolArgs
+) -> _TextSearchReport | None:
+    if (
+        args.command != "search"
+        or args.view != "workspace"
+        or args.render_mode != "seeds"
     ):
         return None
     from ._project_metadata import read_python_project_metadata

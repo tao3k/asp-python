@@ -24,18 +24,18 @@ def test_compact_graph_renderer_shells_out_to_protocol_bin(
         "#!/bin/sh\n"
         'printf "%s\\n" "$@" > "$ASP_ARGV_PATH"\n'
         'cat > "$ASP_STDIN_PATH"\n'
-        'printf "[search-fzf] q=test\\n"\n'
+        'printf "[search-lexical] q=test\\n"\n'
     )
     protocol_bin.chmod(0o755)
     monkeypatch.setenv(SEMANTIC_AGENT_PROTOCOL_BIN_ENV, str(protocol_bin))
     monkeypatch.setenv("ASP_ARGV_PATH", str(argv_path))
     monkeypatch.setenv("ASP_STDIN_PATH", str(stdin_path))
 
-    packet = {"header": {"kind": "search-fzf"}}
+    packet = {"header": {"kind": "search-lexical"}}
 
     output = render_compact_graph_packet(packet, seed_limit=3)
 
-    assert output == "[search-fzf] q=test\n"
+    assert output == "[search-lexical] q=test\n"
     assert argv_path.read_text().splitlines() == [
         "graph",
         "render",
@@ -59,7 +59,7 @@ def test_compact_graph_renderer_missing_bin_does_not_fallback(
     )
 
     with pytest.raises(CompactGraphRenderError, match="not found"):
-        render_compact_graph_packet({"header": {"kind": "search-fzf"}})
+        render_compact_graph_packet({"header": {"kind": "search-lexical"}})
 
 
 def test_compact_graph_seed_packet_appends_non_graph_flow_lines(

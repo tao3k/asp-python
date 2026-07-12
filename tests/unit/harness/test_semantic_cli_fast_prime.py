@@ -43,10 +43,10 @@ def test_cli_search_prime_seed_view_uses_fast_frontier(
     assert "|decision purpose=decision-primer" in rendered
     assert "answer=false code=false" in rendered
     assert (
-        "capabilities=pipe,fzf,fd-query,rg-query,owner-items,selector-code,treesitter-query"
+        "capabilities=pipe,lexical,fd-query,rg-query,owner-items,selector-code,treesitter-query"
         in rendered
     )
-    assert "ladder=pipe>fzf>fd-query|rg-query>owner-items>selector-code" in rendered
+    assert "ladder=pipe>lexical>fd-query|rg-query>owner-items>selector-code" in rendered
     assert (
         "history=asp-artifacts:directReadRisk,repeatedPrime,repeatedPipe,bestPath"
         in rendered

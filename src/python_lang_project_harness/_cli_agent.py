@@ -89,7 +89,7 @@ def render_agent_guide(project_root: Path) -> str:
                     f"--selector <selector> --term <term> --surface owners,tests "
                     f"{workspace} --view seeds"
                 ),
-                f"|cmd fzf=asp python search fzf <query> owner tests {root} --view seeds",
+                f"|cmd lexical=asp python search lexical <query> owner tests {root} --view seeds",
                 "|cmd ast-patch=asp python ast-patch dry-run --packet <semantic-ast-patch.json|->",
                 f"|cmd evidence-graph=asp python evidence graph --json {root}",
                 f"|cmd evidence-analyze=asp python evidence analyze --json {root}",

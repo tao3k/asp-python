@@ -31,7 +31,36 @@ def test_cli_query_direct_source_read_code_rejects_source_locator_hint(
     )
 
     assert exit_code == 3
-    assert "source locator hints are not executable selectors" in stderr.getvalue()
+    assert "status=selector-not-materialized" in stderr.getvalue()
+    assert "nextAction=refresh-parser-projection" in stderr.getvalue()
+
+
+def test_cli_query_direct_source_read_code_rejects_missing_structural_selector(
+    tmp_path: Path,
+) -> None:
+    source = tmp_path / "tests" / "unit" / "example.py"
+    source.parent.mkdir(parents=True)
+    source.write_text("def target() -> None:\n    pass\n", encoding="utf-8")
+    stderr = io.StringIO()
+
+    exit_code = run_cli(
+        [
+            "query",
+            "--from-hook",
+            "owner-local-projection",
+            "--selector",
+            "tests/unit/example.py",
+            "--workspace",
+            str(tmp_path),
+            "--code",
+        ],
+        stdout=io.StringIO(),
+        stderr=stderr,
+        cwd=tmp_path,
+    )
+
+    assert exit_code == 3
+    assert "status=selector-not-materialized" in stderr.getvalue()
 
 
 def test_cli_query_code_rejects_trailing_project_root(tmp_path: Path) -> None:

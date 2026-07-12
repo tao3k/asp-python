@@ -8,10 +8,16 @@ from typing import TYPE_CHECKING, Any
 
 from . import _semantic_language_ids as ids
 from ._python_compact import compact_python_item
-from ._semantic_projection import semantic_query_projection
+from ._semantic_query_packet import (
+    semantic_import_route_next,
+    semantic_query_coverage,
+    semantic_query_match,
+    semantic_query_match_mode,
+)
 from ._semantic_search_common import compact_fields, semantic_search_display_path
 from ._semantic_search_import_routes import import_definition_routes
 from ._semantic_search_model import MAX_OWNER_QUERY_ITEMS
+from ._semantic_selector_identity import python_structural_selector_identity
 
 if TYPE_CHECKING:
     from python_lang_parser import PythonModuleReport, PythonSymbol
@@ -64,7 +70,7 @@ def owner_item_query_payload(
         "itemStatus": "hit" if items and not fallback else "miss",
         "itemMatch": match if items or import_routes else "none",
         "fallback": "owner-top-items" if fallback and items else None,
-        "next": _import_route_next(import_routes[0]) if import_routes else None,
+        "next": semantic_import_route_next(import_routes[0]) if import_routes else None,
     }
     return {
         "items": items,
@@ -86,11 +92,58 @@ def owner_item_semantic_query_packet(
     """Return a semantic-query-packet for owner-local Python item lookup."""
 
     payload = owner_item_query_payload(report, project_root, owner_path, item_query)
+    items, fields, import_routes = _selector_resolved_owner_items(
+        report,
+        project_root,
+        owner_path,
+        selector,
+        payload,
+    )
+    return _owner_item_semantic_query_packet(
+        payload,
+        project_root,
+        owner_path,
+        item_query,
+        output_mode,
+        items,
+        fields,
+        import_routes,
+    )
+
+
+def _selector_resolved_owner_items(
+    report: PythonHarnessReport,
+    project_root: Path,
+    owner_path: str,
+    selector: str | None,
+    payload: dict[str, Any],
+) -> tuple[list[dict[str, Any]], dict[str, Any], list[Any]]:
     items = payload["items"]
     fields = payload["fields"]
     import_routes = payload.get("importRoutes", [])
+    module = _module_for_owner(report, project_root, owner_path)
+    selector_identity = python_structural_selector_identity(selector)
     selector_range = _selector_line_range(selector, owner_path)
-    if selector_range is not None:
+    if selector_identity is not None:
+        selector_owner_path, selector_kind, selector_name = selector_identity
+        items = (
+            [
+                _item_record(module, project_root, owner_path, symbol)
+                for symbol in _sorted_symbols(module)
+                if symbol.kind.value == selector_kind
+                and symbol.qualified_name == selector_name
+            ]
+            if selector_owner_path == owner_path and module is not None
+            else []
+        )
+        fields = {
+            **fields,
+            "item": len(items),
+            "itemStatus": "hit" if items else "miss",
+            "itemMatch": "exact" if items else "none",
+        }
+        import_routes = []
+    elif selector_range is not None:
         items = _selector_range_items(report, project_root, owner_path, selector_range)
         fields = {
             **fields,
@@ -99,6 +152,19 @@ def owner_item_semantic_query_packet(
             "itemMatch": "exact" if items else "none",
         }
         import_routes = []
+    return items, fields, import_routes
+
+
+def _owner_item_semantic_query_packet(
+    payload: dict[str, Any],
+    project_root: Path,
+    owner_path: str,
+    item_query: str,
+    output_mode: str,
+    items: list[dict[str, Any]],
+    fields: dict[str, Any],
+    import_routes: list[Any],
+) -> dict[str, Any]:
     terms = _query_terms(item_query)
     from ._semantic_syntax_refs import (
         annotate_python_owner_item_syntax_refs,
@@ -120,7 +186,7 @@ def owner_item_semantic_query_packet(
         "ownerPath": owner_path,
         "query": item_query,
         "queryTerms": terms,
-        "matchMode": _query_match_mode(str(fields.get("itemMatch", "none"))),
+        "matchMode": semantic_query_match_mode(str(fields.get("itemMatch", "none"))),
         "outputMode": output_mode,
         "patchSafety": {
             "level": "read-safe",
@@ -128,7 +194,7 @@ def owner_item_semantic_query_packet(
             "nextAction": "query --from-hook owner-local-projection",
         },
         "queryCoverage": [
-            _query_coverage(
+            semantic_query_coverage(
                 term,
                 items,
                 str(fields.get("itemMatch", "none")),
@@ -137,7 +203,7 @@ def owner_item_semantic_query_packet(
             for term in terms
         ],
         "matches": [
-            _semantic_query_match(item, include_code=output_mode != "names")
+            semantic_query_match(item, include_code=output_mode != "names")
             for item in items
         ],
         "truncated": any(
@@ -219,122 +285,6 @@ def _selector_line_range(
     return (min(start_line, end_line), max(start_line, end_line))
 
 
-def _query_match_mode(match: str) -> str:
-    if match in {"exact", "fallback-contains", "candidate"}:
-        return match
-    return "unknown"
-
-
-def _query_coverage(
-    term: str,
-    items: list[dict[str, Any]],
-    match: str,
-    import_routes: list[Any],
-) -> dict[str, Any]:
-    exact_count = sum(1 for item in items if item.get("name") == term)
-    if exact_count:
-        return {
-            "value": term,
-            "status": "hit",
-            "match": "exact",
-            "matchCount": exact_count,
-        }
-    contains_count = sum(
-        1 for item in items if term.casefold() in str(item.get("name", "")).casefold()
-    )
-    if contains_count and match == "fallback-contains":
-        return {
-            "value": term,
-            "status": "hit",
-            "match": "fallback-contains",
-            "matchCount": contains_count,
-        }
-    candidate_routes = _routes_for_term(import_routes, term)
-    if candidate_routes:
-        return {
-            "value": term,
-            "status": "partial",
-            "match": "candidate",
-            "matchCount": len(candidate_routes),
-            "candidateNames": [
-                f"{route['ownerPath']}::{route['query']}" for route in candidate_routes
-            ],
-            "nextAction": _import_route_next(candidate_routes[0]),
-        }
-    return {
-        "value": term,
-        "status": "miss",
-        "match": "none",
-        "matchCount": 0,
-        "nextAction": "query:broader-owner-item",
-    }
-
-
-def _semantic_query_match(
-    item: dict[str, Any],
-    *,
-    include_code: bool,
-) -> dict[str, Any]:
-    fields = item.get("fields", {})
-    location = item.get("location", {})
-    match = {
-        "name": item["name"],
-        "kind": item["kind"],
-        "visibility": "public" if fields.get("public") else "private",
-        "doc": bool(fields.get("doc")),
-        "location": {"path": location["path"], "lineRange": location["lineRange"]},
-        "structuralSelector": fields["structuralSelector"],
-        "displayLineRange": fields["displayLineRange"],
-        "sourceLocatorHint": fields["sourceLocatorHint"],
-        "read": fields["read"],
-        "patchSafety": {
-            "level": "read-safe",
-            "reason": "read exact source locator before editing this compact match",
-            "exactRead": fields["read"],
-        },
-        "truncated": bool(fields.get("truncated")),
-        "fields": {
-            "public": bool(fields.get("public")),
-            "reason": str(fields.get("reason", "item-query")),
-        },
-    }
-    for syntax_key in ("syntaxQueryRef", "syntaxMatchRef", "syntaxCaptureRef"):
-        syntax_value = fields.get(syntax_key)
-        if isinstance(syntax_value, str):
-            match["fields"][syntax_key] = syntax_value
-    code = fields.get("code")
-    if include_code and isinstance(code, str):
-        match["code"] = code
-        projection = semantic_query_projection(match, fields, code)
-        projected_code = _projected_code_from_rows(projection)
-        if projected_code:
-            match["code"] = projected_code
-        match["projection"] = projection
-        match["outline"] = {
-            "summary": f"{match['kind']} {match['name']}",
-            "hotBlocks": [
-                {
-                    "label": match["name"],
-                    "read": match["read"],
-                    "reason": "parser-item-query",
-                },
-            ],
-        }
-    return match
-
-
-def _projected_code_from_rows(projection: dict[str, Any]) -> str:
-    rows = projection.get("renderedRows")
-    if not isinstance(rows, list):
-        return ""
-    texts = [
-        str(row.get("text", ""))
-        for row in rows
-        if isinstance(row, dict) and str(row.get("text", "")).strip()
-    ]
-    return "\n".join(texts)
-
-
 def _sorted_symbols(module: PythonModuleReport) -> list[PythonSymbol]:
     return sorted(
         module.symbols,
@@ -365,28 +315,13 @@ def _item_query_notes(
                 "kind": "imported-definition",
                 "message": (
                     f"{item_query or owner_path} is imported in {owner_path}; "
-                    f"next={_import_route_next(route)}"
+                    f"next={semantic_import_route_next(route)}"
                 ),
             }
         ]
     if items:
         return []
     return [{"kind": "item-not-found", "message": item_query or owner_path}]
-
-
-def _routes_for_term(
-    import_routes: list[Any],
-    term: str,
-) -> list[dict[str, str]]:
-    return [
-        route
-        for route in import_routes
-        if isinstance(route, dict) and route.get("term") == term
-    ]
-
-
-def _import_route_next(route: dict[str, str]) -> str:
-    return f"py-harness query {route['ownerPath']} --term {route['query']} --code ."
 
 
 def _select_symbols(

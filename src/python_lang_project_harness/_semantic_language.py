@@ -5,6 +5,7 @@ from __future__ import annotations
 from typing import Any
 
 from . import _semantic_language_ids as ids
+from ._semantic_language_benchmark import python_search_benchmark_invocation
 from ._semantic_language_catalog import python_search_view_descriptors
 from ._semantic_language_query import python_query_method_descriptors
 from ._semantic_language_schemas import python_semantic_language_schemas
@@ -135,6 +136,9 @@ def python_semantic_language_method_descriptors() -> list[dict[str, Any]]:
 def _python_search_method_descriptor(descriptor: dict[str, Any]) -> dict[str, Any]:
     rendered = {
         **descriptor,
+        "benchmarkInvocation": python_search_benchmark_invocation(
+            str(descriptor["view"])
+        ),
         "outputSchemaIds": _search_output_schema_ids(descriptor["view"]),
         "supportsJson": True,
         "supportsCompact": True,

@@ -30,12 +30,12 @@ def test_cli_search_text_prefilter_large_project_records_runtime_cost(
     exit_code = run_cli(
         [
             "search",
-            "fzf",
-            "--query-set",
+            "lexical",
+            "--query",
             "LargeNeedle",
-            "--query-set",
+            "--query",
             "large_need",
-            "--query-set",
+            "--query",
             "generated",
             "--owner",
             "src/pkg/service.py",
@@ -87,12 +87,12 @@ def test_cli_search_text_prefilter_skips_file_list_for_source_rich_terms(
     exit_code = run_cli(
         [
             "search",
-            "fzf",
-            "--query-set",
+            "lexical",
+            "--query",
             "LargeNeedle",
-            "--query-set",
+            "--query",
             "large_need",
-            "--query-set",
+            "--query",
             "generated",
             "--json",
             "--workspace",

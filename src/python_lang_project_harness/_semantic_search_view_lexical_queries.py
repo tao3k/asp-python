@@ -8,7 +8,7 @@ from typing import TYPE_CHECKING, Any
 
 from ._semantic_search_common import dedupe
 from ._semantic_search_hits import text_hits
-from ._semantic_search_model import MAX_FZF_HITS
+from ._semantic_search_model import MAX_LEXICAL_HITS
 from .verification.facts import is_test_path
 
 if TYPE_CHECKING:
@@ -24,7 +24,7 @@ def normalized_query_terms(options: PythonSemanticSearchOptions) -> list[str]:
     return dedupe(term.strip() for term in options.query_set if term.strip())
 
 
-def fzf_query_hits_by_term(
+def lexical_query_hits_by_term(
     report: PythonHarnessReport,
     facts: PythonReasoningTreeFacts,
     project_root: Path,
@@ -44,7 +44,7 @@ def fzf_query_hits_by_term(
     }
 
 
-def fuzzy_fzf_query_hits_by_term(
+def fuzzy_lexical_query_hits_by_term(
     report: PythonHarnessReport,
     facts: PythonReasoningTreeFacts,
     project_root: Path,
@@ -111,7 +111,7 @@ def _merge_text_hit(
     if current is not None:
         _merge_duplicate_text_hit(term, hit, current)
         return
-    if len(ordered_keys) >= MAX_FZF_HITS:
+    if len(ordered_keys) >= MAX_LEXICAL_HITS:
         return
     fields = {**hit.get("fields", {}), "queryTerms": [term]}
     merged[key] = {**hit, "fields": fields}

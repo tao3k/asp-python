@@ -1,4 +1,4 @@
-"""Fast candidate-file pruning for Python semantic fzf search."""
+"""Fast candidate-file pruning for Python semantic lexical search."""
 
 from __future__ import annotations
 
@@ -85,7 +85,7 @@ def _prefilter_with_tools(
             tool=path_match_scan.tool,
             reason=(
                 f"{path_match_scan.tool} path prefilter selected parser input files "
-                "for fzf query"
+                "for lexical query"
             ),
             query_terms=len(terms),
             source_search_passes=0,
@@ -117,7 +117,7 @@ def _prefilter_with_tools(
             matched_files=len(selected),
             elapsed_ms=elapsed_ms,
             tool=source_tool,
-            reason=f"{source_tool} source prefilter selected parser input files for fzf query",
+            reason=f"{source_tool} source prefilter selected parser input files for lexical query",
             query_terms=len(terms),
             source_search_passes=1 if terms else 0,
             file_list_passes=0,
@@ -143,7 +143,7 @@ def _prefilter_with_tools(
         tool=f"{path_match_scan.tool}+{source_tool}",
         reason=(
             f"{path_match_scan.tool}/{source_tool} prefilter selected parser input "
-            "files for fzf query"
+            "files for lexical query"
         ),
         query_terms=len(terms),
         source_search_passes=1 if terms else 0,
