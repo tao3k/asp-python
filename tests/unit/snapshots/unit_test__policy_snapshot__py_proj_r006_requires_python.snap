@@ -8,4 +8,3 @@ expression: rendered
 |summary pyproject.toml has [project] metadata without requires-python.
 |repair declare [project].requires-python
 |hotBlock selector=pyproject.toml:1:1 reason=blocking-finding
-|next action=owner-local-projection selector=pyproject.toml:1:1 root=.

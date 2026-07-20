@@ -38,6 +38,12 @@ packages = [
     "src/python_lang_project_harness",
 ]
 
+[tool.hatch.build.targets.wheel.force-include]
+"provider/asp-provider-manifest.json" = "python_lang_project_harness/asp-provider-manifest.json"
+"schemas/provider-query-pack-descriptor.v1.schema.json" = "python_lang_project_harness/schemas/provider-query-pack-descriptor.v1.schema.json"
+"schemas/semantic-language-registry.v1.schema.json" = "python_lang_project_harness/schemas/semantic-language-registry.v1.schema.json"
+"schemas/semantic-provider-doctor.v1.schema.json" = "python_lang_project_harness/schemas/semantic-provider-doctor.v1.schema.json"
+
 [tool.uv]
 package = true
 

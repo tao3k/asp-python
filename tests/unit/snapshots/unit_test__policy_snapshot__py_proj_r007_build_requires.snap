@@ -8,4 +8,3 @@ expression: rendered
 |summary pyproject.toml has [build-system] metadata without requires.
 |repair declare [build-system].requires
 |hotBlock selector=pyproject.toml:1:1 reason=blocking-finding
-|next action=owner-local-projection selector=pyproject.toml:1:1 root=.

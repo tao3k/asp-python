@@ -8,4 +8,3 @@ expression: rendered
 |summary Facade imports expose names without an explicit public contract.
 |repair add an explicit __all__ for this facade export surface
 |hotBlock selector=src/pkg/__init__.py:1:1 reason=blocking-finding
-|next action=owner-local-projection selector=src/pkg/__init__.py:1:1 root=.

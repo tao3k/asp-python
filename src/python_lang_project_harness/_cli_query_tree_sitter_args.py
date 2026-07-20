@@ -13,8 +13,6 @@ def is_tree_sitter_query_state(state: Any) -> bool:
 def tree_sitter_query_args_error(state: Any) -> str | None:
     if state.catalog is not None and state.tree_sitter_query is not None:
         return "query accepts only one of --catalog or --treesitter-query"
-    if state.from_hook is not None:
-        return "query --catalog/--treesitter-query cannot be combined with --from-hook"
     if state.workspace_root is not None and state.positionals:
         return (
             "query accepts either --workspace <workspace-root> or one positional "

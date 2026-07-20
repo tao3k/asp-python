@@ -16,7 +16,7 @@ def test_cli_agent_doctor_json_advertises_policy_search(
     exit_code = run_cli(["agent", "doctor", "--json", str(tmp_path)], stdout=stdout)
     payload = json.loads(stdout.getvalue())
     assert exit_code == 0
-    registration = payload["languages"][0]
+    registration = payload["registry"]["languages"][0]
     assert "search/policy" in registration["methods"]
     assert any(
         schema["schemaId"] == "agent.semantic-protocols.semantic-handle"

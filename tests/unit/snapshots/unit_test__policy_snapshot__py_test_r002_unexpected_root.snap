@@ -8,4 +8,3 @@ expression: rendered
 |summary misc is not an owned tests root entry.
 |repair move this entry into an owned tests suite directory
 |hotBlock selector=tests/misc:1:1 reason=blocking-finding
-|next action=owner-local-projection selector=tests/misc:1:1 root=.

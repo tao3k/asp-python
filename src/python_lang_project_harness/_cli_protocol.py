@@ -161,8 +161,10 @@ def _render_fast_protocol_command(
     from ._semantic_search_lexical_fast import render_fast_lexical_seed_search
     from ._semantic_search_owner_fast import render_fast_owner_seed_search
     from ._semantic_search_prime_fast import render_fast_prime_search
+    from ._workspace_scope import render_workspace_scope
 
     renderers = (
+        lambda: render_workspace_scope(args, project_root=project_root),
         lambda: render_semantic_graph_facts(
             args, project_root=project_root, stdin=stdin
         ),

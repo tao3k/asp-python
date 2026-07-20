@@ -115,6 +115,11 @@ def python_semantic_language_schemas() -> list[dict[str, str]]:
             "path": "schemas/semantic-fact-ontology.v1.schema.json",
         },
         {
+            "schemaId": ids.SEMANTIC_WORKSPACE_SCOPE_SCHEMA_ID,
+            "schemaVersion": "1",
+            "path": "schemas/semantic-workspace-scope.v1.schema.json",
+        },
+        {
             "schemaId": "agent.semantic-protocols.semantic-handle",
             "schemaVersion": "1",
             "path": "schemas/semantic-handle.v1.schema.json",
@@ -123,6 +128,16 @@ def python_semantic_language_schemas() -> list[dict[str, str]]:
             "schemaId": ids.SEMANTIC_LANGUAGE_REGISTRY_ID,
             "schemaVersion": ids.SEMANTIC_LANGUAGE_REGISTRY_VERSION,
             "path": "schemas/semantic-language-registry.v1.schema.json",
+        },
+        {
+            "schemaId": "agent.semantic-protocols.semantic-provider-doctor",
+            "schemaVersion": "1",
+            "path": "schemas/semantic-provider-doctor.v1.schema.json",
+        },
+        {
+            "schemaId": "agent.semantic-protocols.provider-query-pack-descriptor",
+            "schemaVersion": "1",
+            "path": "schemas/provider-query-pack-descriptor.v1.schema.json",
         },
         {
             "schemaId": ids.PYTHON_CAPABILITIES_SCHEMA_ID,

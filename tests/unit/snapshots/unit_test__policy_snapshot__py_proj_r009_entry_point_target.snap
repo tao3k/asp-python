@@ -8,4 +8,3 @@ expression: rendered
 |summary pyproject.toml declares console script 'snapshot-cli' pointing at 'missing_pkg.cli:main', but the parser did not find that target module.
 |repair point this entry target at a parser-visible module
 |hotBlock selector=pyproject.toml:1:1 reason=blocking-finding
-|next action=owner-local-projection selector=pyproject.toml:1:1 root=.

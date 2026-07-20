@@ -1,0 +1,35 @@
+{
+  "schemaId": "agent.semantic-protocols.provider-workspace-install",
+  "schemaVersion": "1",
+  "schemaAuthority": "https://tao3k.github.io/agent-semantic-protocols/schemas/",
+  "providerId": "py-harness",
+  "binary": "py-harness",
+  "workspaceArtifact": {
+    "root": "languages/python-lang-project-harness/.venv",
+    "entrypoint": "bin/py-harness",
+    "launch": {
+      "program": "bin/python3",
+      "args": [
+        "bin/py-harness"
+      ],
+      "programRelativeToArtifact": true,
+      "argsRelativeToArtifact": true
+    }
+  },
+  "workspaceBuild": {
+    "program": "uv",
+    "args": [
+      "sync",
+      "--frozen",
+      "--no-editable",
+      "--no-cache",
+      "--reinstall-package",
+      "python-lang-project-harness"
+    ],
+    "workingDirectory": "languages/python-lang-project-harness",
+    "derivedPaths": [
+      "languages/python-lang-project-harness/.venv"
+    ],
+    "env": {}
+  }
+}

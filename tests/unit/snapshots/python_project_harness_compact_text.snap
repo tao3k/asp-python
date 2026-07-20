@@ -4,4 +4,3 @@
 |summary $TEMP/src/service.py calls bare print().
 |repair replace bare print with a project-owned reporting surface
 |hotBlock selector=$TEMP/src/service.py:5:5 reason=blocking-finding
-|next action=owner-local-projection selector=$TEMP/src/service.py:5:5 root=.

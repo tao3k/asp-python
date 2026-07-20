@@ -211,10 +211,6 @@ def test_cli_query_json_emits_projection_nodes_and_expand_actions(
 ) -> None:
     package = tmp_path / "src" / "pkg"
     package.mkdir(parents=True)
-    (tmp_path / "pyproject.toml").write_text(
-        '\n[project]\nname = "demo-python"\nversion = "0.1.0"\nimport-names = ["pkg"]\n',
-        encoding="utf-8",
-    )
     (package / "__init__.py").write_text("", encoding="utf-8")
     (package / "service.py").write_text(
         "\n".join(
@@ -284,54 +280,7 @@ def test_cli_query_json_emits_projection_nodes_and_expand_actions(
             continue
         assert action["read"].startswith("src/pkg/service.py")
 
-
-def test_cli_query_direct_source_read_selector_rejects_line_range(
-    tmp_path: Path,
-) -> None:
-    package = tmp_path / "src" / "pkg"
-    package.mkdir(parents=True)
     (tmp_path / "pyproject.toml").write_text(
         '\n[project]\nname = "demo-python"\nversion = "0.1.0"\nimport-names = ["pkg"]\n',
         encoding="utf-8",
     )
-    (package / "__init__.py").write_text("", encoding="utf-8")
-    source = "\n".join(
-        [
-            "def first() -> int:",
-            "    return 1",
-            "def second() -> int:",
-            "    return 2",
-            "def third() -> int:",
-            "    return 3",
-            "def fourth() -> int:",
-            "    return 4",
-            "def fifth() -> int:",
-            "    return 5",
-            "def target() -> int:",
-            "    return 6",
-        ]
-    )
-    target_start = source.splitlines().index("def target() -> int:") + 1
-    selector = f"src/pkg/service.py:{target_start}:{target_start + 1}"
-    (package / "service.py").write_text(source, encoding="utf-8")
-    stdout = io.StringIO()
-    stderr = io.StringIO()
-
-    exit_code = run_cli(
-        [
-            "query",
-            "--from-hook",
-            "owner-local-projection",
-            "--selector",
-            selector,
-            "--json",
-            "--workspace",
-            str(tmp_path),
-        ],
-        stdout=stdout,
-        stderr=stderr,
-    )
-
-    assert exit_code == 3
-    assert stdout.getvalue() == ""
-    assert "source locator hints are not executable selectors" in stderr.getvalue()

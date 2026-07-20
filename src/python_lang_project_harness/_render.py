@@ -225,9 +225,6 @@ def _render_failure_frontier(
         selector = _failure_frontier_selector(finding, project_root=project_root)
         if selector is not None:
             lines.append(f"|hotBlock selector={selector} reason=blocking-finding")
-            lines.append(
-                f"|next action=owner-local-projection selector={selector} root=."
-            )
     if len(findings) > 3:
         lines.append(f"|more blockingFindings={len(findings) - 3}")
     return "\n".join(lines) + "\n"

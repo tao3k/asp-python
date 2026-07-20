@@ -8,4 +8,3 @@ expression: rendered
 |summary build is public in a py.typed package but lacks annotations.
 |repair annotate this typed-package public callable
 |hotBlock selector=src/pkg/service.py:4:4 reason=blocking-finding
-|next action=owner-local-projection selector=src/pkg/service.py:4:4 root=.

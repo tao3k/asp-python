@@ -114,7 +114,8 @@ def test_protocol_search_lexical_query_uses_fast_frontier(
     assert stderr.getvalue() == ""
     assert exit_code == 0
     assert rendered.startswith(
-        "[search-lexical] q=hookruntime,execute view=hits querySet=2"
+        "[search-lexical] q=hookruntime,execute querySet=2 selector=lexical-set "
+        "view=hits alg=query-set-owner-resolution"
     )
     assert "Q=query:term(hookruntime,execute)!lexical" in rendered
     assert "entries=owner-query(O,Q=>items+tests+dependency-usage)" in rendered
@@ -175,7 +176,8 @@ def test_protocol_search_lexical_query_uses_native_prefilter_without_tools(
     assert stderr.getvalue() == ""
     assert exit_code == 0
     assert rendered.startswith(
-        "[search-lexical] q=hookruntime,execute view=hits querySet=2"
+        "[search-lexical] q=hookruntime,execute querySet=2 selector=lexical-set "
+        "view=hits alg=query-set-owner-resolution"
     )
     assert "Q=query:term(hookruntime,execute)!lexical" in rendered
     assert "O=owner:path(src/pkg/hook_runtime.py)!owner" in rendered

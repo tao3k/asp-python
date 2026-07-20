@@ -8,4 +8,3 @@ expression: rendered
 |summary Bare print calls leak diagnostics to stdout.
 |repair replace bare print with a project-owned reporting surface
 |hotBlock selector=src/module.py:5:5 reason=blocking-finding
-|next action=owner-local-projection selector=src/module.py:5:5 root=.

@@ -15,7 +15,7 @@ def test_agent_doctor_advertises_tree_sitter_query_descriptor(
     stdout = io.StringIO()
 
     exit_code = run_cli(["agent", "doctor", "--json", str(tmp_path)], stdout=stdout)
-    registration = json.loads(stdout.getvalue())["languages"][0]
+    registration = json.loads(stdout.getvalue())["registry"]["languages"][0]
 
     assert exit_code == 0
     assert "query" in registration["methods"]

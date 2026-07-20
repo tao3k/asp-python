@@ -34,7 +34,13 @@ _PROJECT_MODEL_EXPORTS = frozenset(
         "PythonPytestOptions",
     }
 )
-_PYPROJECT_EXPORTS = frozenset({"parse_python_project_metadata"})
+_PYPROJECT_EXPORTS = frozenset(
+    {
+        "PythonPyprojectParseError",
+        "parse_python_project_metadata",
+        "parse_python_pyproject_document",
+    }
+)
 _REASONING_TREE_EXPORTS = frozenset(
     {
         "PythonReasoningTreeBranch",
@@ -106,6 +112,7 @@ __all__ = [
     "PythonProjectEntryPoint",
     "PythonProjectImportName",
     "PythonProjectMetadata",
+    "PythonPyprojectParseError",
     "PythonProjectScript",
     "PythonPytestOptions",
     "PythonReference",
@@ -122,6 +129,7 @@ __all__ = [
     "__version__",
     "parse_python_file",
     "parse_python_project_metadata",
+    "parse_python_pyproject_document",
     "parse_python_source",
     "python_module_is_package_init",
     "python_module_has_public_surface",

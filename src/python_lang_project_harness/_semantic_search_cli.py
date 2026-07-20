@@ -77,7 +77,7 @@ def _search_view_descriptor(
 def _semantic_search_usage() -> str:
     return (
         "usage: py-harness search "
-        "<workspace|prime|owner|dependency|deps|api|public-external-types|policy|symbol|callsite|import|tests|lexical|reasoning|env|runtime-source|lang|std|capability|extension|pattern|compare|text|ingest|semantic-facts> "
+        "<workspace|workspace-scope|prime|owner|dependency|deps|api|public-external-types|policy|symbol|callsite|import|tests|lexical|reasoning|env|runtime-source|lang|std|capability|extension|pattern|compare|text|ingest|semantic-facts> "
         "... [--json] [--code] [--package PATH] [--workspace <workspace-root>]; "
         "dependency/deps are manifest-first, import-usage backed, and cache hashes not raw source"
     )

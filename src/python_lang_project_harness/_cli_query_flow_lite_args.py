@@ -15,8 +15,6 @@ def is_flow_lite_query_state(state: Any) -> bool:
 def flow_lite_query_args_error(state: Any) -> str | None:
     if state.tree_sitter_query is not None:
         return "query --catalog flow-lite cannot be combined with --treesitter-query"
-    if state.from_hook is not None:
-        return "query --catalog flow-lite cannot be combined with --from-hook"
     if state.workspace_root is not None and state.positionals:
         return (
             "query accepts either --workspace <workspace-root> or one positional "

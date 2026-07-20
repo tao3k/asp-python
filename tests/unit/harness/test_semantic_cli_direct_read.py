@@ -3,8 +3,6 @@ from __future__ import annotations
 import io
 from pathlib import Path
 
-from pytest import CaptureFixture
-
 from python_lang_project_harness._cli import run_cli
 
 
@@ -26,33 +24,6 @@ def _write_demo_package(tmp_path: Path) -> None:
             ]
         ),
         encoding="utf-8",
-    )
-
-
-def test_cli_query_direct_source_read_rejects_line_selector(
-    tmp_path: Path,
-    capsys: CaptureFixture[str],
-) -> None:
-    _write_demo_package(tmp_path)
-    stdout = io.StringIO()
-
-    exit_code = run_cli(
-        [
-            "query",
-            "--from-hook",
-            "owner-local-projection",
-            "--selector",
-            "src/pkg/service.py:2:2",
-            "--workspace",
-            str(tmp_path),
-        ],
-        stdout=stdout,
-    )
-
-    assert exit_code == 3
-    assert stdout.getvalue() == ""
-    assert (
-        "source locator hints are not executable selectors" in capsys.readouterr().err
     )
 
 

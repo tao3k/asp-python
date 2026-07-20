@@ -20,7 +20,8 @@ def test_cli_agent_doctor_json_advertises_semantic_language_provider(
     payload = json.loads(stdout.getvalue())
 
     assert exit_code == 0
-    registration = payload["languages"][0]
+    registry = payload["registry"]
+    registration = registry["languages"][0]
     assert registration["languageId"] == "python"
     assert registration["providerId"] == "py-harness"
     assert registration["binary"] == "py-harness"
@@ -101,7 +102,7 @@ def test_cli_agent_guide_prints_provider_owned_searchflow(tmp_path: Path) -> Non
     assert (
         "|catalog reasoningProfiles=owner-query,query-deps,owner-tests,"
         "finding-frontier,feature-cfg entries=owner-query,query-deps,owner-tests "
-        "routes=read-frontier,syntax-locate,syntax-code,query-code"
+        "routes=syntax-locate,syntax-code,query-code"
     ) in rendered
     assert (
         "|routing evidence-state prime=owner-map-only pipe=ambiguous-query" in rendered
@@ -127,11 +128,9 @@ def test_cli_agent_guide_prints_provider_owned_searchflow(tmp_path: Path) -> Non
         in rendered
     )
     assert "asp python search owner <owner-path> items --query <symbol|a|b>" in rendered
-    assert (
-        "asp python query --from-hook owner-local-projection --selector <selector> "
-        "--term <term> --surface owners,tests --workspace <workspace-root> --view seeds"
-        in rendered
-    )
+    assert "read-frontier" not in rendered
+    assert "owner-local-projection" not in rendered
+    assert "--from-hook" not in rendered
     assert (
         "|cmd syntax-code=asp python query --treesitter-query "
         "'(function_definition name: (identifier) @function.name)' "
@@ -171,6 +170,7 @@ def test_python_capability_schema_covers_registry_descriptors() -> None:
     )
 
     for descriptor in python_semantic_language_registration()["methodDescriptors"]:
+        assert descriptor["invocation"]["argv"][0] == "py-harness"
         for capability in descriptor.get("capabilities", []):
             assert capability["name"] in capability_names
         for ingest_surface in descriptor.get("ingestRequiredFor", []):

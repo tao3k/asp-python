@@ -20,6 +20,13 @@ def python_search_view_descriptors() -> list[dict[str, Any]]:
             ],
         ),
         _view(
+            "workspace-scope",
+            capabilities=[
+                _semantic("workspace-candidate-admission"),
+                _python("python-package-manager-workspace-scope"),
+            ],
+        ),
+        _view(
             "prime",
             capabilities=[
                 _semantic("package-prime-map"),

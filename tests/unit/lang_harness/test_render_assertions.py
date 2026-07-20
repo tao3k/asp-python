@@ -29,7 +29,8 @@ def test_render_python_lang_harness_uses_compact_source_diagnostic(
     assert "|failureFrontier rule=python.syntax.invalid severity=error" in output
     assert "|hotBlock selector=" in output
     assert "bad.py:1:1 reason=blocking-finding" in output
-    assert "|next action=owner-local-projection selector=" in output
+    assert "|next action=" not in output
+    assert "owner-local-projection" not in output
     assert "Action:" not in output
     assert "Fix:" not in output
     assert "Evidence:" not in output

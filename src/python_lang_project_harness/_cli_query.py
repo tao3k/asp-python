@@ -104,17 +104,6 @@ def _write_item_query_response(
     stdout.write("\n")
 
 
-def _selector_has_line_range(selector: str | None, owner_path: str) -> bool:
-    if selector is None:
-        return False
-    normalized = selector.replace("\\", "/").removeprefix("owner:")
-    if any(marker in normalized for marker in ("*", "{", "}")):
-        return False
-    if not owner_path:
-        return _selector_owner_path(selector) is not None
-    return normalized.startswith(f"{owner_path}:")
-
-
 def _selector_is_structural(selector: str | None) -> bool:
     if selector is None:
         return False
@@ -123,24 +112,7 @@ def _selector_is_structural(selector: str | None) -> bool:
 
 
 def _selector_owner_path(selector: str | None) -> str | None:
-    if selector is None:
-        return None
-    normalized = selector.replace("\\", "/").removeprefix("owner:")
-    if any(marker in normalized for marker in ("*", "{", "}")):
-        return None
-    structural_owner_path = python_structural_selector_owner_path(selector)
-    if structural_owner_path is not None:
-        return structural_owner_path
-    path_and_start, separator, end_text = normalized.rpartition(":")
-    if not separator:
-        return None
-    path, separator, _start_text = path_and_start.rpartition(":")
-    if separator:
-        return path or None
-    _start_text, separator, _end_text = end_text.partition("-")
-    if not separator:
-        return None
-    return path_and_start or None
+    return python_structural_selector_owner_path(selector)
 
 
 def _selector_looks_like_source_locator_hint(selector: str | None) -> bool:
@@ -150,12 +122,3 @@ def _selector_looks_like_source_locator_hint(selector: str | None) -> bool:
     if any(marker in normalized for marker in ("*", "{", "}")):
         return False
     return ".py:" in normalized
-
-
-def _selector_looks_like_owner_path_hint(selector: str | None) -> bool:
-    if selector is None:
-        return False
-    normalized = selector.replace("\\", "/").removeprefix("owner:")
-    if any(marker in normalized for marker in ("*", "{", "}")):
-        return False
-    return normalized.endswith(".py")

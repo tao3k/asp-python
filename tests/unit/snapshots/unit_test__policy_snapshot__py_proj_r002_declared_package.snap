@@ -8,4 +8,3 @@ expression: rendered
 |summary Declared wheel package root $TEMP/src/missing_pkg is not an importable package directory.
 |repair make this declared package root importable
 |hotBlock selector=pyproject.toml:1:1 reason=blocking-finding
-|next action=owner-local-projection selector=pyproject.toml:1:1 root=.

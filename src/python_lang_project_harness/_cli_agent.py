@@ -2,7 +2,10 @@
 
 from __future__ import annotations
 
+import json
 from pathlib import Path
+
+from ._semantic_provider_doctor import semantic_provider_doctor_document
 
 
 def render_agent_guide(project_root: Path) -> str:
@@ -16,7 +19,7 @@ def render_agent_guide(project_root: Path) -> str:
                 (
                     "|catalog reasoningProfiles=owner-query,query-deps,owner-tests,"
                     "finding-frontier,feature-cfg entries=owner-query,query-deps,"
-                    "owner-tests routes=read-frontier,syntax-locate,syntax-code,"
+                    "owner-tests routes=syntax-locate,syntax-code,"
                     "query-code"
                 ),
                 "|routing evidence-state prime=owner-map-only pipe=ambiguous-query "
@@ -34,12 +37,6 @@ def render_agent_guide(project_root: Path) -> str:
                     f"returns=code code=pure cmd=asp python query --treesitter-query "
                     f"'(function_definition name: (identifier) @function.name)' "
                     f"--selector <exact-structural-selector> {workspace} --code"
-                ),
-                (
-                    f"|route read-plan selectors=R:selector,T:term "
-                    f"returns=owners,tests,window-set code=false cmd=asp python "
-                    f"query --from-hook owner-local-projection --selector <selector> "
-                    f"--term <term> --surface owners,tests {workspace} --view seeds"
                 ),
                 (
                     f"|route query-code selectors=O:owner,Q:symbol returns=code "
@@ -84,11 +81,6 @@ def render_agent_guide(project_root: Path) -> str:
                     f"|cmd policy=asp python search policy <rule-id-or-alias> "
                     f"owner tests {root} --view seeds"
                 ),
-                (
-                    f"|cmd read-plan=asp python query --from-hook owner-local-projection "
-                    f"--selector <selector> --term <term> --surface owners,tests "
-                    f"{workspace} --view seeds"
-                ),
                 f"|cmd lexical=asp python search lexical <query> owner tests {root} --view seeds",
                 "|cmd ast-patch=asp python ast-patch dry-run --packet <semantic-ast-patch.json|->",
                 f"|cmd evidence-graph=asp python evidence graph --json {root}",
@@ -119,8 +111,8 @@ def render_agent_guide(project_root: Path) -> str:
                     "unsupported=none unsupportedReported=true"
                 ),
                 (
-                    "|rule query --code is pure code; search/read-plan returns "
-                    "locators/frontier, not inline code"
+                    "|rule query --selector <exact-structural-selector> --code is pure code; "
+                    "search returns locators/frontier, not inline code"
                 ),
                 (
                     "|rule displayLineRange/sourceLocatorHint are display hints; "
@@ -173,13 +165,9 @@ def render_agent_doctor(project_root: Path) -> str:
 
 
 def render_agent_doctor_json(project_root: Path) -> str:
-    import json
-
-    from ._semantic_language import semantic_language_registry_document
-
     return (
         json.dumps(
-            semantic_language_registry_document(str(project_root)),
+            semantic_provider_doctor_document(),
             separators=(",", ":"),
         )
         + "\n"

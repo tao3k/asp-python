@@ -123,7 +123,6 @@ def _selector_resolved_owner_items(
     import_routes = payload.get("importRoutes", [])
     module = _module_for_owner(report, project_root, owner_path)
     selector_identity = python_structural_selector_identity(selector)
-    selector_range = _selector_line_range(selector, owner_path)
     if selector_identity is not None:
         selector_owner_path, selector_kind, selector_name = selector_identity
         items = (
@@ -136,15 +135,6 @@ def _selector_resolved_owner_items(
             if selector_owner_path == owner_path and module is not None
             else []
         )
-        fields = {
-            **fields,
-            "item": len(items),
-            "itemStatus": "hit" if items else "miss",
-            "itemMatch": "exact" if items else "none",
-        }
-        import_routes = []
-    elif selector_range is not None:
-        items = _selector_range_items(report, project_root, owner_path, selector_range)
         fields = {
             **fields,
             "item": len(items),
@@ -191,7 +181,7 @@ def _owner_item_semantic_query_packet(
         "patchSafety": {
             "level": "read-safe",
             "reason": "compact query packet is not a mutation authority",
-            "nextAction": "query --from-hook owner-local-projection",
+            "nextAction": "query --selector <structural-selector> --code",
         },
         "queryCoverage": [
             semantic_query_coverage(
@@ -227,62 +217,6 @@ def _module_for_owner(
         ):
             return module
     return None
-
-
-def _selector_range_items(
-    report: PythonHarnessReport,
-    project_root: Path,
-    owner_path: str,
-    selector_range: tuple[int, int],
-) -> list[dict[str, Any]]:
-    module = _module_for_owner(report, project_root, owner_path)
-    if module is None:
-        return []
-    return [
-        _item_record(module, project_root, owner_path, symbol)
-        for symbol in _sorted_symbols(module)
-        if _symbol_overlaps_range(symbol, selector_range)
-    ]
-
-
-def _symbol_overlaps_range(
-    symbol: PythonSymbol,
-    selector_range: tuple[int, int],
-) -> bool:
-    start_line, end_line = selector_range
-    symbol_end = symbol.end_line or symbol.location.line
-    return symbol_end >= start_line and symbol.location.line <= end_line
-
-
-def _selector_line_range(
-    selector: str | None,
-    owner_path: str,
-) -> tuple[int, int] | None:
-    if selector is None:
-        return None
-    normalized = selector.replace("\\", "/").removeprefix("owner:")
-    if any(marker in normalized for marker in ("*", "{", "}")):
-        return None
-    path_and_start, separator, end_text = normalized.rpartition(":")
-    if not separator:
-        return None
-    path, separator, start_text = path_and_start.rpartition(":")
-    if separator and path == owner_path:
-        pass
-    elif path_and_start == owner_path:
-        start_text, separator, end_text = end_text.partition("-")
-        if not separator:
-            return None
-    else:
-        return None
-    try:
-        start_line = int(start_text)
-        end_line = int(end_text)
-    except ValueError:
-        return None
-    if start_line < 1 or end_line < 1:
-        return None
-    return (min(start_line, end_line), max(start_line, end_line))
 
 
 def _sorted_symbols(module: PythonModuleReport) -> list[PythonSymbol]:

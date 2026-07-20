@@ -45,8 +45,50 @@
     ]
   },
   "searchCapabilities": {
+    "sourceSnapshot": {
+      "descriptorId": "python.source-snapshot",
+      "descriptorVersion": "1",
+      "languageId": "python",
+      "packetSchemaId": "asp.source-snapshot.v1",
+      "exactSourcePacketSchemaId": "asp.exact-source-query-result.v1",
+      "sourceOverlaySchemaId": "asp.source-overlay.v1",
+      "derivedArtifactEvidenceSchemaId": "asp.derived-source-artifact-evidence.v1",
+      "algorithm": "blake3-merkle-v1",
+      "authority": "live-parser",
+      "exactSelectorResolution": "pinned-live-module-graph",
+      "overlayMode": "merkle-delta"
+    },
     "ownerItems": true,
-    "semanticFacts": true
+    "semanticFacts": true,
+    "dependencyTopology": false,
+    "dependencyTopologyMetadata": false,
+    "workspaceScope": true
+  },
+  "semanticFactsDescriptor": {
+    "descriptorId": "python.semantic-facts",
+    "descriptorVersion": "1",
+    "packetSchemaIds": [
+      "semantic-fact-graph.v1",
+      "semantic-fact-ontology.v1"
+    ],
+    "factKinds": [
+      "field"
+    ],
+    "intentAxes": [
+      {
+        "axis": "data-shape",
+        "terms": [
+          "fields",
+          "collection"
+        ]
+      },
+      {
+        "axis": "collection",
+        "terms": [
+          "list"
+        ]
+      }
+    ]
   },
   "policy": {
     "directSourceRead": "block",
@@ -54,89 +96,101 @@
     "rawSourceSearch": "block",
     "agentSearchJson": "block"
   },
-  "routes": {
-    "prime": {
-      "argv": [
-        "py-harness",
-        "search",
-        "prime",
-        "--workspace",
-        "{projectRoot}",
-        "--view",
-        "seeds"
-      ]
-    },
-    "owner": {
-      "argv": [
-        "py-harness",
-        "search",
-        "owner",
-        "{path}",
-        "--workspace",
-        "{projectRoot}",
-        "--view",
-        "seeds"
-      ]
-    },
-    "lexical": {
-      "argv": [
-        "py-harness",
-        "search",
-        "lexical",
-        "{query}",
-        "owner",
-        "tests",
-        "--workspace",
-        "{projectRoot}",
-        "--view",
-        "seeds"
-      ]
-    },
-    "query": {
-      "argv": [
-        "py-harness",
-        "query",
-        "--from-hook",
-        "direct-source-read",
-        "--selector",
-        "{selector}",
-        "{termArgs}",
-        "--surface",
-        "owners,tests",
-        "--workspace",
-        "{projectRoot}",
-        "--view",
-        "seeds"
-      ]
-    },
-    "ingest": {
-      "argv": [
-        "py-harness",
-        "search",
-        "ingest",
-        "items",
-        "tests",
-        "--workspace",
-        "{projectRoot}",
-        "--view",
-        "seeds"
-      ],
-      "stdinMode": "pipe-candidates"
-    },
-    "checkChanged": {
-      "argv": [
-        "py-harness",
-        "check",
-        "--changed",
-        "{projectRoot}"
-      ]
-    },
-    "guide": {
-      "argv": [
-        "py-harness",
-        "guide",
-        "{projectRoot}"
-      ]
-    }
+  "queryPackDescriptor": {
+    "descriptorId": "python.query-pack",
+    "descriptorVersion": "1",
+    "languageId": "python",
+    "semanticFactsDescriptorId": "python.semantic-facts",
+    "termRoleOverrides": [],
+    "recipes": [
+      {
+        "recipeId": "python-asyncio-runtime",
+        "trigger": {
+          "terms": [
+            "asyncio",
+            "task",
+            "scheduling"
+          ],
+          "match": "any"
+        },
+        "clauses": [
+          {
+            "terms": [
+              "asyncio",
+              "task",
+              "scheduling"
+            ],
+            "roles": [
+              "concept"
+            ],
+            "intentAxes": [
+              "concurrency"
+            ]
+          }
+        ]
+      },
+      {
+        "recipeId": "python-context-lifecycle",
+        "trigger": {
+          "terms": [
+            "contextmanager",
+            "resource",
+            "lifecycle"
+          ],
+          "match": "any"
+        },
+        "clauses": [
+          {
+            "terms": [
+              "contextmanager",
+              "resource",
+              "lifecycle"
+            ],
+            "roles": [
+              "concept"
+            ],
+            "intentAxes": [
+              "resource-lifecycle"
+            ]
+          }
+        ]
+      },
+      {
+        "recipeId": "python-stream-backpressure",
+        "trigger": {
+          "terms": [
+            "queue",
+            "async-generator",
+            "backpressure"
+          ],
+          "match": "any"
+        },
+        "clauses": [
+          {
+            "terms": [
+              "queue",
+              "async-generator",
+              "backpressure"
+            ],
+            "roles": [
+              "concept"
+            ],
+            "intentAxes": [
+              "collection",
+              "stream"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "routeBindings": {
+    "prime": "search/prime",
+    "owner": "search/owner",
+    "lexical": "search/lexical",
+    "query": "query/direct-source-read",
+    "ingest": "search/ingest",
+    "checkChanged": "check/changed",
+    "guide": "guide"
   }
 }

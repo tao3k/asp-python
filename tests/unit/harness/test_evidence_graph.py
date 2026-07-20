@@ -86,7 +86,7 @@ def test_agent_registry_advertises_evidence_methods(tmp_path: Path) -> None:
 
     assert exit_code == 0
     registry = json.loads(stdout.getvalue())
-    language = registry["languages"][0]
+    language = registry["registry"]["languages"][0]
     assert "evidence/graph" in language["methods"]
     assert "evidence/analyze" in language["methods"]
     analyze = next(

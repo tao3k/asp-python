@@ -8,4 +8,3 @@ expression: rendered
 |summary pyproject.toml is present but project sources are not under src/.
 |repair declare package code under src/
 |hotBlock selector=pyproject.toml:1:1 reason=blocking-finding
-|next action=owner-local-projection selector=pyproject.toml:1:1 root=.
