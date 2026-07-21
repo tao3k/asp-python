@@ -15,27 +15,11 @@ def test_package_local_semantic_schemas_stay_synchronized() -> None:
     if not protocol_schema_dir.exists():
         pytest.skip("protocol repository schemas are not available")
 
-    for schema_file_name in (
-        "semantic-search-packet.v1.schema.json",
-        "semantic-query-packet.v1.schema.json",
-        "semantic-read-packet.v1.schema.json",
-        "semantic-provider-doctor.v1.schema.json",
-        "semantic-language-registry.v1.schema.json",
-        "semantic-language-registry.v1.schema.json",
-        "provider-query-pack-descriptor.v1.schema.json",
-        "semantic-source-location.v1.schema.json",
-        "semantic-tree-sitter-provenance.v1.schema.json",
-        "semantic-tree-sitter-query.v1.schema.json",
-        "semantic-tree-sitter-grammar-profile.v1.schema.json",
-        "semantic-graph.v1.schema.json",
-        "semantic-type-surface.v1.schema.json",
-        "semantic-dev-command-log.v1.schema.json",
-    ):
-        package_schema = json.loads(
-            (package_root / "schemas" / schema_file_name).read_text(encoding="utf-8")
-        )
-        protocol_schema = json.loads(
-            (protocol_schema_dir / schema_file_name).read_text(encoding="utf-8")
-        )
+    for package_schema_path in sorted((package_root / "schemas").glob("*.schema.json")):
+        protocol_schema_path = protocol_schema_dir / package_schema_path.name
+        if not protocol_schema_path.exists():
+            continue
+        package_schema = json.loads(package_schema_path.read_text(encoding="utf-8"))
+        protocol_schema = json.loads(protocol_schema_path.read_text(encoding="utf-8"))
 
         assert package_schema == protocol_schema

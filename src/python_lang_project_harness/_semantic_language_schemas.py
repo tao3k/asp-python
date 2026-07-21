@@ -130,16 +130,6 @@ def python_semantic_language_schemas() -> list[dict[str, str]]:
             "path": "schemas/semantic-language-registry.v1.schema.json",
         },
         {
-            "schemaId": "agent.semantic-protocols.semantic-provider-doctor",
-            "schemaVersion": "1",
-            "path": "schemas/semantic-provider-doctor.v1.schema.json",
-        },
-        {
-            "schemaId": "agent.semantic-protocols.provider-query-pack-descriptor",
-            "schemaVersion": "1",
-            "path": "schemas/provider-query-pack-descriptor.v1.schema.json",
-        },
-        {
             "schemaId": ids.PYTHON_CAPABILITIES_SCHEMA_ID,
             "schemaVersion": "1",
             "path": "schemas/python-semantic-capabilities.v1.schema.json",
