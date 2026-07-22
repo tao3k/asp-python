@@ -44,6 +44,11 @@ def run_query_command(
         )
         return 0
 
+    if args.selector is None and (args.owner_path is not None or args.terms):
+        raise ValueError(
+            "python query requires an exact --selector; use `asp python search owner "
+            "<owner-path> items --query <symbol> --names-only --workspace .` for discovery"
+        )
     if args.code_only and not _selector_is_structural(args.selector):
         raise ValueError(
             "query requires parser-owned structural selector identity; "
