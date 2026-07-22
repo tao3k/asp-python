@@ -27,6 +27,10 @@
       "python-lang-project-harness"
     ],
     "workingDirectory": "languages/python-lang-project-harness",
+    "sourceSnapshotAnchors": [
+      "languages/python-lang-project-harness/pyproject.toml",
+      "languages/python-lang-project-harness/uv.lock"
+    ],
     "derivedPaths": [
       "languages/python-lang-project-harness/.venv"
     ],
