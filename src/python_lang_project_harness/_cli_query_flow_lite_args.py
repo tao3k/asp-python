@@ -22,13 +22,6 @@ def flow_lite_query_args_error(state: Any) -> str | None:
         )
     if len(state.positionals) > 1:
         return "query accepts at most one positional WORKSPACE"
-    if state.names_only:
-        return "--names-only cannot be combined with --catalog flow-lite"
-    if state.code_only:
-        return (
-            "query --catalog flow-lite is a locator/provenance surface; select an "
-            "exact frontier locator and run query --selector <path-or-range> --code"
-        )
     if state.surfaces:
         return "query --surface cannot be combined with --catalog flow-lite"
     if state.render_mode is not None:

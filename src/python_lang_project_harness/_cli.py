@@ -18,7 +18,15 @@ def run_cli_from_env() -> int:
     args = sys.argv[1:]
     log = start_dev_command_log(args, Path.cwd())
     try:
-        stdin = "" if sys.stdin.isatty() else sys.stdin.read()
+        stdin = (
+            b""
+            if sys.stdin.isatty() and args[:1] == ["projection-batch-stdin"]
+            else (
+                sys.stdin.buffer.read()
+                if args[:1] == ["projection-batch-stdin"]
+                else ("" if sys.stdin.isatty() else sys.stdin.read())
+            )
+        )
         exit_code = run_cli(args, stdin=stdin)
         log.finish(exit_code)
         return exit_code
@@ -32,7 +40,7 @@ def run_cli(
     *,
     stdout: TextIO | None = None,
     stderr: TextIO | None = None,
-    stdin: str | None = None,
+    stdin: str | bytes | None = None,
     cwd: Path | None = None,
 ) -> int:
     """Run the default package-level Python harness CLI."""
@@ -40,6 +48,38 @@ def run_cli(
     selected_stdout = sys.stdout if stdout is None else stdout
     selected_stderr = sys.stderr if stderr is None else stderr
     selected_cwd = Path.cwd() if cwd is None else cwd
+    selected_stdin = "" if stdin is None else stdin
+    from ._exact_source_projection import try_run_provider_native_exact
+    from ._owner_search_stdin import try_run_provider_native_owner
+
+    native_owner_exit = try_run_provider_native_owner(
+        args,
+        stdin=selected_stdin,
+        cwd=selected_cwd,
+        stdout=selected_stdout,
+        stderr=selected_stderr,
+    )
+    if native_owner_exit is not None:
+        return native_owner_exit
+    native_exact_exit = try_run_provider_native_exact(
+        args,
+        stdin=selected_stdin,
+        cwd=selected_cwd,
+        stdout=selected_stdout,
+        stderr=selected_stderr,
+    )
+    if native_exact_exit is not None:
+        return native_exact_exit
+    from ._project_resolution import try_run_project_resolution
+
+    project_resolution_exit = try_run_project_resolution(
+        args,
+        stdin=selected_stdin,
+        cwd=selected_cwd,
+        stdout=selected_stdout,
+    )
+    if project_resolution_exit is not None:
+        return project_resolution_exit
     protocol_args = ProtocolArgs.parse(args)
     if protocol_args is not None:
         return run_protocol_cli(

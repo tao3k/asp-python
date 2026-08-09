@@ -8,7 +8,7 @@ import-names = [
     "python_lang_parser",
     "python_lang_project_harness",
 ]
-dependencies = []
+dependencies = ["blake3>=1.0.8,<2"]
 
 [project.optional-dependencies]
 pytest = [
@@ -46,6 +46,7 @@ packages = [
 package = true
 
 [tool.pytest.ini_options]
+pythonpath = ["src"]
 addopts = [
     "--python-project-harness",
 ]

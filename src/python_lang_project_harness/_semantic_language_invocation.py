@@ -42,6 +42,11 @@ def _non_search_invocation(method: str) -> dict[str, list[str]]:
             "--workspace",
             "{workspace}",
         ],
+        "query/exact-selector-native-v1": [
+            ids.PYTHON_BINARY,
+            "query",
+            "--asp-exact-request-stdin",
+        ],
         "check/changed": [ids.PYTHON_BINARY, "check", "--changed", "{workspace}"],
         "check/full": [ids.PYTHON_BINARY, "check", "--full", "{workspace}"],
         "ast-patch/dry-run": [

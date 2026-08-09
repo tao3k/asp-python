@@ -38,7 +38,6 @@ class ProtocolArgs:
     pipes: tuple[str, ...] = ()
     json: bool = False
     names_only: bool = False
-    code_only: bool = False
     source_version: str = "worktree"
     render_mode: str | None = None
     error: str | None = None
@@ -58,6 +57,8 @@ class ProtocolArgs:
             return cls._parse_agent(args[1:])
         if command == "ast-patch":
             return cls._parse_ast_patch(args[1:])
+        if command == "projection-batch-stdin":
+            return cls(command)
         return None
 
     @classmethod
@@ -82,7 +83,6 @@ class ProtocolArgs:
             workspace=parsed.workspace,
             pipes=parsed.pipes,
             json=parsed.json,
-            code_only=parsed.code_only,
             render_mode=parsed.render_mode,
         )
 
@@ -390,8 +390,8 @@ def help_text() -> str:
     return (
         "py-harness — Python semantic search and project harness\n\n"
         "Usage:\n"
-        "  py-harness search <view> ... [--json] [--code] [--package PATH] [--workspace <workspace-root>]\n"
-        "  py-harness query <owner-path> --term <symbol> [--term <symbol>] [--workspace <workspace-root>] [--names-only | --code]\n"
+        "  py-harness search <view> ... [--json] [--package PATH] [--workspace <workspace-root>]\n"
+        "  asp python query --selector <exact-structural-selector> --projection <source|callable-skeleton> --workspace <workspace-root>\n"
         "  py-harness query --catalog flow-lite --where 'source.call=NAME sink.constructs=TYPE scope.fn=FUNCTION' [--json] [--workspace <workspace-root>]\n"
         "  py-harness check [--changed | --full] [--json]\n"
         "  py-harness evidence graph [--json] [PROJECT_ROOT]\n"
@@ -406,8 +406,8 @@ def help_text() -> str:
         "  search workspace          Workspace package/router index\n"
         "  search prime              Project reasoning-tree map\n"
         "  search owner <path>       Owner graph slice\n"
-        "  search owner <path> items --query <symbol|a|b> [--names-only | --code]\n"
-        "                             Parser-owned item query and compact code extraction\n"
+        "  search owner <path> items --query <symbol|a|b>\n"
+        "                             Parser-owned structural selector discovery\n"
         "  search dependency <pkg>   Dependency manifest and local import usage\n"
         "  search deps <pkg[@ver][::api]>\n"
         "                             Versioned dependency API usage evidence\n"
@@ -430,14 +430,10 @@ def help_text() -> str:
         "                             Typed graph entry returning owners, imports, and usage tests\n"
         "  search ingest             Detect stdin shape and group hits by owner\n\n"
         "QUERY\n"
-        "  query <owner-path> --term <symbol>\n"
-        "                             Parser-owned owner item query\n"
-        "  query <owner-path> --term <a> --term <b> --names-only\n"
-        "                             Owner-local item discovery without code windows\n"
-        "  query <owner-path> --term <symbol> --code\n"
-        "                             Pure compact parser-owned code output\n\n"
-        "  query --selector <python-structural-selector> [--workspace <workspace-root>] --code\n"
-        "                             Parser-materialized exact item projection; --code consumes no path argument\n\n"
+        "  asp python query --selector <python-structural-selector> --projection source --workspace <workspace-root>\n"
+        "                             Exact source materialization through ASP authority\n"
+        "  asp python query --selector <python-structural-selector> --projection callable-skeleton --workspace <workspace-root>\n"
+        "                             Typed callable skeleton materialization through ASP authority\n\n"
         "  query --catalog flow-lite --where 'source.call=NAME sink.constructs=TYPE scope.fn=FUNCTION'\n"
         "                             Flow-lite ABI compatibility surface; Python executor is not enabled yet\n\n"
         "CHECK\n"
@@ -472,8 +468,7 @@ def help_text() -> str:
         "  py-harness search reasoning owner-tests --owner src/python_lang_project_harness/_cli.py .\n"
         "  py-harness search reasoning owner-query --owner src/python_lang_project_harness/_cli.py --query run_cli .\n"
         "  py-harness search reasoning query-deps --query Session --dependency requests .\n"
-        "  py-harness query src/python_lang_project_harness/_cli.py --term run_cli --workspace . --names-only\n"
-        "  py-harness query src/python_lang_project_harness/_cli.py --term run_cli --workspace . --code\n"
+        "  asp python query --selector 'python://src/python_lang_project_harness/_cli.py#item/function/run_cli' --projection source --workspace .\n"
         "  py-harness query --catalog flow-lite --where 'source.call=payload sink.constructs=Action scope.fn=collect' .\n"
         "  asp python search lexical --query PythonSemanticSearchOptions --workspace . --view seeds\n"
         "  py-harness check --full .\n"

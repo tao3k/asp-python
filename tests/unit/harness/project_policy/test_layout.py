@@ -61,8 +61,8 @@ def test_project_policy_accepts_pyproject_declared_nested_src_layout(
     report = run_python_project_harness(tmp_path)
 
     assert report.is_clean
-    assert report.project_scope is not None
-    assert report.project_scope.source_paths == (package.parent,)
+    assert report.project_resolution is not None
+    assert report.project_resolution.source_paths == (package.parent,)
 
 
 def test_project_policy_blocks_missing_declared_package_root(

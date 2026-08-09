@@ -44,6 +44,19 @@ def test_cli_agent_doctor_json_validates_v1_envelope_and_registry(
     )
     descriptors = registration["methodDescriptors"]
     assert len(descriptors) == len(registration["methods"]) == 34
+    native_owner = next(
+        descriptor
+        for descriptor in descriptors
+        if descriptor["method"] == "search/owner-native"
+    )
+    assert native_owner["acceptsStdin"] is True
+    assert native_owner["command"] == "search"
+    assert native_owner["invocation"]["argv"] == [
+        "py-harness",
+        "owner-search-stdin",
+        "--asp-provider-id",
+        "py-harness",
+    ]
     assert all(descriptor["invocation"]["argv"] for descriptor in descriptors)
     canonical = json.dumps(
         registry,

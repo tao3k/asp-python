@@ -10,7 +10,6 @@ from ._tree_sitter_query_catalog import resolved_tree_sitter_query
 from ._tree_sitter_query_model import parse_selector
 from ._tree_sitter_query_packet import (
     syntax_query_packet,
-    tree_sitter_query_code,
     tree_sitter_query_compact_lines,
 )
 from ._tree_sitter_query_projection import project_tree_sitter_query
@@ -50,18 +49,13 @@ def write_tree_sitter_query_response(
                     query=query,
                     terms=terms,
                     selector=selector,
-                    code_output=args.code_only,
+                    code_output=False,
                     projection=projection,
                 ),
                 separators=(",", ":"),
             )
         )
         stdout.write("\n")
-        return
-    if args.code_only:
-        stdout.write(tree_sitter_query_code(projection.rows))
-        if projection.rows:
-            stdout.write("\n")
         return
     stdout.write(tree_sitter_query_compact_lines(query, terms, projection))
     stdout.write("\n")

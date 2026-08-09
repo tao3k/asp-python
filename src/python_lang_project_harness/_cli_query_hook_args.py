@@ -28,7 +28,7 @@ def normalize_query_view(value: str | None) -> tuple[str | None, str | None]:
             None,
             "--view metadata is document-only for asp md/org query; "
             "Python query uses search --view seeds for discovery and "
-            "query <owner-path> --term <symbol> --code or --names-only",
+            "exact query uses --selector with --projection source or callable-skeleton",
         )
     if value not in {"graph", "hits", "both", "seeds"}:
         return None, "--view requires graph, hits, both, or seeds"

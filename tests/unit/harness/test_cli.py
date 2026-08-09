@@ -10,33 +10,29 @@ if TYPE_CHECKING:
     from pathlib import Path
 
 
-def test_cli_help_advertises_code_flag() -> None:
+def test_cli_help_advertises_exact_projection_routes() -> None:
     stdout = io.StringIO()
     exit_code = run_cli(["--help"], stdout=stdout)
     rendered = stdout.getvalue()
     assert exit_code == 0
-    assert "py-harness search <view> ... [--json] [--code]" in rendered
+    assert "py-harness search <view> ... [--json] [--package PATH]" in rendered
     assert (
-        "py-harness query <owner-path> --term <symbol> [--term <symbol>] [--workspace <workspace-root>] [--names-only | --code]"
-        in rendered
+        "asp python query --selector <exact-structural-selector> "
+        "--projection <source|callable-skeleton>" in rendered
     )
-    assert (
-        "search owner <path> items --query <symbol|a|b> [--names-only | --code]"
-        in rendered
-    )
-    assert "query <owner-path> --term <symbol> --code" in rendered
 
 
-def test_cli_subcommand_help_advertises_code_flag() -> None:
+def test_cli_subcommand_help_advertises_exact_projection() -> None:
     for args in (["search", "--help"], ["query", "--help"]):
         stdout = io.StringIO()
         exit_code = run_cli(args, stdout=stdout)
         rendered = stdout.getvalue()
         assert exit_code == 0
-        assert "--code" in rendered
+        assert "--selector <exact-structural-selector>" in rendered
+        assert "--projection <source|callable-skeleton>" in rendered
 
 
-def test_cli_agent_guide_advertises_code_route(tmp_path: Path) -> None:
+def test_cli_agent_guide_advertises_exact_source_route(tmp_path: Path) -> None:
     stdout = io.StringIO()
 
     exit_code = run_cli(["agent", "guide", str(tmp_path)], stdout=stdout)
@@ -44,12 +40,8 @@ def test_cli_agent_guide_advertises_code_route(tmp_path: Path) -> None:
 
     assert exit_code == 0
     assert (
-        "asp python query <owner-path> --term <symbol> --workspace <workspace-root> --code"
-        in rendered
-    )
-    assert (
-        "asp python search owner <owner-path> items --query <symbol|a|b> --workspace <workspace-root> --code"
-        in rendered
+        "asp python query --selector <exact-structural-selector> "
+        "--projection source --workspace <workspace-root>" in rendered
     )
 
 
@@ -82,7 +74,7 @@ def test_cli_json_flag_renders_structured_report(tmp_path: Path) -> None:
     assert exit_code == 0
     assert payload["is_clean"] is True
     assert payload["file_count"] == 1
-    assert payload["project_scope"]["project_root"] == str(tmp_path)
+    assert payload["project_resolution"]["project_root"] == str(tmp_path)
 
 
 def test_cli_agent_snapshot_renders_parser_backed_project_shape(
@@ -222,8 +214,8 @@ packages = ["packages/python/src/tools"]
     assert exit_code == 0
     assert payload["is_clean"] is True
     assert [finding["rule_id"] for finding in payload["findings"]] == []
-    assert payload["project_scope"]["source_paths"] == [str(package_source)]
-    assert payload["project_scope"]["project_paths"] == [
+    assert payload["project_resolution"]["source_paths"] == [str(package_source)]
+    assert payload["project_resolution"]["project_paths"] == [
         str(package_source),
         str(tmp_path / "tests"),
     ]

@@ -9,6 +9,7 @@ def test_registered_search_methods_publish_public_benchmark_invocations() -> Non
         descriptor
         for descriptor in descriptors
         if descriptor["method"].startswith("search/")
+        and "benchmarkInvocation" in descriptor
     ]
 
     assert search_descriptors

@@ -54,7 +54,9 @@ def render_python_project_harness_agent_snapshot_report(
     """Render an already-built project harness report as an agent snapshot."""
 
     project_root = (
-        None if report.project_scope is None else report.project_scope.project_root
+        None
+        if report.project_resolution is None
+        else report.project_resolution.project_root
     )
     target = ", ".join(
         _display_path(Path(path), project_root=project_root)

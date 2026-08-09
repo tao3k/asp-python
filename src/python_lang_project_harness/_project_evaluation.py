@@ -24,7 +24,7 @@ def evaluate_project_rule_packs(
     rule_packs: Sequence[PythonLangRulePack],
     modules: Sequence[PythonModuleReport],
 ) -> tuple[PythonHarnessFinding, ...]:
-    """Evaluate project-scope hooks exposed by configured rule packs."""
+    """Evaluate project-resolution hooks exposed by configured rule packs."""
 
     findings: list[PythonHarnessFinding] = []
     for rule_pack in rule_packs:
@@ -32,7 +32,7 @@ def evaluate_project_rule_packs(
         if module_evaluator is not None:
             findings.extend(module_evaluator(scope, modules))
             continue
-        scope_evaluator = getattr(rule_pack, "evaluate_project_scope", None)
+        scope_evaluator = getattr(rule_pack, "evaluate_project_resolution", None)
         if scope_evaluator is not None:
             findings.extend(scope_evaluator(scope))
             continue

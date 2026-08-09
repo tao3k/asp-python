@@ -17,7 +17,6 @@ SEMANTIC_GRAPH_TURBO_REQUEST_SCHEMA_ID = (
 SEMANTIC_TYPE_SURFACE_SCHEMA_ID = "agent.semantic-protocols.semantic-type-surface"
 SEMANTIC_FACT_GRAPH_SCHEMA_ID = "agent.semantic-protocols.semantic-fact-graph"
 SEMANTIC_FACT_ONTOLOGY_SCHEMA_ID = "agent.semantic-protocols.semantic-fact-ontology"
-SEMANTIC_WORKSPACE_SCOPE_SCHEMA_ID = "agent.semantic-protocols.semantic-workspace-scope"
 SEMANTIC_DETERMINISM_READINESS_SCHEMA_ID = (
     "agent.semantic-protocols.semantic-determinism-readiness"
 )

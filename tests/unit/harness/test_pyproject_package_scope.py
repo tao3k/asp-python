@@ -54,6 +54,9 @@ packages = ["packages/python/src/tools"]
         str(source_file),
         str(test_file),
     ]
-    assert report.project_scope is not None
-    assert report.project_scope.source_paths == (package_source,)
-    assert report.project_scope.project_paths == (package_source, tmp_path / "tests")
+    assert report.project_resolution is not None
+    assert report.project_resolution.source_paths == (package_source,)
+    assert report.project_resolution.project_paths == (
+        package_source,
+        tmp_path / "tests",
+    )

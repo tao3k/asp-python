@@ -33,7 +33,6 @@ def _supports_fast_lexical_seed_search(args: ProtocolArgs) -> bool:
         and args.view == "lexical"
         and args.render_mode == "seeds"
         and not args.json
-        and not args.code_only
         and bool(_fast_lexical_query_terms(args))
         and args.pipes in {("owner",), ("owner", "tests")}
         and args.item_query is None

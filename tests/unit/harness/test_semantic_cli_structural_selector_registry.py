@@ -20,8 +20,12 @@ def test_cli_query_registry_owns_structural_selector_projection(
     query = next(
         descriptor for descriptor in descriptors if descriptor["method"] == "query"
     )
-    assert query["codeOutput"]["mode"] == "pure-code"
-    assert "exact-selector" in query["codeOutput"]["requires"]
+    assert query["outputModes"] == ["frontier", "json"]
+    assert "codeOutput" not in query
+    assert any(
+        descriptor["method"] == "query/exact-selector-native-v1"
+        for descriptor in descriptors
+    )
     assert all(
         "owner-local-projection" not in descriptor["method"]
         for descriptor in descriptors

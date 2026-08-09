@@ -61,9 +61,9 @@ class _SnapshotTreeRenderer:
 
     @property
     def project_root(self) -> Path | None:
-        if self.report.project_scope is None:
+        if self.report.project_resolution is None:
             return None
-        return self.report.project_scope.project_root
+        return self.report.project_resolution.project_root
 
     def render(self) -> str:
         facts = verification_reasoning_tree_facts(self.report)

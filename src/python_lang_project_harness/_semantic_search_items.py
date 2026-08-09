@@ -181,7 +181,9 @@ def _owner_item_semantic_query_packet(
         "patchSafety": {
             "level": "read-safe",
             "reason": "compact query packet is not a mutation authority",
-            "nextAction": "query --selector <structural-selector> --code",
+            "nextAction": (
+                "query --selector <structural-selector> --projection source"
+            ),
         },
         "queryCoverage": [
             semantic_query_coverage(

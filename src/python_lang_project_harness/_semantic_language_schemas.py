@@ -115,11 +115,6 @@ def python_semantic_language_schemas() -> list[dict[str, str]]:
             "path": "schemas/semantic-fact-ontology.v1.schema.json",
         },
         {
-            "schemaId": ids.SEMANTIC_WORKSPACE_SCOPE_SCHEMA_ID,
-            "schemaVersion": "1",
-            "path": "schemas/semantic-workspace-scope.v1.schema.json",
-        },
-        {
             "schemaId": "agent.semantic-protocols.semantic-handle",
             "schemaVersion": "1",
             "path": "schemas/semantic-handle.v1.schema.json",

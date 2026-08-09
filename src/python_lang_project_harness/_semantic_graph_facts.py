@@ -52,7 +52,6 @@ def _supports_semantic_graph_facts(args: ProtocolArgs) -> bool:
         args.command == "search"
         and args.view == "semantic-facts"
         and args.json
-        and not args.code_only
         and args.query is not None
     )
 

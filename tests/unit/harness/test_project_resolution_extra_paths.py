@@ -43,6 +43,6 @@ def test_run_python_project_harness_can_include_extra_project_paths(
             str(tool),
         ]
     )
-    assert report.project_scope is not None
-    assert report.project_scope.extra_paths == (shared,)
+    assert report.project_resolution is not None
+    assert report.project_resolution.extra_paths == (shared,)
     assert report.root_paths == (str(tmp_path), str(shared))

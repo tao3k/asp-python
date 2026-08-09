@@ -46,7 +46,6 @@
             "workspace-router",
             "workspace-candidate-admission",
             "python-package-root-search",
-            "python-package-manager-workspace-scope",
             "package-prime-map",
             "python-reasoning-tree-prime",
             "graph-turbo-provider-facts",

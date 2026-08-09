@@ -9,41 +9,15 @@
   "providerId": "py-harness",
   "namespace": "agent.semantic-protocols.languages.python.py-harness",
   "binary": "py-harness",
-  "execution": "external-process",
-  "source": {
-    "defaultExtensions": [
-      ".py"
-    ],
-    "defaultConfigFiles": [
-      "pyproject.toml",
-      "setup.py",
-      "setup.cfg"
-    ],
-    "defaultSourceRoots": [
-      "src",
-      "tests"
-    ],
-    "defaultIgnoredPathPrefixes": [
-      ".venv",
-      "venv",
-      "__pycache__",
-      ".mypy_cache"
-    ],
-    "defaultProjectMarkers": [
-      "pyproject.toml",
-      "setup.py",
-      "setup.cfg"
-    ],
-    "defaultDependencyMarkers": [
-      "pyproject.toml",
-      "requirements.txt",
-      "requirements-dev.txt",
-      "uv.lock",
-      "poetry.lock",
-      "Pipfile",
-      "Pipfile.lock"
-    ]
+  "development": {
+    "schemaId": "agent.semantic-protocols.provider-development-descriptor",
+    "schemaVersion": "1",
+    "sourceRoot": "languages/python-lang-project-harness",
+    "buildBinding": "provider-workspace-install-v1",
+    "workspaceInstall": "provider/asp-provider-workspace-install.json",
+    "artifactDomain": "checkout"
   },
+  "execution": "external-process",
   "searchCapabilities": {
     "sourceSnapshot": {
       "descriptorId": "python.source-snapshot",
@@ -61,9 +35,8 @@
     },
     "ownerItems": true,
     "semanticFacts": true,
-    "dependencyTopology": false,
-    "dependencyTopologyMetadata": false,
-    "workspaceScope": true
+    "dependencyTopology": true,
+    "dependencyTopologyMetadata": false
   },
   "semanticFactsDescriptor": {
     "descriptorId": "python.semantic-facts",
@@ -96,6 +69,45 @@
     "bulkSourceDump": "block",
     "rawSourceSearch": "block",
     "agentSearchJson": "block"
+  },
+  "languageProjection": {
+    "schemaId": "agent.semantic-protocols.provider-language-projection-descriptor",
+    "schemaVersion": "1",
+    "commandBinding": "projection-batch-stdin",
+    "transport": "framed-stdin-v1",
+    "requestSchema": "https://schemas.agent-semantic-protocols.dev/provider-language-projection-batch-request.v1.schema.json",
+    "responseSchema": "https://schemas.agent-semantic-protocols.dev/provider-language-projection-batch-response.v1.schema.json",
+    "identitySchema": "https://schemas.agent-semantic-protocols.dev/canonical-language-item-identity.v1.schema.json"
+  },
+  "projectResolution": {
+    "schemaId": "agent.semantic-protocols.provider-project-resolution-descriptor",
+    "schemaVersion": "1",
+    "capabilityId": "project-resolution",
+    "entryMarkers": [
+      "pyproject.toml"
+    ],
+    "sourceExtensions": [
+      ".py",
+      ".pyi"
+    ],
+    "manifestKinds": [
+      "pep-621",
+      "uv-workspace",
+      "setuptools",
+      "hatch",
+      "poetry"
+    ],
+    "lockfileKinds": [
+      "uv-lock",
+      "poetry-lock",
+      "pdm-lock"
+    ],
+    "parserId": "python.pyproject-toml",
+    "commandBinding": "project-resolution-stdin",
+    "requestSchema": "https://schemas.agent-semantic-protocols.dev/provider-project-resolution-request.v1.schema.json",
+    "responseSchema": "https://schemas.agent-semantic-protocols.dev/provider-project-resolution-response.v1.schema.json",
+    "packageGraphSchema": "https://schemas.agent-semantic-protocols.dev/language-package-graph.v1.schema.json",
+    "projectResolutionSchema": "https://schemas.agent-semantic-protocols.dev/project-resolution.v1.schema.json"
   },
   "queryPackDescriptor": {
     "descriptorId": "python.query-pack",
@@ -190,8 +202,10 @@
     "owner": "search/owner",
     "lexical": "search/lexical",
     "query": "query/exact-selector",
+    "exactSelectorNative": "query/exact-selector-native-v1",
     "ingest": "search/ingest",
     "checkChanged": "check/changed",
-    "guide": "guide"
+    "guide": "guide",
+    "dependencyTopology": "search/dependency-topology"
   }
 }

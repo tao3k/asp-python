@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-from pathlib import Path
 from typing import TYPE_CHECKING
 
 from ._cli_query_arg_consume import (
@@ -15,7 +14,6 @@ from ._cli_query_flow_lite_args import (
     flow_lite_query_protocol_args,
     is_flow_lite_query_state,
 )
-from ._cli_query_hook_args import owner_path_from_query_selector
 from ._cli_query_tree_sitter_args import (
     is_tree_sitter_query_state,
     tree_sitter_query_args_error,
@@ -54,24 +52,13 @@ def _query_args_result(
         return flow_lite_query_protocol_args(args_type, state)
     if is_tree_sitter_query_state(state):
         return tree_sitter_query_protocol_args(args_type, state)
-    owner_path = (
-        owner_path_from_query_selector(state.selector)
-        if state.selector is not None
-        else state.positionals[0]
-    )
     return args_type(
-        "query",
-        owner_path=owner_path,
-        selector=state.selector,
-        query_set=tuple(state.terms),
-        project_root=_query_project_root(state),
-        package_path=state.package_path,
-        workspace=state.workspace,
-        json=state.json_output,
-        names_only=_query_names_only(state),
-        code_only=state.code_only,
-        source_version=state.source_version,
-        render_mode=state.render_mode,
+        "error",
+        error=(
+            "exact source projection is ASP-owned; use `asp python query "
+            "--selector <exact-structural-selector> --projection "
+            "source|callable-skeleton --workspace <workspace-root>`"
+        ),
     )
 
 
@@ -85,28 +72,13 @@ def _query_args_error(state: QueryParseState) -> str | None:
     if is_tree_sitter_query_state(state):
         return tree_sitter_query_args_error(state)
     if not state.selector and not state.positionals:
-        if state.names_only and state.terms:
-            return (
-                "query --names-only requires an owner selector; workspace term discovery is "
-                "`search lexical '<term>' owner --workspace <workspace-root> --view seeds`"
-            )
         return "query requires an owner path"
     if not state.terms and state.selector is None:
         return "query requires at least one --term"
-    if state.json_output and state.code_only:
-        return "--code cannot be combined with --json"
-    if state.names_only and state.code_only:
-        return "--code cannot be combined with --names-only"
     if state.surfaces:
         return "query --surface is Rust ASP search-owned; Python query accepts exact owner-local projection only"
     if state.render_mode is not None:
         return "query --view is Rust ASP search-owned; Python query accepts exact owner-local projection only"
-    return None
-
-
-def _query_project_root(state: QueryParseState) -> Path | None:
-    if state.workspace_root is not None:
-        return state.workspace_root
     return None
 
 
@@ -118,7 +90,3 @@ def _query_has_positional_workspace(state: QueryParseState) -> bool:
 
 def _query_allows_positional_workspace(state: QueryParseState) -> bool:
     return state.catalog is not None and state.tree_sitter_query is None
-
-
-def _query_names_only(state: QueryParseState) -> bool:
-    return state.names_only

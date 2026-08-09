@@ -34,7 +34,7 @@ def verification_reasoning_tree_facts(
 ) -> PythonReasoningTreeFacts:
     """Return parser-owned reasoning-tree facts for one harness report."""
 
-    scope = report.project_scope
+    scope = report.project_resolution
     return python_reasoning_tree_facts(
         report.modules,
         import_roots=_reasoning_tree_import_roots(report),
@@ -46,8 +46,8 @@ def verification_reasoning_tree_facts(
 def verification_project_root(report: PythonHarnessReport) -> Path:
     """Return the project root represented by a harness report."""
 
-    if report.project_scope is not None:
-        return report.project_scope.project_root
+    if report.project_resolution is not None:
+        return report.project_resolution.project_root
     if report.root_paths:
         return Path(report.root_paths[0])
     return Path(".")
@@ -240,8 +240,8 @@ def _append_owner_responsibilities(
 def _reasoning_tree_import_roots(
     report: PythonHarnessReport,
 ) -> tuple[Path | str, ...]:
-    if report.project_scope is None:
+    if report.project_resolution is None:
         return report.root_paths
-    if report.project_scope.source_paths:
-        return report.project_scope.source_paths
-    return report.project_scope.monitored_paths
+    if report.project_resolution.source_paths:
+        return report.project_resolution.source_paths
+    return report.project_resolution.monitored_paths

@@ -118,7 +118,11 @@ def test_harness_pyproject_metadata_comes_from_parser_boundary() -> None:
     )
 
     for path in harness_sources:
-        if path.name in {"_project_config.py", "_test_layout_config.py"}:
+        if path.name in {
+            "_project_config.py",
+            "_project_resolution_candidates.py",
+            "_test_layout_config.py",
+        }:
             continue
         source = path.read_text(encoding="utf-8")
         assert "import tomllib" not in source, path

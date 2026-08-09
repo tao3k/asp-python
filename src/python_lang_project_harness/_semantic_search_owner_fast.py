@@ -34,7 +34,6 @@ def _fast_owner_path(args: ProtocolArgs, project_root: Path) -> Path | None:
         or args.view != "owner"
         or args.render_mode != "seeds"
         or args.json
-        or args.code_only
         or args.query is None
         or args.item_query is not None
         or args.owner_path is not None

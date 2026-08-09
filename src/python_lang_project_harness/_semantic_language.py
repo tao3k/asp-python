@@ -14,7 +14,10 @@ from ._semantic_provider_doctor import _provider_identity
 from ._semantic_query_pack import python_query_pack_descriptor
 
 _PYTHON_CHECK_METHODS = ("check/changed", "check/full")
-_PYTHON_QUERY_METHODS = ("query", "query/owner-items")
+_PYTHON_QUERY_METHODS = (
+    "query",
+    "query/exact-selector-native-v1",
+)
 _PYTHON_AST_PATCH_METHODS = ("ast-patch/dry-run",)
 _PYTHON_EVIDENCE_METHODS = ("evidence/graph", "evidence/analyze")
 _PYTHON_AGENT_METHODS = ("agent/doctor", "agent/guide")
@@ -22,7 +25,10 @@ _PYTHON_SEARCH_VIEW_DESCRIPTORS = python_search_view_descriptors()
 _PYTHON_SEARCH_VIEWS = tuple(
     descriptor["view"] for descriptor in _PYTHON_SEARCH_VIEW_DESCRIPTORS
 )
-_PYTHON_SEARCH_METHODS = tuple(f"search/{view}" for view in _PYTHON_SEARCH_VIEWS)
+_PYTHON_SEARCH_METHODS = (
+    *(f"search/{view}" for view in _PYTHON_SEARCH_VIEWS),
+    "search/owner-native",
+)
 
 
 def semantic_language_registry_document() -> dict[str, Any]:
@@ -133,7 +139,35 @@ def python_semantic_language_method_descriptors() -> list[dict[str, Any]]:
             },
         ]
     )
-    return attach_semantic_language_invocations(descriptors)
+    attached = attach_semantic_language_invocations(descriptors)
+    attached.append(
+        {
+            "method": "search/owner-native",
+            "command": "search",
+            "view": "owner-native",
+            "outputSchemaIds": [
+                "agent.semantic-protocols.provider-native-owner-search-response"
+            ],
+            "packetSchemas": [
+                "provider-native-owner-search-request.v1",
+                "provider-native-owner-search-response.v1",
+            ],
+            "requiresQuery": False,
+            "acceptsStdin": True,
+            "supportsPackageScope": False,
+            "supportsJson": True,
+            "supportsCompact": False,
+            "invocation": {
+                "argv": [
+                    "py-harness",
+                    "owner-search-stdin",
+                    "--asp-provider-id",
+                    "py-harness",
+                ]
+            },
+        }
+    )
+    return attached
 
 
 def _python_search_method_descriptor(descriptor: dict[str, Any]) -> dict[str, Any]:
@@ -154,17 +188,10 @@ def _python_search_method_descriptor(descriptor: dict[str, Any]) -> dict[str, An
             "semantic-fact-ontology.v1",
         ]
         rendered["input"] = "search semantic-facts <query>"
-    if descriptor["view"] == "workspace-scope":
-        rendered["supportsCompact"] = False
-        rendered["outputModes"] = ["json"]
-        rendered["packetSchemas"] = ["semantic-workspace-scope.v1"]
-        rendered["input"] = "search workspace-scope --workspace <discovery-root>"
     return rendered
 
 
 def _search_output_schema_ids(view: str) -> list[str]:
-    if view == "workspace-scope":
-        return [ids.SEMANTIC_WORKSPACE_SCOPE_SCHEMA_ID]
     if view == "semantic-facts":
         return [ids.SEMANTIC_FACT_GRAPH_SCHEMA_ID]
     schema_ids = [ids.SEMANTIC_SEARCH_PACKET_SCHEMA_ID]
@@ -176,6 +203,22 @@ def _search_output_schema_ids(view: str) -> list[str]:
 
 
 def python_semantic_search_view_descriptor(view: str) -> dict[str, Any] | None:
+    if view == "dependency-topology":
+        return {
+            "method": "search/dependency-topology",
+            "command": "search",
+            "view": "dependency-topology",
+            "requiresQuery": False,
+            "acceptsStdin": False,
+            "supportsPackageScope": True,
+            "capabilities": [
+                {
+                    "languageId": "python",
+                    "namespace": "semantic",
+                    "name": "dependency-topology",
+                }
+            ],
+        }
     """Return the registry descriptor for one search view."""
 
     return next(

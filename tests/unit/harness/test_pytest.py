@@ -129,7 +129,7 @@ def test_python_project_harness_test_honors_embedded_options(
     harness_test()
 
 
-def test_python_project_harness_test_honors_configured_project_scope(
+def test_python_project_harness_test_honors_configured_project_resolution(
     tmp_path: Path,
 ) -> None:
     lib = tmp_path / "lib"
