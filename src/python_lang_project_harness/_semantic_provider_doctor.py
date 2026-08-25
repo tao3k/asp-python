@@ -2,32 +2,25 @@
 
 import json
 from hashlib import sha256
-from importlib.resources import files
-from pathlib import Path
 from typing import Any
 
 from . import _semantic_language_ids as ids
 
 
-def _provider_manifest() -> dict[str, Any]:
-    packaged = files("python_lang_project_harness").joinpath(
-        "asp-provider-manifest.json"
-    )
-    if packaged.is_file():
-        return json.loads(packaged.read_text(encoding="utf-8"))
-    checkout = (
-        Path(__file__).resolve().parents[2] / "provider" / "asp-provider-manifest.json"
-    )
-    return json.loads(checkout.read_text(encoding="utf-8"))
-
-
 def _provider_identity() -> dict[str, str]:
-    manifest = _provider_manifest()
-    keys = ("languageId", "providerId", "binary", "execution")
-    identity = {key: manifest[key] for key in keys}
-    if not all(isinstance(value, str) and value for value in identity.values()):
-        raise ValueError("provider manifest identity fields must be non-empty strings")
-    return identity
+    """Return the provider identity owned by the executable contract.
+
+    Installation and Runtime routing consume ``provider/asp-provider-registration.json``;
+    the provider process uses the same compile-time identity constants and does not
+    carry a second package-local provider manifest.
+    """
+
+    return {
+        "languageId": ids.PYTHON_LANGUAGE_ID,
+        "providerId": ids.PYTHON_PROVIDER_ID,
+        "binary": ids.PYTHON_BINARY,
+        "execution": "provider",
+    }
 
 
 def _jcs_bytes(value: object) -> bytes:

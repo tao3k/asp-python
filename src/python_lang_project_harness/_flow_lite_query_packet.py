@@ -66,7 +66,7 @@ def _flow_lite_packet(project_root: Path, where: dict[str, str]) -> dict[str, ob
         "protocolId": "agent.semantic-protocols.semantic-language",
         "protocolVersion": "1",
         "languageId": "python",
-        "providerId": "py-harness",
+        "providerId": "asp-python",
         "projectRoot": str(project_root),
         "packageName": project_root.name,
         "flowId": (

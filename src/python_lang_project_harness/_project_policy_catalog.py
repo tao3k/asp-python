@@ -111,7 +111,7 @@ _RULES = (
         pack_id=PROJECT_POLICY_PACK_ID,
         severity=PythonDiagnosticSeverity.INFO,
         title="Verification profile hints are not configured",
-        requirement="Configure `[tool.python-lang-project-harness.verification].profile_hints` from parser-suggested owners, or run `py-harness --agent-snapshot` to copy the compact `[verify-profile]` hints.",
+        requirement="Configure `[tool.python-lang-project-harness.verification].profile_hints` from parser-suggested owners, or run `asp-python --agent-snapshot` to copy the compact `[verify-profile]` hints.",
         labels=dict(_RULE_LABELS),
     ),
 )

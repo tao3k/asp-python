@@ -1,3 +1,5 @@
+"""Define exact Python selector and projection value boundaries."""
+
 from __future__ import annotations
 
 import ast
@@ -7,7 +9,7 @@ from urllib.parse import unquote
 
 REQUEST_SCHEMA_ID = "agent.semantic-protocols.provider-native-exact-request"
 RESPONSE_SCHEMA_ID = "agent.semantic-protocols.provider-native-exact-projection"
-SKELETON_SCHEMA_ID = "agent.semantic-protocols.callable-skeleton-projection"
+SKELETON_SCHEMA_ID = "agent.semantic-protocols.callable-skeleton"
 EXACT_SELECTOR_SCHEMA_ID = "asp.exact-structural-selector.v1"
 CANONICAL_SELECTOR_SCHEMA_ID = "asp.canonical-item-selector.v1"
 

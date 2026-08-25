@@ -13,9 +13,9 @@ from ._cli_query_predicates import parse_asp_syntax_query_predicates
 from ._tree_sitter_query_predicates import SyntaxQueryPredicate
 
 QUERY_USAGE = (
-    "usage: py-harness query (--catalog ID | --treesitter-query EXPR) "
+    "usage: asp-python query (--catalog ID | --treesitter-query EXPR) "
     "[<workspace-root>] [--workspace <workspace-root>] [--json]; "
-    "or py-harness query --catalog flow-lite --where 'source.call=NAME sink.constructs=TYPE scope.fn=FUNCTION' [<workspace-root>] [--json] [--workspace <workspace-root>]"
+    "or asp-python query --catalog flow-lite --where 'source.call=NAME sink.constructs=TYPE scope.fn=FUNCTION' [<workspace-root>] [--json] [--workspace <workspace-root>]"
 )
 
 

@@ -92,6 +92,12 @@ def _resolution_context(
     candidates = candidate_paths_from_entries(request["candidatePaths"])
     root_manifest = PurePosixPath("pyproject.toml")
     manifests = candidate_pyproject_paths(candidates)
+    if not manifests:
+        raise ProjectResolutionError(
+            "provider has no tracked pyproject.toml candidate",
+            reason_kind="provider-not-applicable",
+            next_action="continue-without-python-provider",
+        )
     if root_manifest not in manifests:
         raise ProjectResolutionError(
             "provider project entry is required: candidate pyproject.toml",

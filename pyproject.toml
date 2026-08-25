@@ -16,7 +16,7 @@ pytest = [
 ]
 
 [project.scripts]
-py-harness = "python_lang_project_harness:run_cli_from_env"
+asp-python = "python_lang_project_harness:run_cli_from_env"
 
 [project.entry-points.pytest11]
 python_lang_project_harness = "python_lang_project_harness.pytest_plugin"
@@ -39,7 +39,6 @@ packages = [
 ]
 
 [tool.hatch.build.targets.wheel.force-include]
-"provider/asp-provider-manifest.json" = "python_lang_project_harness/asp-provider-manifest.json"
 "schemas/semantic-language-registry.v1.schema.json" = "python_lang_project_harness/schemas/semantic-language-registry.v1.schema.json"
 
 [tool.uv]
@@ -47,9 +46,6 @@ package = true
 
 [tool.pytest.ini_options]
 pythonpath = ["src"]
-addopts = [
-    "--python-project-harness",
-]
 
 [[tool.python-lang-project-harness.verification.profile_hints]]
 owner_path = "pyproject.toml"

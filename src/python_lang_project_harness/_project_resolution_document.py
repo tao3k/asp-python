@@ -62,7 +62,7 @@ def build_scope_document(
         "state": "resolved",
         "completeness": "exact" if not unresolved else "partial",
         "languageId": "python",
-        "providerId": "py-harness",
+        "providerId": "asp-python",
         "parserId": parser_id,
         "candidateGenerationDigest": generation_digest,
         "projectEntry": project_manifest.as_posix(),
@@ -70,7 +70,7 @@ def build_scope_document(
             "schemaId": PACKAGE_GRAPH_SCHEMA_ID,
             "schemaVersion": "1",
             "languageId": "python",
-            "providerId": "py-harness",
+            "providerId": "asp-python",
             "projectEntry": project_manifest.as_posix(),
             "parserId": parser_id,
             "manifests": [

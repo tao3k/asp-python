@@ -14,7 +14,7 @@ def test_cli_agent_doctor_advertises_provider(tmp_path: Path) -> None:
     assert run_cli(["agent", "doctor", "--json", str(tmp_path)], stdout=stdout) == 0
     registration = json.loads(stdout.getvalue())["registry"]["languages"][0]
     assert registration["languageId"] == "python"
-    assert registration["providerId"] == "py-harness"
+    assert registration["providerId"] == "asp-python"
     assert "query/exact-selector-native-v1" in registration["methods"]
 
 
@@ -30,7 +30,12 @@ def test_cli_agent_guide_uses_asp_owned_exact_projection(tmp_path: Path) -> None
 
 def test_search_descriptors_publish_benchmark_invocations() -> None:
     descriptors = python_semantic_language_registration()["methodDescriptors"]
-    assert any(
-        descriptor["method"] == "search/owner-native" and descriptor["acceptsStdin"]
-        for descriptor in descriptors
+    assert all(
+        descriptor["method"] != "search/owner-native" for descriptor in descriptors
     )
+    exact = next(
+        descriptor
+        for descriptor in descriptors
+        if descriptor["method"] == "query/exact-selector-native-v1"
+    )
+    assert exact["invocation"]["argv"][:3] == ["asp", "python", "query"]

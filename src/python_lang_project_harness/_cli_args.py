@@ -57,8 +57,6 @@ class ProtocolArgs:
             return cls._parse_agent(args[1:])
         if command == "ast-patch":
             return cls._parse_ast_patch(args[1:])
-        if command == "projection-batch-stdin":
-            return cls(command)
         return None
 
     @classmethod
@@ -138,7 +136,7 @@ class ProtocolArgs:
             elif arg in {"--help", "-h"}:
                 return cls(
                     "error",
-                    error="usage: py-harness check [--changed | --full] [--json] [PROJECT_ROOT]",
+                    error="usage: asp-python check [--changed | --full] [--json] [PROJECT_ROOT]",
                 )
             elif arg.startswith("-"):
                 return cls("error", error=f"unknown check option: {arg}")
@@ -190,7 +188,7 @@ class ProtocolArgs:
             )
             return cls(
                 "error",
-                error=f"py-harness agent {action} moved to asp; use `{replacement}`",
+                error=f"asp-python agent {action} moved to asp; use `{replacement}`",
             )
         if action == "guide":
             return cls._parse_agent_guide(args[1:])
@@ -388,18 +386,18 @@ class CliOptions:
 
 def help_text() -> str:
     return (
-        "py-harness — Python semantic search and project harness\n\n"
+        "asp-python — Python semantic search and project harness\n\n"
         "Usage:\n"
-        "  py-harness search <view> ... [--json] [--package PATH] [--workspace <workspace-root>]\n"
+        "  asp-python search <view> ... [--json] [--package PATH] [--workspace <workspace-root>]\n"
         "  asp python query --selector <exact-structural-selector> --projection <source|callable-skeleton> --workspace <workspace-root>\n"
-        "  py-harness query --catalog flow-lite --where 'source.call=NAME sink.constructs=TYPE scope.fn=FUNCTION' [--json] [--workspace <workspace-root>]\n"
-        "  py-harness check [--changed | --full] [--json]\n"
-        "  py-harness evidence graph [--json] [PROJECT_ROOT]\n"
-        "  py-harness evidence analyze [--json] [PROJECT_ROOT]\n"
-        "  py-harness ast-patch dry-run --packet <semantic-ast-patch.json|->\n"
-        "  py-harness agent doctor [--json]\n"
-        "  py-harness agent guide\n"
-        "  py-harness [--json | --agent-snapshot] [--no-tests] "
+        "  asp-python query --catalog flow-lite --where 'source.call=NAME sink.constructs=TYPE scope.fn=FUNCTION' [--json] [--workspace <workspace-root>]\n"
+        "  asp-python check [--changed | --full] [--json]\n"
+        "  asp-python evidence graph [--json] [PROJECT_ROOT]\n"
+        "  asp-python evidence analyze [--json] [PROJECT_ROOT]\n"
+        "  asp-python ast-patch dry-run --packet <semantic-ast-patch.json|->\n"
+        "  asp-python agent doctor [--json]\n"
+        "  asp-python agent guide\n"
+        "  asp-python [--json | --agent-snapshot] [--no-tests] "
         "[--source-dir DIR] [--test-dir DIR] [--extra-path PATH] "
         "[--disable-rule RULE_ID] [--block-rule RULE_ID] [PROJECT_ROOT]\n\n"
         "SEARCH VIEWS\n"
@@ -460,22 +458,22 @@ def help_text() -> str:
         "Repeat --extra-path to include external project paths.\n"
         "Repeat --disable-rule or --block-rule to customize policy by rule id.\n"
         "\nEXAMPLES\n"
-        "  py-harness search workspace .\n"
-        "  py-harness search prime .\n"
-        "  py-harness search public-external-types pytest .\n"
-        "  py-harness search callsite PythonSemanticSearchOptions .\n"
+        "  asp-python search workspace .\n"
+        "  asp-python search prime .\n"
+        "  asp-python search public-external-types pytest .\n"
+        "  asp-python search callsite PythonSemanticSearchOptions .\n"
         "  asp python search lexical --query PythonSemanticSearchOptions --query owner --workspace .\n"
-        "  py-harness search reasoning owner-tests --owner src/python_lang_project_harness/_cli.py .\n"
-        "  py-harness search reasoning owner-query --owner src/python_lang_project_harness/_cli.py --query run_cli .\n"
-        "  py-harness search reasoning query-deps --query Session --dependency requests .\n"
+        "  asp-python search reasoning owner-tests --owner src/python_lang_project_harness/_cli.py .\n"
+        "  asp-python search reasoning owner-query --owner src/python_lang_project_harness/_cli.py --query run_cli .\n"
+        "  asp-python search reasoning query-deps --query Session --dependency requests .\n"
         "  asp python query --selector 'python://src/python_lang_project_harness/_cli.py#item/function/run_cli' --projection source --workspace .\n"
-        "  py-harness query --catalog flow-lite --where 'source.call=payload sink.constructs=Action scope.fn=collect' .\n"
+        "  asp-python query --catalog flow-lite --where 'source.call=payload sink.constructs=Action scope.fn=collect' .\n"
         "  asp python search lexical --query PythonSemanticSearchOptions --workspace . --view seeds\n"
-        "  py-harness check --full .\n"
-        "  py-harness evidence graph --json .\n"
-        "  py-harness evidence analyze --json .\n"
-        "  py-harness agent doctor --json .\n"
-        "  py-harness agent guide\n"
+        "  asp-python check --full .\n"
+        "  asp-python evidence graph --json .\n"
+        "  asp-python evidence analyze --json .\n"
+        "  asp-python agent doctor --json .\n"
+        "  asp-python agent guide\n"
     )
 
 

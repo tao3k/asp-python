@@ -23,7 +23,7 @@ MAX_OWNER_QUERY_ITEMS = 4
 
 @dataclass(frozen=True, slots=True)
 class PythonSemanticSearchOptions:
-    """Options parsed from a `py-harness search` invocation."""
+    """Options parsed from an `asp-python search` invocation."""
 
     view: str
     query: str | None = None

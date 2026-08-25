@@ -129,9 +129,9 @@ gate.
 
 ## CLI Embedding
 
-`py-harness check [--json] [PROJECT_ROOT]` runs the same default project
+`asp-python check [--json] [PROJECT_ROOT]` runs the same default project
 runner. Compact text is the default output. `--json` emits the structured
-`PythonHarnessReport` payload. `py-harness search ...` renders bounded
+`PythonHarnessReport` payload. `asp-python search ...` renders bounded
 semantic-search packets from parser-owned facts. The CLI is a thin adapter over
 library APIs: it does not own workflow orchestration or project-specific
 policy.

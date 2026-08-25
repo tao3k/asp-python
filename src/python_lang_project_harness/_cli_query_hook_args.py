@@ -6,7 +6,7 @@ from ._semantic_selector_identity import python_structural_selector_owner_path
 
 
 def normalize_query_surfaces(value: str | None) -> tuple[tuple[str, ...], str | None]:
-    """Normalize shared hook query surfaces into py-harness search pipes."""
+    """Normalize shared hook query surfaces into asp-python search pipes."""
     if value is None:
         return (), "--surface requires owner,tests style surfaces"
     surfaces = tuple(surface.strip() for surface in value.split(",") if surface.strip())

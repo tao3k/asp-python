@@ -1,16 +1,26 @@
 {
+  "$schema": "../schemas/provider-workspace-install.schema.json",
   "schemaId": "agent.semantic-protocols.provider-workspace-install",
   "schemaVersion": "1",
   "schemaAuthority": "https://tao3k.github.io/agent-semantic-protocols/schemas/",
-  "providerId": "py-harness",
-  "binary": "py-harness",
+  "languageId": "python",
+  "providerId": "asp-python",
+  "binary": "asp-python",
+  "providerRegistration": "asp-provider-registration.json",
+  "schemaBundleReceipt": "../schemas/.asp-schema-manager-receipt.json",
   "workspaceArtifact": {
     "root": "languages/python-lang-project-harness/.venv",
-    "entrypoint": "bin/py-harness",
+    "entrypoint": "bin/asp-python",
+    "runtimeDependencies": [
+      {
+        "source": "lib/libpython3.13.dylib",
+        "target": "lib/libpython3.13.dylib"
+      }
+    ],
     "launch": {
       "program": "bin/python3",
       "args": [
-        "bin/py-harness"
+        "bin/asp-python"
       ],
       "programRelativeToArtifact": true,
       "argsRelativeToArtifact": true

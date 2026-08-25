@@ -3,16 +3,20 @@
 from __future__ import annotations
 
 import ast
-import json
+import base64
+import binascii
 from dataclasses import dataclass
 
 from ._callable_skeleton_projection import callable_skeleton_payload, collect_segments
 from ._exact_projection_model import ExactSelector
 
-_REQUEST_SCHEMA_ID = "asp.provider-language-projection-batch-request.v1"
-_RESPONSE_SCHEMA_ID = "asp.provider-language-projection-batch-response.v1"
-_IDENTITY_SCHEMA_ID = "asp.canonical-language-item-identity.v1"
-_TRANSPORT = "framed-stdin-v1"
+_REQUEST_SCHEMA_ID = (
+    "agent.semantic-protocols.provider-language-projection-batch-request"
+)
+_RESPONSE_SCHEMA_ID = (
+    "agent.semantic-protocols.provider-language-projection-batch-response"
+)
+_IDENTITY_SCHEMA_ID = "agent.semantic-protocols.canonical-language-item-identity"
 
 
 @dataclass(frozen=True, slots=True)
@@ -22,71 +26,83 @@ class _OwnerFrame:
     source: bytes
 
 
-def render_projection_batch(frame: bytes) -> str:
-    """Decode one ASP frame and render the provider-owned projection response."""
+def project_projection_batch(request: dict[str, object]) -> dict[str, object]:
+    """Project one structured resident-runtime request with the native AST."""
 
-    header, owners = _decode_frame(frame)
-    projected = [_project_owner(owner, header) for owner in owners]
+    owners, _auxiliary_owners = _decode_request(request)
+    projected = [_project_owner(owner, request) for owner in owners]
     response = {
         "schemaId": _RESPONSE_SCHEMA_ID,
         "schemaVersion": "1",
-        "languageId": header["languageId"],
-        "providerId": header["providerId"],
-        "generationRootDigest": header["generationRootDigest"],
+        "languageId": request["languageId"],
+        "providerId": request["providerId"],
+        "generationRootDigest": request["generationRootDigest"],
         "owners": projected,
     }
-    return json.dumps(response, separators=(",", ":"), ensure_ascii=False)
+    return response
 
 
-def _decode_frame(frame: bytes) -> tuple[dict[str, object], list[_OwnerFrame]]:
-    if len(frame) < 4:
-        raise ValueError("projection batch frame is missing its header length")
-    header_length = int.from_bytes(frame[:4], "big")
-    header_end = 4 + header_length
-    if header_end > len(frame):
-        raise ValueError("projection batch header exceeds the input frame")
-    header = json.loads(frame[4:header_end])
-    if not isinstance(header, dict):
-        raise ValueError("projection batch header must be an object")
+def _decode_request(
+    request: dict[str, object],
+) -> tuple[list[_OwnerFrame], list[_OwnerFrame]]:
     if (
-        header.get("schemaId") != _REQUEST_SCHEMA_ID
-        or header.get("schemaVersion") != "1"
-        or header.get("languageId") != "python"
-        or header.get("transport") != _TRANSPORT
-        or not isinstance(header.get("parserIdentityDigest"), str)
-        or not header.get("parserIdentityDigest")
-        or not isinstance(header.get("queryPackDigest"), str)
-        or not header.get("queryPackDigest")
+        request.get("schemaId") != _REQUEST_SCHEMA_ID
+        or request.get("schemaVersion") != "1"
+        or request.get("languageId") != "python"
+        or not isinstance(request.get("parserIdentityDigest"), str)
+        or not request.get("parserIdentityDigest")
+        or not isinstance(request.get("queryPackDigest"), str)
+        or not request.get("queryPackDigest")
     ):
         raise ValueError("projection batch request identity mismatch")
-    owner_headers = header.get("owners")
-    if not isinstance(owner_headers, list):
-        raise ValueError("projection batch owners must be an array")
-    cursor = header_end
+    owners = _decode_owners(request.get("owners"), "owners")
+    auxiliary_owners = _decode_owners(
+        request.get("auxiliaryOwners", []), "auxiliaryOwners"
+    )
+    paths = [owner.path for owner in (*owners, *auxiliary_owners)]
+    if len(paths) != len(set(paths)):
+        raise ValueError("projection batch owner paths must be unique")
+    return owners, auxiliary_owners
+
+
+def _decode_owners(value: object, field: str) -> list[_OwnerFrame]:
+    if not isinstance(value, list):
+        raise ValueError(f"projection batch {field} must be an array")
     owners: list[_OwnerFrame] = []
-    for raw_owner in owner_headers:
+    for raw_owner in value:
         if not isinstance(raw_owner, dict):
-            raise ValueError("projection batch owner header must be an object")
+            raise ValueError("projection batch owner must be an object")
         path = raw_owner.get("ownerPath")
         digest = raw_owner.get("sourceLeafDigest")
-        byte_length = raw_owner.get("byteLength")
         if (
             not isinstance(path, str)
             or not path
             or not isinstance(digest, str)
             or not digest
-            or not isinstance(byte_length, int)
-            or byte_length < 0
         ):
-            raise ValueError("projection batch owner header is incomplete")
-        owner_end = cursor + byte_length
-        if owner_end > len(frame):
-            raise ValueError(f"projection batch owner bytes are truncated: {path}")
-        owners.append(_OwnerFrame(path, digest, frame[cursor:owner_end]))
-        cursor = owner_end
-    if cursor != len(frame):
-        raise ValueError("projection batch frame has trailing bytes")
-    return header, owners
+            raise ValueError("projection batch owner is incomplete")
+        source_encoding = raw_owner.get("sourceEncoding")
+        source_text = raw_owner.get("sourceText")
+        source_bytes_base64 = raw_owner.get("sourceBytesBase64")
+        if (
+            source_encoding == "utf8"
+            and isinstance(source_text, str)
+            and source_bytes_base64 is None
+        ):
+            source = source_text.encode("utf-8")
+        elif (
+            source_encoding == "base64"
+            and source_text is None
+            and isinstance(source_bytes_base64, str)
+        ):
+            try:
+                source = base64.b64decode(source_bytes_base64, validate=True)
+            except (binascii.Error, ValueError) as error:
+                raise ValueError("projection batch owner base64 is invalid") from error
+        else:
+            raise ValueError("projection batch owner source encoding mismatch")
+        owners.append(_OwnerFrame(path, digest, source))
+    return owners
 
 
 def _project_owner(owner: _OwnerFrame, header: dict[str, object]) -> dict[str, object]:

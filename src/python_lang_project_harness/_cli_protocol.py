@@ -28,13 +28,6 @@ def run_protocol_cli(
     if args.command == "help":
         stdout.write(help_text())
         return 0
-    if args.command == "projection-batch-stdin":
-        from ._projection_batch import render_projection_batch
-
-        frame = stdin if isinstance(stdin, bytes) else stdin.encode("utf-8")
-        stdout.write(render_projection_batch(frame))
-        return 0
-
     project_root = _resolve_project_root(args, cwd)
     if args.command == "agent":
         return _run_agent_command(args, project_root=project_root, stdout=stdout)

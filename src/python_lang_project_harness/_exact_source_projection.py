@@ -1,10 +1,11 @@
+"""Execute resident exact-source projections with the native Python AST."""
+
 from __future__ import annotations
 
 import ast
 import base64
-import json
 from pathlib import Path
-from typing import Any, TextIO
+from typing import Any
 
 from ._callable_skeleton_projection import (
     callable_skeleton_payload,
@@ -16,7 +17,6 @@ from ._exact_projection_model import (
     ExactSelector,
     ProjectionSegment,
     find_function,
-    flag_value,
     line_byte_offsets,
     node_byte_span,
     parse_selector,
@@ -25,33 +25,16 @@ from ._exact_projection_model import (
 )
 
 
-def try_run_provider_native_exact(
-    args: list[str] | tuple[str, ...],
-    *,
-    stdin: str,
-    cwd: Path,
-    stdout: TextIO,
-    stderr: TextIO,
-) -> int | None:
-    if "--asp-exact-request-stdin" not in args:
-        return None
-    try:
-        request = json.loads(stdin)
-        packet = _project_request(args, request, cwd)
-    except (UnicodeDecodeError, ValueError, json.JSONDecodeError) as error:
-        stderr.write(f"provider-native exact query failed: {error}\n")
-        return 2
-    stdout.write(json.dumps(packet, separators=(",", ":"), sort_keys=True))
-    stdout.write("\n")
-    return 0
-
-
-def _project_request(
-    args: list[str] | tuple[str, ...],
-    request: dict[str, Any],
-    cwd: Path,
+def project_provider_native_exact_request(
+    request: dict[str, Any], *, cwd: Path
 ) -> dict[str, Any]:
-    _validate_request_identity(args, request)
+    """Execute one exact projection through the resident provider boundary."""
+
+    _validate_request(request)
+    return _project_request(request, cwd)
+
+
+def _project_request(request: dict[str, Any], cwd: Path) -> dict[str, Any]:
     selector = parse_selector(required_text(request, "structuralSelector"))
     if selector.owner_path != required_text(request, "ownerPath"):
         raise ValueError("exact request ownerPath does not match structuralSelector")
@@ -119,29 +102,18 @@ def _source_packet(
     )
 
 
-def _validate_request_identity(
-    args: list[str] | tuple[str, ...], request: dict[str, Any]
-) -> None:
+def _validate_request(request: dict[str, Any]) -> None:
     expected = {
         "schemaId": REQUEST_SCHEMA_ID,
         "schemaVersion": "1",
         "languageId": "python",
-        "providerId": "py-harness",
+        "providerId": "asp-python",
         "sourceEncoding": "base64",
         "transport": "stdin-json",
     }
     for field, value in expected.items():
         if request.get(field) != value:
             raise ValueError(f"exact request {field} must be {value}")
-    for flag, field in (
-        ("--asp-provider-id", "providerId"),
-        ("--asp-parser-identity-digest", "parserIdentityDigest"),
-        ("--asp-query-pack-digest", "queryPackDigest"),
-    ):
-        if flag_value(args, flag) != required_text(request, field):
-            raise ValueError(f"exact request authority mismatch for {field}")
-    if flag_value(args, "--selector") != required_text(request, "structuralSelector"):
-        raise ValueError("exact request selector does not match CLI authority")
     for field in (
         "generationIdentityDigest",
         "parserIdentityDigest",
@@ -165,7 +137,7 @@ def _projection_packet(
         "schemaId": RESPONSE_SCHEMA_ID,
         "schemaVersion": "1",
         "languageId": "python",
-        "providerId": "py-harness",
+        "providerId": "asp-python",
         "projectionMode": projection_kind,
         "requestedStructuralSelector": selector.requested,
         "structuralSelector": selector.requested,

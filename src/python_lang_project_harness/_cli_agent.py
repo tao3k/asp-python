@@ -15,7 +15,7 @@ def render_agent_guide(project_root: Path) -> str:
     return (
         "\n".join(
             (
-                f"[py-harness-guide] project={project}",
+                f"[asp-python-guide] project={project}",
                 (
                     "|catalog reasoningProfiles=owner-query,query-deps,owner-tests,"
                     "finding-frontier,feature-cfg entries=owner-query,query-deps,"

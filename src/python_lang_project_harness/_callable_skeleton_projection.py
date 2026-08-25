@@ -1,3 +1,5 @@
+"""Project callable skeletons from native Python AST owners."""
+
 from __future__ import annotations
 
 import ast
@@ -7,7 +9,6 @@ from typing import Any
 from ._exact_projection_model import (
     CANONICAL_SELECTOR_SCHEMA_ID,
     EXACT_SELECTOR_SCHEMA_ID,
-    SKELETON_SCHEMA_ID,
     ExactSelector,
     ProjectionSegment,
     node_byte_span,
@@ -95,7 +96,7 @@ def callable_skeleton_payload(
             "label": function.name,
             "order": 0,
             "queryable": True,
-            "exactSelector": root_exact,
+            "selector": root_exact["selector"],
             "languageFacts": {
                 "async": isinstance(function, ast.AsyncFunctionDef),
                 "decoratorCount": len(function.decorator_list),
@@ -115,7 +116,7 @@ def callable_skeleton_payload(
                 "label": segment.label,
                 "order": segment.ordinal,
                 "queryable": True,
-                "exactSelector": exact_selector(request, selector, segment),
+                "selector": exact_selector(request, selector, segment)["selector"],
                 "sourceLocatorHint": {
                     "sourceByteStart": segment.byte_start,
                     "sourceByteEnd": segment.byte_end,
@@ -139,12 +140,6 @@ def callable_skeleton_payload(
     )
     projected_bytes = min(source_bytes, structural_bytes)
     return {
-        "schemaId": SKELETON_SCHEMA_ID,
-        "schemaVersion": "1",
-        "projectionKind": "callable-skeleton",
-        "languageId": "python",
-        "providerId": "py-harness",
-        "rootSelector": root_exact,
         "rootNodeId": "callable:root",
         "callable": {
             "kind": selector.kind,

@@ -28,7 +28,7 @@ def parse_query_args(
     args_type: type[ProtocolArgs],
     args: list[str] | tuple[str, ...],
 ) -> ProtocolArgs:
-    """Parse py-harness query arguments into protocol args."""
+    """Parse asp-python query arguments into protocol args."""
 
     if args and args[0] in {"--help", "-h"}:
         return args_type("help")

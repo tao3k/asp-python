@@ -43,19 +43,22 @@ def test_cli_agent_doctor_json_validates_v1_envelope_and_registry(
         registration["binary"],
     )
     descriptors = registration["methodDescriptors"]
-    assert len(descriptors) == len(registration["methods"]) == 34
-    native_owner = next(
+    assert len(descriptors) == len(registration["methods"]) == 33
+    exact_query = next(
         descriptor
         for descriptor in descriptors
-        if descriptor["method"] == "search/owner-native"
+        if descriptor["method"] == "query/exact-selector-native-v1"
     )
-    assert native_owner["acceptsStdin"] is True
-    assert native_owner["command"] == "search"
-    assert native_owner["invocation"]["argv"] == [
-        "py-harness",
-        "owner-search-stdin",
-        "--asp-provider-id",
-        "py-harness",
+    assert exact_query["invocation"]["argv"] == [
+        "asp",
+        "python",
+        "query",
+        "--selector",
+        "{selector}",
+        "--projection",
+        "{projection}",
+        "--workspace",
+        "{workspace}",
     ]
     assert all(descriptor["invocation"]["argv"] for descriptor in descriptors)
     canonical = json.dumps(

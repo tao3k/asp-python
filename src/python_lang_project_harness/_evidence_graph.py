@@ -9,8 +9,8 @@ from typing import Any
 _EVIDENCE_GRAPH_SCHEMA_ID = "agent.semantic-protocols.semantic-evidence-graph"
 _EVIDENCE_GRAPH_PROTOCOL_ID = "agent.semantic-protocols.evidence-graph"
 _LANGUAGE_ID = "python"
-_PROVIDER_ID = "py-harness"
-_NAMESPACE = "agent.semantic-protocols.languages.python.py-harness"
+_PROVIDER_ID = "asp-python"
+_NAMESPACE = "agent.semantic-protocols.languages.python.asp-python"
 
 
 def build_python_evidence_graph(project_root: Path) -> dict[str, Any]:
@@ -20,10 +20,10 @@ def build_python_evidence_graph(project_root: Path) -> dict[str, Any]:
     owner_path = _select_owner_path(root)
     owner_id = _node_id("python:owner", owner_path)
     claim_id = _node_id("python:claim", owner_path)
-    receipt_id = _node_id("python:receipt", "py-harness-check-full")
-    action_id = _node_id("python:action", "run-py-harness-check-full")
+    receipt_id = _node_id("python:receipt", "asp-python-check-full")
+    action_id = _node_id("python:action", "run-asp-python-check-full")
     gap_id = _node_id("python:gap", f"{owner_path}:receipt")
-    check_command = "py-harness check --full ."
+    check_command = "asp-python check --full ."
     nodes: list[dict[str, Any]] = [
         {
             "nodeId": owner_id,
@@ -52,7 +52,7 @@ def build_python_evidence_graph(project_root: Path) -> dict[str, Any]:
             "nodeId": receipt_id,
             "kind": "verification-receipt",
             "label": check_command,
-            "receiptId": "python.py-harness.check.full",
+            "receiptId": "python.asp-python.check.full",
             "status": "needs-injection",
             "summary": "Run the Python harness full check and attach the receipt before treating the claim as verified.",
             "fields": {"command": check_command},
@@ -60,8 +60,8 @@ def build_python_evidence_graph(project_root: Path) -> dict[str, Any]:
         {
             "nodeId": action_id,
             "kind": "review-action",
-            "label": "Run py-harness check --full .",
-            "actionId": "python.run-py-harness-check-full",
+            "label": "Run asp-python check --full .",
+            "actionId": "python.run-asp-python-check-full",
             "status": "missing",
             "summary": "run-receipt",
             "fields": {
@@ -79,7 +79,7 @@ def build_python_evidence_graph(project_root: Path) -> dict[str, Any]:
         {
             "gapId": gap_id,
             "ownerPath": owner_path,
-            "summary": "No attached py-harness full-check receipt for this evidence graph.",
+            "summary": "No attached asp-python full-check receipt for this evidence graph.",
             "severity": "warning",
             "fields": {"nextCommand": check_command},
         }

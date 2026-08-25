@@ -25,10 +25,7 @@ _PYTHON_SEARCH_VIEW_DESCRIPTORS = python_search_view_descriptors()
 _PYTHON_SEARCH_VIEWS = tuple(
     descriptor["view"] for descriptor in _PYTHON_SEARCH_VIEW_DESCRIPTORS
 )
-_PYTHON_SEARCH_METHODS = (
-    *(f"search/{view}" for view in _PYTHON_SEARCH_VIEWS),
-    "search/owner-native",
-)
+_PYTHON_SEARCH_METHODS = tuple(f"search/{view}" for view in _PYTHON_SEARCH_VIEWS)
 
 
 def semantic_language_registry_document() -> dict[str, Any]:
@@ -139,35 +136,7 @@ def python_semantic_language_method_descriptors() -> list[dict[str, Any]]:
             },
         ]
     )
-    attached = attach_semantic_language_invocations(descriptors)
-    attached.append(
-        {
-            "method": "search/owner-native",
-            "command": "search",
-            "view": "owner-native",
-            "outputSchemaIds": [
-                "agent.semantic-protocols.provider-native-owner-search-response"
-            ],
-            "packetSchemas": [
-                "provider-native-owner-search-request.v1",
-                "provider-native-owner-search-response.v1",
-            ],
-            "requiresQuery": False,
-            "acceptsStdin": True,
-            "supportsPackageScope": False,
-            "supportsJson": True,
-            "supportsCompact": False,
-            "invocation": {
-                "argv": [
-                    "py-harness",
-                    "owner-search-stdin",
-                    "--asp-provider-id",
-                    "py-harness",
-                ]
-            },
-        }
-    )
-    return attached
+    return attach_semantic_language_invocations(descriptors)
 
 
 def _python_search_method_descriptor(descriptor: dict[str, Any]) -> dict[str, Any]:

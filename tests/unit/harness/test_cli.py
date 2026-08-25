@@ -15,7 +15,7 @@ def test_cli_help_advertises_exact_projection_routes() -> None:
     exit_code = run_cli(["--help"], stdout=stdout)
     rendered = stdout.getvalue()
     assert exit_code == 0
-    assert "py-harness search <view> ... [--json] [--package PATH]" in rendered
+    assert "asp-python search <view> ... [--json] [--package PATH]" in rendered
     assert (
         "asp python query --selector <exact-structural-selector> "
         "--projection <source|callable-skeleton>" in rendered
@@ -245,9 +245,9 @@ def test_cli_help_and_argument_errors_are_stable(tmp_path: Path) -> None:
     error_stderr = io.StringIO()
 
     assert run_cli(["--help"], stdout=help_stdout) == 0
-    assert "py-harness search <view>" in help_stdout.getvalue()
+    assert "asp-python search <view>" in help_stdout.getvalue()
     assert (
-        "py-harness [--json | --agent-snapshot] [--no-tests]" in help_stdout.getvalue()
+        "asp-python [--json | --agent-snapshot] [--no-tests]" in help_stdout.getvalue()
     )
     assert run_cli(["--bogus"], stderr=error_stderr) == 2
     assert "unknown option: --bogus" in error_stderr.getvalue()

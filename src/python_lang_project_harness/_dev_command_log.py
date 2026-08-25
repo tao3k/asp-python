@@ -1,4 +1,4 @@
-"""Write development-only py-harness command log events."""
+"""Write development-only asp-python command log events."""
 
 from __future__ import annotations
 
@@ -89,8 +89,8 @@ class DevCommandLog:
             "sessionId": self.session_id,
             "sessionOrdinal": self.session_ordinal,
             "languageId": "python",
-            "providerId": "py-harness",
-            "binary": "py-harness",
+            "providerId": "asp-python",
+            "binary": "asp-python",
             "argv": self.argv,
             "cwd": str(self.cwd),
             "projectRoot": str(self.project_root),
@@ -142,15 +142,15 @@ def start_dev_command_log(
     session = resolve_session_context(log_root, project_root_hash)
     session_ordinal = allocate_session_ordinal(log_root, session.session_id)
     started_at_ms = int(time.time() * 1000)
-    event_id = f"py-harness-{started_at_ms}-{os.getpid()}-{session_ordinal:06d}"
+    event_id = f"asp-python-{started_at_ms}-{os.getpid()}-{session_ordinal:06d}"
     log_file = (
         log_root
         / "python"
-        / "py-harness"
+        / "asp-python"
         / "commands"
         / f"{utc_file_timestamp()}-{session_ordinal:06d}-{sanitize_file_component(event_id)}.jsonl"
     )
-    argv = ["py-harness", *redact_argv(list(args))]
+    argv = ["asp-python", *redact_argv(list(args))]
     return DevCommandLog(
         argv=argv,
         command=normalize_command(argv),

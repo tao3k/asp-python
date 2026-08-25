@@ -2,20 +2,17 @@
 
 from __future__ import annotations
 
-import json
-
-from python_lang_project_harness._cli import run_cli
+from python_lang_project_harness._projection_batch import project_projection_batch
 
 
-def test_projection_batch_projects_canonical_python_items(capsys: object) -> None:
-    source = b"class Agent:\n    def run(self):\n        return 1\n\ndef top():\n    return 2\n"
-    header = {
-        "schemaId": "asp.provider-language-projection-batch-request.v1",
+def test_projection_batch_projects_canonical_python_items() -> None:
+    source = "class Agent:\n    def run(self):\n        return 1\n\ndef top():\n    return 2\n"
+    request = {
+        "schemaId": "agent.semantic-protocols.provider-language-projection-batch-request",
         "schemaVersion": "1",
         "languageId": "python",
-        "providerId": "py-harness",
+        "providerId": "asp-python",
         "workspaceIdentity": "workspace-test",
-        "transport": "framed-stdin-v1",
         "generationRootDigest": "generation-test",
         "parserIdentityDigest": "parser-test",
         "queryPackDigest": "query-pack-test",
@@ -24,19 +21,28 @@ def test_projection_batch_projects_canonical_python_items(capsys: object) -> Non
             {
                 "ownerPath": "src/example.py",
                 "sourceLeafDigest": "source-test",
-                "byteLength": len(source),
+                "sourceEncoding": "utf8",
+                "sourceText": source,
+            }
+        ],
+        "auxiliaryOwners": [
+            {
+                "ownerPath": "pyproject.toml",
+                "sourceLeafDigest": "config-test",
+                "sourceEncoding": "utf8",
+                "sourceText": "[project]\nname = 'fixture'\n",
             }
         ],
     }
-    header_bytes = json.dumps(header, separators=(",", ":")).encode()
-    frame = len(header_bytes).to_bytes(4, "big") + header_bytes + source
+    response = project_projection_batch(request)
 
-    assert run_cli(["projection-batch-stdin"], stdin=frame) == 0
-    response = json.loads(capsys.readouterr().out)  # type: ignore[attr-defined]
-
-    assert response["schemaId"] == "asp.provider-language-projection-batch-response.v1"
+    assert (
+        response["schemaId"]
+        == "agent.semantic-protocols.provider-language-projection-batch-response"
+    )
     assert response["generationRootDigest"] == "generation-test"
     owner = response["owners"][0]
+    assert len(response["owners"]) == 1
     assert owner["sourceLeafDigest"] == "source-test"
     assert [item["selector"] for item in owner["items"]] == [
         "python://src/example.py#item/class/Agent",
@@ -49,7 +55,7 @@ def test_projection_batch_projects_canonical_python_items(capsys: object) -> Non
     assert owner["items"][0]["projections"] == []
     for item in owner["items"][1:]:
         assert item["projections"][0]["projectionKind"] == "callable-skeleton"
-        assert (
-            item["projections"][0]["payload"]["schemaId"]
-            == "agent.semantic-protocols.callable-skeleton-projection"
-        )
+        payload = item["projections"][0]["payload"]
+        assert "schemaId" not in payload
+        assert "schemaVersion" not in payload
+        assert "projectionKind" not in payload

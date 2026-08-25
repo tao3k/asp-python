@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
-from typing import Any, TextIO
+from typing import Any
 
 from ._project_resolution_graph import (
     ProjectResolutionError,
@@ -15,32 +15,22 @@ _REQUEST_SCHEMA_ID = "agent.semantic-protocols.provider-project-resolution-reque
 _RESPONSE_SCHEMA_ID = "agent.semantic-protocols.provider-project-resolution-response"
 
 
-def try_run_project_resolution(
-    args: list[str] | tuple[str, ...],
-    *,
-    stdin: str,
-    cwd: Path,
-    stdout: TextIO,
-) -> int | None:
-    if tuple(args) != ("project-resolution-stdin",):
-        return None
+def resolve_project_resolution_request(
+    request: dict[str, Any], *, cwd: Path
+) -> dict[str, Any]:
+    """Resolve one validated resident-runtime request without CLI dispatch."""
 
+    request = _decode_request(json.dumps(request, separators=(",", ":")))
     try:
-        request = _decode_request(stdin)
-        response = _response(
-            "resolved", scope=resolve_project_resolution(request, cwd=cwd)
-        )
+        return _response("resolved", scope=resolve_project_resolution(request, cwd=cwd))
     except ProjectResolutionError as error:
-        response = _failure(
+        return _failure(
             str(error),
             reason_kind=error.reason_kind,
             next_action=error.next_action,
         )
     except (ValueError, OSError) as error:
-        response = _failure(str(error))
-    stdout.write(json.dumps(response, separators=(",", ":"), sort_keys=True))
-    stdout.write("\n")
-    return 0
+        return _failure(str(error))
 
 
 def _decode_request(stdin: str) -> dict[str, Any]:
@@ -59,10 +49,10 @@ def _decode_request(stdin: str) -> dict[str, Any]:
         raise ValueError("project-resolution request schema must be v1")
     if (
         request.get("languageId") != "python"
-        or request.get("providerId") != "py-harness"
+        or request.get("providerId") != "asp-python"
     ):
         raise ValueError(
-            "project-resolution request provider identity does not match py-harness"
+            "project-resolution request provider identity does not match asp-python"
         )
     if request.get("candidateBase") != ".":
         raise ValueError("project-resolution request candidateBase must be .")
@@ -117,7 +107,7 @@ def _response(
         "schemaId": _RESPONSE_SCHEMA_ID,
         "schemaVersion": "1",
         "languageId": "python",
-        "providerId": "py-harness",
+        "providerId": "asp-python",
         "state": state,
     }
     if scope is not None:
@@ -133,6 +123,8 @@ def _failure(
     reason_kind: str = "project-entry-invalid",
     next_action: str = "send-valid-project-resolution-request",
 ) -> dict[str, Any]:
+    if reason_kind == "provider-not-applicable":
+        return _response("not-applicable")
     return _response(
         "failed",
         failure={

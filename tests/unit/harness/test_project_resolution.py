@@ -2,11 +2,10 @@
 
 from __future__ import annotations
 
-import io
 import json
 from pathlib import Path
 
-from python_lang_project_harness import run_cli
+from python_lang_project_harness._runtime import _response_frame
 
 
 def request(candidate_paths: list[str]) -> dict[str, object]:
@@ -14,7 +13,7 @@ def request(candidate_paths: list[str]) -> dict[str, object]:
         "schemaId": "agent.semantic-protocols.provider-project-resolution-request",
         "schemaVersion": "1",
         "languageId": "python",
-        "providerId": "py-harness",
+        "providerId": "asp-python",
         "candidateBase": ".",
         "candidateGeneration": {
             "algorithm": "blake3-path-set-v1",
@@ -27,19 +26,25 @@ def request(candidate_paths: list[str]) -> dict[str, object]:
     }
 
 
-def run_project_resolution(root: Path, payload: object) -> dict[str, object]:
-    stdout = io.StringIO()
-    stderr = io.StringIO()
-    exit_code = run_cli(
-        ["project-resolution-stdin"],
-        stdin=json.dumps(payload),
-        stdout=stdout,
-        stderr=stderr,
-        cwd=root,
+def project_resolution_frame(root: Path, payload: object) -> dict[str, object]:
+    return _response_frame(
+        {
+            "schemaId": "agent.semantic-protocols.provider-runtime-request-frame",
+            "schemaVersion": "1",
+            "requestId": "project-resolution-test",
+            "operation": "project-resolution",
+            "payload": payload,
+        },
+        root,
     )
-    assert exit_code == 0
-    assert stderr.getvalue() == ""
-    return json.loads(stdout.getvalue())
+
+
+def run_project_resolution(root: Path, payload: object) -> dict[str, object]:
+    frame = project_resolution_frame(root, payload)
+    assert frame["outcome"] == "ready", frame
+    result = frame["payload"]
+    assert isinstance(result, dict)
+    return result
 
 
 def test_project_resolution_uses_only_candidates_and_uv_package_graph(
@@ -169,15 +174,20 @@ name = "example-pkg"
 
 
 def test_project_resolution_rejects_non_object_request(tmp_path: Path) -> None:
-    response = run_project_resolution(tmp_path, [])
-    assert response["state"] == "failed"
-    assert response["failure"]["reasonKind"] == "project-entry-invalid"
+    response = project_resolution_frame(tmp_path, [])
+    assert response["outcome"] == "error"
+    assert response["error"] == "provider runtime payload is not an object"
 
 
 def test_project_resolution_requires_candidate_project_entry(tmp_path: Path) -> None:
     response = run_project_resolution(tmp_path, request(["src/pkg/__init__.py"]))
-    assert response["state"] == "failed"
-    assert response["failure"]["reasonKind"] == "project-entry-missing"
+    assert response == {
+        "schemaId": "agent.semantic-protocols.provider-project-resolution-response",
+        "schemaVersion": "1",
+        "languageId": "python",
+        "providerId": "asp-python",
+        "state": "not-applicable",
+    }
 
 
 def test_empty_uv_workspace_aggregator_is_not_a_provider_failure(
@@ -207,16 +217,25 @@ exclude = ["packages/python"]
     assert scope["metrics"]["dbOpens"] == 0
 
 
-def test_provider_manifest_advertises_project_resolution() -> None:
+def test_provider_registration_advertises_project_resolution() -> None:
     project_root = Path(__file__).parents[3]
     manifest = json.loads(
-        (project_root / "provider/asp-provider-manifest.json").read_text()
+        (project_root / "provider/asp-provider-registration.json").read_text()
     )
-    descriptor = manifest["projectResolution"]
-    assert descriptor["commandBinding"] == "project-resolution-stdin"
-    assert descriptor["parserId"] == "python.pyproject-toml"
-    assert "supportsGitCandidates" not in descriptor
-    assert "candidateSnapshotSchema" not in descriptor
+    descriptor = manifest["sourceInventory"]["projectResolution"]
+    assert descriptor == {"entryMarkers": ["pyproject.toml"]}
+
+    operations = {
+        operation["operation"]: operation
+        for operation in manifest["runtimeContract"]["operations"]
+    }
+    project_resolution = operations["project-resolution"]
+    assert project_resolution["requestSchemaId"].endswith(
+        "/provider-project-resolution-request.schema.json"
+    )
+    assert project_resolution["responseSchemaId"].endswith(
+        "/provider-project-resolution-response.schema.json"
+    )
 
 
 def test_explicit_owner_collection_scope_is_required_and_normalized(
@@ -234,6 +253,6 @@ def test_explicit_owner_collection_scope_is_required_and_normalized(
         "kind": "explicit-owners",
         "ownerPaths": ["src/../changed.py"],
     }
-    failure = run_project_resolution(tmp_path, payload)
-    assert failure["state"] == "failed"
-    assert "normalized workspace-relative" in failure["failure"]["message"]
+    failure = project_resolution_frame(tmp_path, payload)
+    assert failure["outcome"] == "error"
+    assert "normalized workspace-relative" in failure["error"]

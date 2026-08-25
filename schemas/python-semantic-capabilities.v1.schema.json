@@ -8,7 +8,7 @@
   "required": ["schemaId", "schemaVersion", "languageId", "providerId"],
   "properties": {
     "schemaId": {
-      "const": "agent.semantic-protocols.languages.python.py-harness.capabilities"
+      "const": "agent.semantic-protocols.languages.python.asp-python.capabilities"
     },
     "schemaVersion": {
       "const": "1"
@@ -17,7 +17,7 @@
       "const": "python"
     },
     "providerId": {
-      "const": "py-harness"
+      "const": "asp-python"
     },
     "capability": {
       "$ref": "#/$defs/capabilityDescriptor"

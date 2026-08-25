@@ -41,7 +41,7 @@ def test_search_semantic_facts_emits_field_type_collection_graph(tmp_path):
     payload = json.loads(stdout.getvalue())
     assert payload["schemaId"] == "agent.semantic-protocols.semantic-fact-graph"
     assert payload["languageId"] == "python"
-    assert payload["providerId"] == "py-harness"
+    assert payload["providerId"] == "asp-python"
     assert payload["query"] == "list collection fields"
     nodes = payload["nodes"]
     edges = payload["edges"]
@@ -51,7 +51,7 @@ def test_search_semantic_facts_emits_field_type_collection_graph(tmp_path):
         and node["fields"]["typeValue"] == "list[str]"
         and node["fields"]["collectionKind"] == "list"
         and node["fields"]["languageId"] == "python"
-        and node["fields"]["providerId"] == "py-harness"
+        and node["fields"]["providerId"] == "asp-python"
         and node["fields"]["semanticFactKind"] == "field"
         and node["fields"]["provenance"] == "parser"
         and node["fields"]["confidence"] == "exact"
