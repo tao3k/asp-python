@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 import base64
+import json
+from pathlib import Path
 
 from python_lang_project_harness._exact_source_projection import (
     project_provider_native_exact_request,
@@ -80,3 +82,42 @@ def test_provider_does_not_recompute_asp_source_digest(tmp_path) -> None:
     }
     packet = project_provider_native_exact_request(request, cwd=tmp_path)
     assert packet["sourceContentDigest"] == "asp-owned-content-identity"
+
+
+def test_resolved_projection_satisfies_central_schema_branch(tmp_path) -> None:
+    source = b"def selected() -> int:\n    return 1\n"
+    selector = "python://src/example.py#item/function/selected"
+    packet = project_provider_native_exact_request(
+        {
+            "schemaId": "agent.semantic-protocols.provider-native-exact-request",
+            "schemaVersion": "1",
+            "languageId": "python",
+            "providerId": "asp-python",
+            "structuralSelector": selector,
+            "ownerPath": "src/example.py",
+            "projectionKind": "source",
+            "generationIdentityDigest": "a" * 64,
+            "parserIdentityDigest": "b" * 64,
+            "queryPackDigest": "c" * 64,
+            "sourceDigest": "d" * 64,
+            "sourceByteLength": len(source),
+            "sourceEncoding": "base64",
+            "sourceBytesBase64": base64.b64encode(source).decode(),
+            "transport": "stdin-json",
+        },
+        cwd=tmp_path,
+    )
+    schema = json.loads(
+        Path("schemas/provider-native-exact-response.v1.schema.json").read_text()
+    )
+    required = set(schema["required"]) | set(schema["oneOf"][0]["required"])
+
+    assert required <= packet.keys()
+    assert packet.keys() <= schema["properties"].keys()
+    assert packet["ownerPath"] == "src/example.py"
+    assert packet["resolutionState"] == "resolved"
+    assert packet["normalizedParserFacts"] == {
+        "parserKind": "python-ast",
+        "itemKind": "function",
+        "itemName": "selected",
+    }

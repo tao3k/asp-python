@@ -138,9 +138,24 @@ def _projection_packet(
         "schemaVersion": "1",
         "languageId": "python",
         "providerId": "asp-python",
+        "ownerPath": selector.owner_path,
         "projectionMode": projection_kind,
         "requestedStructuralSelector": selector.requested,
+        "resolutionState": "resolved",
         "structuralSelector": selector.requested,
+        "normalizedParserFacts": {
+            "parserKind": "python-ast",
+            "itemKind": selector.kind,
+            "itemName": selector.symbol,
+            **(
+                {
+                    "segmentKind": selector.segment_kind,
+                    "segmentIdentity": selector.segment_identity,
+                }
+                if selector.segment_kind is not None
+                else {}
+            ),
+        },
         "sourceContentDigest": required_text(request, "sourceDigest"),
         "sourceByteStart": byte_start,
         "sourceByteEnd": max(byte_start, byte_end - 1),
