@@ -38,9 +38,9 @@ SEMANTIC_TREE_SITTER_GRAMMAR_PROFILE_SCHEMA_ID = (
     "agent.semantic-protocols.semantic-tree-sitter-grammar-profile"
 )
 PYTHON_CAPABILITIES_SCHEMA_ID = (
-    "agent.semantic-protocols.languages.python.py-harness.capabilities"
+    "agent.semantic-protocols.languages.python.asp-python.capabilities"
 )
 PYTHON_LANGUAGE_ID = "python"
-PYTHON_PROVIDER_ID = "py-harness"
-PYTHON_BINARY = "py-harness"
-PYTHON_PROVIDER_NAMESPACE = "agent.semantic-protocols.languages.python.py-harness"
+PYTHON_PROVIDER_ID = "asp-python"
+PYTHON_BINARY = "asp-python"
+PYTHON_PROVIDER_NAMESPACE = "agent.semantic-protocols.languages.python.asp-python"

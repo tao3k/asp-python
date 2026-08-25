@@ -291,7 +291,7 @@ class PythonHarnessReport:
     blocking_severities: frozenset[PythonDiagnosticSeverity] = (
         DEFAULT_BLOCKING_SEVERITIES
     )
-    project_scope: PythonProjectHarnessScope | None = None
+    project_resolution: PythonProjectHarnessScope | None = None
     disabled_rule_ids: frozenset[str] = frozenset()
     blocking_rule_ids: frozenset[str] = frozenset()
 
@@ -318,8 +318,10 @@ class PythonHarnessReport:
 
         return {
             "root_paths": list(self.root_paths),
-            "project_scope": (
-                None if self.project_scope is None else self.project_scope.to_dict()
+            "project_resolution": (
+                None
+                if self.project_resolution is None
+                else self.project_resolution.to_dict()
             ),
             "file_count": self.file_count,
             "parsed_count": self.parsed_count,

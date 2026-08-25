@@ -117,7 +117,10 @@ def _receipt(
         "verification": verification,
         "failureKind": failure_kind,
         "failures": failures,
-        "next": f"py-harness query <owner> --term <symbol> --code {project_root}",
+        "next": (
+            "asp python query --selector <exact-structural-selector> "
+            f"--projection source --workspace {project_root}"
+        ),
     }
 
 

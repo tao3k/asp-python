@@ -45,9 +45,9 @@ def test_project_runner_uses_configured_source_and_test_roots(
         str(lib / "service.py"),
         str(tests / "test_service.py"),
     ]
-    assert report.project_scope is not None
-    assert report.project_scope.source_paths == (lib,)
-    assert report.project_scope.test_paths == (checks.parent,)
+    assert report.project_resolution is not None
+    assert report.project_resolution.source_paths == (lib,)
+    assert report.project_resolution.test_paths == (checks.parent,)
 
 
 def test_project_runner_parameters_override_configured_roots(
@@ -72,8 +72,8 @@ def test_project_runner_parameters_override_configured_roots(
         str(lib / "included.py"),
         str(src / "service.py"),
     ]
-    assert report.project_scope is not None
-    assert report.project_scope.source_paths == (src,)
+    assert report.project_resolution is not None
+    assert report.project_resolution.source_paths == (src,)
 
 
 def test_project_runner_parameters_override_configured_extra_paths(
@@ -101,8 +101,8 @@ def test_project_runner_parameters_override_configured_extra_paths(
         str(src / "service.py"),
         str(tools / "check.py"),
     ]
-    assert report.project_scope is not None
-    assert report.project_scope.extra_paths == (tools,)
+    assert report.project_resolution is not None
+    assert report.project_resolution.extra_paths == (tools,)
 
 
 def test_project_runner_can_exclude_tests_from_config(tmp_path: Path) -> None:
@@ -120,9 +120,9 @@ def test_project_runner_can_exclude_tests_from_config(tmp_path: Path) -> None:
 
     assert report.is_clean
     assert [module.path for module in report.modules] == [str(src / "service.py")]
-    assert report.project_scope is not None
-    assert report.project_scope.test_paths == (tests.parent,)
-    assert report.project_scope.monitored_paths == (src,)
+    assert report.project_resolution is not None
+    assert report.project_resolution.test_paths == (tests.parent,)
+    assert report.project_resolution.monitored_paths == (src,)
 
 
 def test_project_runner_can_disable_policy_rules_from_config(tmp_path: Path) -> None:

@@ -55,7 +55,7 @@ def test_reasoning_tree_render_uses_project_relative_paths(tmp_path: Path) -> No
         ),
         findings=(),
         root_paths=(str(tmp_path),),
-        project_scope=PythonProjectHarnessScope(
+        project_resolution=PythonProjectHarnessScope(
             project_root=tmp_path,
             project_metadata=PythonProjectMetadata(
                 project_root=tmp_path,
@@ -111,7 +111,7 @@ def test_compact_text_render_uses_project_relative_finding_paths(
             ),
         ),
         root_paths=(str(tmp_path),),
-        project_scope=PythonProjectHarnessScope(
+        project_resolution=PythonProjectHarnessScope(
             project_root=tmp_path,
             project_paths=(tmp_path,),
             source_paths=(src,),
@@ -175,7 +175,7 @@ def _reasoning_tree_snapshot_report() -> PythonHarnessReport:
         ),
         findings=(),
         root_paths=(str(root),),
-        project_scope=PythonProjectHarnessScope(
+        project_resolution=PythonProjectHarnessScope(
             project_root=root,
             project_metadata=PythonProjectMetadata(
                 project_root=root,

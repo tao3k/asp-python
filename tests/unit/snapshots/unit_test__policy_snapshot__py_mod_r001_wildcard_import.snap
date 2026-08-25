@@ -8,4 +8,3 @@ expression: rendered
 |summary Wildcard import from 'tools' makes exported names implicit.
 |repair replace wildcard import with explicit imported names
 |hotBlock selector=src/module.py:3:3 reason=blocking-finding
-|next action=owner-local-projection selector=src/module.py:3:3 root=.

@@ -1,0 +1,49 @@
+{
+  "$schema": "../schemas/provider-workspace-install.schema.json",
+  "schemaId": "agent.semantic-protocols.provider-workspace-install",
+  "schemaVersion": "1",
+  "schemaAuthority": "https://tao3k.github.io/agent-semantic-protocols/schemas/",
+  "languageId": "python",
+  "providerId": "asp-python",
+  "binary": "asp-python",
+  "providerRegistration": "asp-provider-registration.json",
+  "schemaBundleReceipt": "../schemas/.asp-schema-manager-receipt.json",
+  "workspaceArtifact": {
+    "root": "languages/python-lang-project-harness/.venv",
+    "entrypoint": "bin/asp-python",
+    "runtimeDependencies": [
+      {
+        "source": "lib/libpython3.13.dylib",
+        "target": "lib/libpython3.13.dylib"
+      }
+    ],
+    "launch": {
+      "program": "bin/python3",
+      "args": [
+        "bin/asp-python"
+      ],
+      "programRelativeToArtifact": true,
+      "argsRelativeToArtifact": true
+    }
+  },
+  "workspaceBuild": {
+    "program": "uv",
+    "args": [
+      "sync",
+      "--frozen",
+      "--no-editable",
+      "--no-cache",
+      "--reinstall-package",
+      "python-lang-project-harness"
+    ],
+    "workingDirectory": "languages/python-lang-project-harness",
+    "sourceSnapshotAnchors": [
+      "languages/python-lang-project-harness/pyproject.toml",
+      "languages/python-lang-project-harness/uv.lock"
+    ],
+    "derivedPaths": [
+      "languages/python-lang-project-harness/.venv"
+    ],
+    "env": {}
+  }
+}

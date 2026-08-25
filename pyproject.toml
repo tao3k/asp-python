@@ -8,7 +8,7 @@ import-names = [
     "python_lang_parser",
     "python_lang_project_harness",
 ]
-dependencies = []
+dependencies = ["blake3>=1.0.8,<2"]
 
 [project.optional-dependencies]
 pytest = [
@@ -16,7 +16,7 @@ pytest = [
 ]
 
 [project.scripts]
-py-harness = "python_lang_project_harness:run_cli_from_env"
+asp-python = "python_lang_project_harness:run_cli_from_env"
 
 [project.entry-points.pytest11]
 python_lang_project_harness = "python_lang_project_harness.pytest_plugin"
@@ -38,13 +38,14 @@ packages = [
     "src/python_lang_project_harness",
 ]
 
+[tool.hatch.build.targets.wheel.force-include]
+"schemas/semantic-language-registry.v1.schema.json" = "python_lang_project_harness/schemas/semantic-language-registry.v1.schema.json"
+
 [tool.uv]
 package = true
 
 [tool.pytest.ini_options]
-addopts = [
-    "--python-project-harness",
-]
+pythonpath = ["src"]
 
 [[tool.python-lang-project-harness.verification.profile_hints]]
 owner_path = "pyproject.toml"

@@ -7,11 +7,17 @@ from typing import Any
 from . import _semantic_language_ids as ids
 from ._semantic_language_benchmark import python_search_benchmark_invocation
 from ._semantic_language_catalog import python_search_view_descriptors
+from ._semantic_language_invocation import attach_semantic_language_invocations
 from ._semantic_language_query import python_query_method_descriptors
 from ._semantic_language_schemas import python_semantic_language_schemas
+from ._semantic_provider_doctor import _provider_identity
+from ._semantic_query_pack import python_query_pack_descriptor
 
 _PYTHON_CHECK_METHODS = ("check/changed", "check/full")
-_PYTHON_QUERY_METHODS = ("query", "query/owner-items", "query/owner-local-projection")
+_PYTHON_QUERY_METHODS = (
+    "query",
+    "query/exact-selector-native-v1",
+)
 _PYTHON_AST_PATCH_METHODS = ("ast-patch/dry-run",)
 _PYTHON_EVIDENCE_METHODS = ("evidence/graph", "evidence/analyze")
 _PYTHON_AGENT_METHODS = ("agent/doctor", "agent/guide")
@@ -22,9 +28,7 @@ _PYTHON_SEARCH_VIEWS = tuple(
 _PYTHON_SEARCH_METHODS = tuple(f"search/{view}" for view in _PYTHON_SEARCH_VIEWS)
 
 
-def semantic_language_registry_document(
-    project_root: str | None = None,
-) -> dict[str, Any]:
+def semantic_language_registry_document() -> dict[str, Any]:
     """Return the provider registry document advertised by agent doctor."""
 
     payload: dict[str, Any] = {
@@ -34,18 +38,17 @@ def semantic_language_registry_document(
         "protocolVersion": ids.SEMANTIC_LANGUAGE_PROTOCOL_VERSION,
         "languages": [python_semantic_language_registration()],
     }
-    if project_root is not None:
-        payload["projectRoot"] = project_root
     return payload
 
 
 def python_semantic_language_registration() -> dict[str, Any]:
     """Return the Python semantic-language provider registration."""
 
+    identity = _provider_identity()
     return {
-        "languageId": ids.PYTHON_LANGUAGE_ID,
-        "providerId": ids.PYTHON_PROVIDER_ID,
-        "binary": ids.PYTHON_BINARY,
+        "languageId": identity["languageId"],
+        "providerId": identity["providerId"],
+        "binary": identity["binary"],
         "namespace": ids.PYTHON_PROVIDER_NAMESPACE,
         "displayName": "Python",
         "methods": [
@@ -58,6 +61,7 @@ def python_semantic_language_registration() -> dict[str, Any]:
         ],
         "methodDescriptors": python_semantic_language_method_descriptors(),
         "schemas": python_semantic_language_schemas(),
+        "queryPackDescriptor": python_query_pack_descriptor(),
     }
 
 
@@ -118,7 +122,9 @@ def python_semantic_language_method_descriptors() -> list[dict[str, Any]]:
             {
                 "method": "agent/doctor",
                 "command": "agent",
-                "outputSchemaIds": [ids.SEMANTIC_LANGUAGE_REGISTRY_ID],
+                "outputSchemaIds": [
+                    "agent.semantic-protocols.semantic-provider-doctor"
+                ],
                 "supportsJson": True,
                 "supportsCompact": True,
             },
@@ -130,7 +136,7 @@ def python_semantic_language_method_descriptors() -> list[dict[str, Any]]:
             },
         ]
     )
-    return descriptors
+    return attach_semantic_language_invocations(descriptors)
 
 
 def _python_search_method_descriptor(descriptor: dict[str, Any]) -> dict[str, Any]:
@@ -166,6 +172,22 @@ def _search_output_schema_ids(view: str) -> list[str]:
 
 
 def python_semantic_search_view_descriptor(view: str) -> dict[str, Any] | None:
+    if view == "dependency-topology":
+        return {
+            "method": "search/dependency-topology",
+            "command": "search",
+            "view": "dependency-topology",
+            "requiresQuery": False,
+            "acceptsStdin": False,
+            "supportsPackageScope": True,
+            "capabilities": [
+                {
+                    "languageId": "python",
+                    "namespace": "semantic",
+                    "name": "dependency-topology",
+                }
+            ],
+        }
     """Return the registry descriptor for one search view."""
 
     return next(

@@ -13,12 +13,9 @@ from ._cli_query_predicates import parse_asp_syntax_query_predicates
 from ._tree_sitter_query_predicates import SyntaxQueryPredicate
 
 QUERY_USAGE = (
-    "usage: py-harness query <owner-path> --term <symbol> "
-    "[--term <symbol>] [--workspace <workspace-root>] [--names-only] [--json] [--package PATH]; "
-    "or py-harness query --from-hook owner-local-projection --selector PATH:START:END "
-    "[--workspace <workspace-root>] [--source worktree|index|head] [--code]; "
-    "or py-harness query (--catalog ID | --treesitter-query EXPR) [<workspace-root>] [--workspace <workspace-root>] [--json]; "
-    "or py-harness query --catalog flow-lite --where 'source.call=NAME sink.constructs=TYPE scope.fn=FUNCTION' [<workspace-root>] [--json] [--workspace <workspace-root>]"
+    "usage: asp-python query (--catalog ID | --treesitter-query EXPR) "
+    "[<workspace-root>] [--workspace <workspace-root>] [--json]; "
+    "or asp-python query --catalog flow-lite --where 'source.call=NAME sink.constructs=TYPE scope.fn=FUNCTION' [<workspace-root>] [--json] [--workspace <workspace-root>]"
 )
 
 
@@ -32,12 +29,9 @@ class ProtocolArgError:
 @dataclass(slots=True)
 class QueryParseState:
     json_output: bool = False
-    names_only: bool = False
-    code_only: bool = False
     package_path: Path | None = None
     workspace: bool = False
     workspace_root: Path | None = None
-    from_hook: str | None = None
     selector: str | None = None
     catalog: str | None = None
     flow_lite_where: str | None = None
@@ -63,8 +57,8 @@ def consume_query_arg(
     arg = args[index]
     if arg in {"--term", "--query"}:
         return _consume_query_term(state, args, index, arg)
-    if arg in {"--names-only", "--code", "--json"}:
-        _set_query_flag(state, arg)
+    if arg == "--json":
+        state.json_output = True
         return index + 1
     if arg == "--workspace":
         value = _optional_arg(args, index + 1)
@@ -88,7 +82,6 @@ def consume_query_arg(
         state.render_mode = render_mode
         return index + 2
     if arg in {
-        "--from-hook",
         "--selector",
         "--package",
         "--catalog",
@@ -125,15 +118,6 @@ def _consume_query_term(
     return index + 2
 
 
-def _set_query_flag(state: QueryParseState, arg: str) -> None:
-    if arg == "--names-only":
-        state.names_only = True
-    elif arg == "--code":
-        state.code_only = True
-    else:
-        state.json_output = True
-
-
 def _consume_query_option(
     state: QueryParseState,
     args: list[str] | tuple[str, ...],
@@ -144,8 +128,6 @@ def _consume_query_option(
     if value is None:
         return ProtocolArgError(f"{arg} requires {_query_option_value_name(arg)}")
     match arg:
-        case "--from-hook":
-            state.from_hook = value
         case "--selector":
             state.selector = value
         case "--catalog":
@@ -179,7 +161,6 @@ def _consume_query_option(
 
 def _query_option_value_name(arg: str) -> str:
     return {
-        "--from-hook": "a hook reason",
         "--selector": "an owner path",
         "--package": "a package path",
         "--catalog": "a catalog id",

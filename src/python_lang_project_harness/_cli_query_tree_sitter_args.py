@@ -13,8 +13,6 @@ def is_tree_sitter_query_state(state: Any) -> bool:
 def tree_sitter_query_args_error(state: Any) -> str | None:
     if state.catalog is not None and state.tree_sitter_query is not None:
         return "query accepts only one of --catalog or --treesitter-query"
-    if state.from_hook is not None:
-        return "query --catalog/--treesitter-query cannot be combined with --from-hook"
     if state.workspace_root is not None and state.positionals:
         return (
             "query accepts either --workspace <workspace-root> or one positional "
@@ -22,10 +20,6 @@ def tree_sitter_query_args_error(state: Any) -> str | None:
         )
     if len(state.positionals) > 1:
         return "query accepts at most one positional WORKSPACE"
-    if state.names_only:
-        return "--names-only cannot be combined with --catalog or --treesitter-query"
-    if state.json_output and state.code_only:
-        return "--code cannot be combined with --json"
     if state.surfaces:
         return "query --surface is Rust ASP search-owned; Python query accepts tree-sitter projection only"
     if state.render_mode is not None:
@@ -48,7 +42,6 @@ def tree_sitter_query_protocol_args(args_type: type[Any], state: Any) -> Any:
         package_path=state.package_path,
         workspace=state.workspace or bool(state.positionals),
         json=state.json_output,
-        code_only=state.code_only,
     )
 
 

@@ -16,7 +16,7 @@ def test_cli_agent_doctor_advertises_reasoning_search(tmp_path: Path) -> None:
 
     assert run_cli(["agent", "doctor", "--json", str(tmp_path)], stdout=stdout) == 0
 
-    registration = json.loads(stdout.getvalue())["languages"][0]
+    registration = json.loads(stdout.getvalue())["registry"]["languages"][0]
     assert "search/reasoning" in registration["methods"]
     assert any(
         descriptor["method"] == "search/reasoning"

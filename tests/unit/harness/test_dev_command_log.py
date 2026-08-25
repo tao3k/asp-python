@@ -39,13 +39,18 @@ def test_dev_command_log_records_ordered_active_context_events(
     monkeypatch.delenv("SEMANTIC_PROTOCOL_PARENT_EVENT_ID", raising=False)
     monkeypatch.delenv("SEMANTIC_PROTOCOL_SESSION_ID", raising=False)
     monkeypatch.delenv("SEMANTIC_PROTOCOL_HOOK_RUN_ID", raising=False)
+    monkeypatch.delenv("CODEX_SESSION_ID", raising=False)
+    monkeypatch.delenv("CLAUDE_SESSION_ID", raising=False)
+    monkeypatch.delenv("TERM_SESSION_ID", raising=False)
+    monkeypatch.delenv("CODEX_HOOK_RUN_ID", raising=False)
+    monkeypatch.delenv("AGENT_HOOK_RUN_ID", raising=False)
 
     log = start_dev_command_log(
         ["search", "lexical", "metadata", str(project)], project
     )
     log.finish(0)
 
-    command_dir = trace / "python" / "py-harness" / "commands"
+    command_dir = trace / "python" / "asp-python" / "commands"
     entries = list(command_dir.glob("*.jsonl"))
     assert len(entries) == 1
     assert entries[0].name.startswith("20")
@@ -55,7 +60,7 @@ def test_dev_command_log_records_ordered_active_context_events(
     event = json.loads(entries[0].read_text(encoding="utf-8"))
     assert event["schemaId"] == "agent.semantic-protocols.dev-command-log"
     assert event["languageId"] == "python"
-    assert event["providerId"] == "py-harness"
+    assert event["providerId"] == "asp-python"
     assert event["sessionId"] == "session-py"
     assert event["sessionOrdinal"] == 1
     assert event["parentEventId"] == "hook-parent-py"

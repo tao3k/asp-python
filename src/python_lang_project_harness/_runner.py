@@ -82,7 +82,7 @@ def run_python_project_harness(
     )
     return replace(
         report,
-        project_scope=scope,
+        project_resolution=scope,
         findings=_configured_findings(
             compact_project_findings(report.findings, project_findings),
             config=selected_config,

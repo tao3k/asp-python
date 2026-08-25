@@ -86,7 +86,7 @@ work orders for the repair Agent, not immediate merge blockers.
 - `PY-AGENT-PROJECT-011`: projects that declare the harness as a test/dev dependency
   and expose parser-visible verification owners should configure
   `[tool.python-lang-project-harness.verification].profile_hints`. The finding
-  points the Agent to `py-harness --agent-snapshot`, whose compact
+  points the Agent to `asp-python --agent-snapshot`, whose compact
   `[verify-profile]` section is the config draft.
 
 ## Agent Advice Rules

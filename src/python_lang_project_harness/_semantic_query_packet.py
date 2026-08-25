@@ -126,7 +126,10 @@ def _routes_for_term(import_routes: list[Any], term: str) -> list[dict[str, str]
 
 
 def semantic_import_route_next(route: dict[str, str]) -> str:
-    return f"py-harness query {route['ownerPath']} --term {route['query']} --code ."
+    return (
+        "asp python search owner "
+        f"{route['ownerPath']} items --query {route['query']} --workspace . --view seeds"
+    )
 
 
 def _projected_code_from_rows(projection: dict[str, Any]) -> str:

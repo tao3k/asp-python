@@ -1,4 +1,4 @@
-"""Normalize py-harness argv for development command logging."""
+"""Normalize asp-python argv for development command logging."""
 
 from __future__ import annotations
 

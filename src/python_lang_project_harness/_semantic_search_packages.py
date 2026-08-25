@@ -58,12 +58,12 @@ def workspace_packages(
     for path in roots:
         shown = semantic_search_display_path(path, project_root)
         packages.append(_workspace_package(shown, name=Path(shown).name))
-    if len(packages) == 1 and report.project_scope is not None:
+    if len(packages) == 1 and report.project_resolution is not None:
         packages.extend(
             _workspace_package(
                 semantic_search_display_path(path, project_root), name=path.name
             )
-            for path in report.project_scope.source_paths
+            for path in report.project_resolution.source_paths
         )
     return _dedupe_packages(packages)[:MAX_WORKSPACE_PACKAGES]
 

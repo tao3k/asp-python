@@ -2,14 +2,11 @@
 
 from __future__ import annotations
 
-import re
-from collections.abc import Sequence
-
 from ._semantic_selector_identity import python_structural_selector_owner_path
 
 
 def normalize_query_surfaces(value: str | None) -> tuple[tuple[str, ...], str | None]:
-    """Normalize shared hook query surfaces into py-harness search pipes."""
+    """Normalize shared hook query surfaces into asp-python search pipes."""
     if value is None:
         return (), "--surface requires owner,tests style surfaces"
     surfaces = tuple(surface.strip() for surface in value.split(",") if surface.strip())
@@ -31,20 +28,11 @@ def normalize_query_view(value: str | None) -> tuple[str | None, str | None]:
             None,
             "--view metadata is document-only for asp md/org query; "
             "Python query uses search --view seeds for discovery and "
-            "query <owner-path> --term <symbol> --code or --names-only",
+            "exact query uses --selector with --projection source or callable-skeleton",
         )
     if value not in {"graph", "hits", "both", "seeds"}:
         return None, "--view requires graph, hits, both, or seeds"
     return value, None
-
-
-def is_broad_hook_query(
-    from_hook: str | None,
-    selector: str | None,
-    terms: Sequence[str],
-) -> bool:
-    """Return whether hook query args should fan into semantic search."""
-    return False
 
 
 def _selector_has_glob(selector: str) -> bool:
@@ -60,13 +48,4 @@ def owner_path_from_query_selector(selector: str | None) -> str | None:
     structural_owner_path = python_structural_selector_owner_path(selector)
     if structural_owner_path is not None:
         return structural_owner_path
-    return re.sub(r":[1-9][0-9]*(?:[:-][1-9][0-9]*)?$", "", normalized)
-
-
-def selector_has_line_range(selector: str | None) -> bool:
-    if selector is None:
-        return False
-    normalized = selector.replace("\\", "/").removeprefix("owner:")
-    if any(marker in normalized for marker in ("*", "{", "}")):
-        return False
-    return re.search(r":[1-9][0-9]*(?:[:-][1-9][0-9]*)?$", normalized) is not None
+    return None

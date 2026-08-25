@@ -8,4 +8,3 @@ expression: rendered
 |summary test_scattered.py is a pytest module directly under tests root.
 |repair move this pytest module under tests/unit/ or tests/integration/
 |hotBlock selector=tests/test_scattered.py:1:1 reason=blocking-finding
-|next action=owner-local-projection selector=tests/test_scattered.py:1:1 root=.

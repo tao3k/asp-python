@@ -120,12 +120,14 @@ def render_python_reasoning_tree(
         report.modules,
         import_roots=_reasoning_tree_import_roots(report),
         project_root=(
-            None if report.project_scope is None else report.project_scope.project_root
+            None
+            if report.project_resolution is None
+            else report.project_resolution.project_root
         ),
         project_metadata=(
             None
-            if report.project_scope is None
-            else report.project_scope.project_metadata
+            if report.project_resolution is None
+            else report.project_resolution.project_metadata
         ),
     )
     project_root = _report_project_root(report)
@@ -225,9 +227,6 @@ def _render_failure_frontier(
         selector = _failure_frontier_selector(finding, project_root=project_root)
         if selector is not None:
             lines.append(f"|hotBlock selector={selector} reason=blocking-finding")
-            lines.append(
-                f"|next action=owner-local-projection selector={selector} root=."
-            )
     if len(findings) > 3:
         lines.append(f"|more blockingFindings={len(findings) - 3}")
     return "\n".join(lines) + "\n"
@@ -300,17 +299,17 @@ def _format_software_criterion(criterion_id: str) -> str:
 
 
 def _reasoning_tree_import_roots(report: PythonHarnessReport) -> tuple[Path | str, ...]:
-    if report.project_scope is None:
+    if report.project_resolution is None:
         return report.root_paths
-    if report.project_scope.source_paths:
-        return report.project_scope.source_paths
-    return report.project_scope.monitored_paths
+    if report.project_resolution.source_paths:
+        return report.project_resolution.source_paths
+    return report.project_resolution.monitored_paths
 
 
 def _report_project_root(report: PythonHarnessReport) -> Path | None:
-    if report.project_scope is None:
+    if report.project_resolution is None:
         return None
-    return report.project_scope.project_root
+    return report.project_resolution.project_root
 
 
 def _render_reasoning_tree_node(

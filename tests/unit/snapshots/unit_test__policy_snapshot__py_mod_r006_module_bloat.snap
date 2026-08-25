@@ -8,4 +8,3 @@ expression: rendered
 |summary feature.py has 261 effective lines, 60 top-level items, 2 responsibility groups, 60 public surface items, 0 long functions, and max function span 2 lines.
 |repair split this module into focused ownership seams
 |hotBlock selector=src/feature.py:1:1 reason=blocking-finding
-|next action=owner-local-projection selector=src/feature.py:1:1 root=.

@@ -18,6 +18,12 @@ def run_cli_from_env() -> int:
     args = sys.argv[1:]
     log = start_dev_command_log(args, Path.cwd())
     try:
+        if args == ["serve"]:
+            from ._runtime import serve_provider_runtime
+
+            exit_code = serve_provider_runtime(Path.cwd())
+            log.finish(exit_code)
+            return exit_code
         stdin = "" if sys.stdin.isatty() else sys.stdin.read()
         exit_code = run_cli(args, stdin=stdin)
         log.finish(exit_code)
@@ -32,7 +38,7 @@ def run_cli(
     *,
     stdout: TextIO | None = None,
     stderr: TextIO | None = None,
-    stdin: str | None = None,
+    stdin: str | bytes | None = None,
     cwd: Path | None = None,
 ) -> int:
     """Run the default package-level Python harness CLI."""

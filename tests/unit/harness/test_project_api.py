@@ -70,8 +70,8 @@ def test_run_python_project_harness_uses_project_paths(tmp_path: Path) -> None:
     assert report.is_clean
     assert report.file_count == 2
     assert report.root_paths == (str(tmp_path),)
-    assert report.project_scope is not None
-    assert report.to_dict()["project_scope"] == {
+    assert report.project_resolution is not None
+    assert report.to_dict()["project_resolution"] == {
         "project_root": str(tmp_path),
         "project_metadata": None,
         "project_paths": [str(tmp_path)],
@@ -125,9 +125,9 @@ def test_run_python_project_harness_can_exclude_tests_from_scope(
 
     assert report.is_clean
     assert [module.path for module in report.modules] == [str(src / "library.py")]
-    assert report.project_scope is not None
-    assert report.project_scope.test_paths == (tests.parent,)
-    assert report.project_scope.monitored_paths == (src,)
+    assert report.project_resolution is not None
+    assert report.project_resolution.test_paths == (tests.parent,)
+    assert report.project_resolution.monitored_paths == (src,)
 
 
 def test_run_python_project_harness_does_not_fallback_into_excluded_tests(
@@ -144,8 +144,8 @@ def test_run_python_project_harness_does_not_fallback_into_excluded_tests(
 
     assert report.is_clean
     assert [module.path for module in report.modules] == [str(package / "__init__.py")]
-    assert report.project_scope is not None
-    assert report.project_scope.project_paths == (package,)
+    assert report.project_resolution is not None
+    assert report.project_resolution.project_paths == (package,)
 
 
 def test_include_tests_false_skips_test_parsing_not_layout_policy(
@@ -165,8 +165,8 @@ def test_include_tests_false_skips_test_parsing_not_layout_policy(
 
     assert report.file_count == 1
     assert [finding.rule_id for finding in report.findings] == ["PY-TEST-R001"]
-    assert report.project_scope is not None
-    assert report.project_scope.monitored_paths == (src,)
+    assert report.project_resolution is not None
+    assert report.project_resolution.monitored_paths == (src,)
 
 
 def test_assert_python_project_harness_clean_blocks_for_pytest(tmp_path: Path) -> None:

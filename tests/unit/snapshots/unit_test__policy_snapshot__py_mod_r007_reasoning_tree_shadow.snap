@@ -8,4 +8,3 @@ expression: rendered
 |summary $TEMP/src/pkg/domain.py and $TEMP/src/pkg/domain/__init__.py both define Python import owner 'pkg.domain'.
 |repair choose one source owner for this package branch
 |hotBlock selector=src/pkg/domain/__init__.py:1:1 reason=blocking-finding
-|next action=owner-local-projection selector=src/pkg/domain/__init__.py:1:1 root=.

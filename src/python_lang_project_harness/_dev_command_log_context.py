@@ -165,7 +165,7 @@ def read_active_context(
 
 
 def allocate_session_ordinal(log_root: Path, session_id: str) -> int:
-    directory = log_root / "python" / "py-harness" / "sessions"
+    directory = log_root / "python" / "asp-python" / "sessions"
     counter_path = directory / f"{sanitize_file_component(session_id)}.counter"
     lock_path = directory / f"{sanitize_file_component(session_id)}.lock"
     try:

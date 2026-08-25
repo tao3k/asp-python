@@ -8,4 +8,3 @@ expression: rendered
 |summary pkg exposes public Python surface without a py.typed marker.
 |repair add py.typed to this package root
 |hotBlock selector=src/pkg:1:1 reason=blocking-finding
-|next action=owner-local-projection selector=src/pkg:1:1 root=.

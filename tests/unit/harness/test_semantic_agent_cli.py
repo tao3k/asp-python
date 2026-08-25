@@ -22,7 +22,7 @@ def test_cli_agent_install_reports_root_asp_owner(
 
     assert exit_code == 2
     assert stdout.getvalue() == ""
-    assert "py-harness agent install moved to asp" in stderr.getvalue()
+    assert "asp-python agent install moved to asp" in stderr.getvalue()
     assert "asp hook install --client codex" in stderr.getvalue()
 
 
@@ -41,5 +41,5 @@ def test_cli_agent_hook_reports_root_asp_owner(
 
     assert exit_code == 2
     assert stdout.getvalue() == ""
-    assert "py-harness agent hook moved to asp" in stderr.getvalue()
+    assert "asp-python agent hook moved to asp" in stderr.getvalue()
     assert "asp hook <event> --client codex" in stderr.getvalue()

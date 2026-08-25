@@ -26,13 +26,29 @@ def test_compact_graph_profiles_filter_to_rendered_aliases() -> None:
     os.environ["SEMANTIC_AGENT_PROTOCOL_BIN"] = str(workspace_renderer)
 
     packet: dict[str, Any] = {
+        "schemaId": "agent.semantic-protocols.semantic-search-packet",
+        "schemaVersion": "1",
+        "protocolId": "agent.semantic-protocols.search",
+        "protocolVersion": "1",
+        "languageId": "python",
+        "providerId": "asp-python",
+        "binary": "asp-python",
+        "namespace": "agent.semantic-protocols.languages.python.asp-python",
+        "method": "search/owner",
+        "projectRoot": ".",
+        "view": "seeds",
+        "renderMode": "compact",
         "header": {"kind": "search-owner", "fields": {}},
+        "nodes": [],
+        "edges": [],
         "nextActions": [
             {"kind": "owner", "target": "src/pkg/service.py"},
             {"kind": "tests", "target": "tests/test_service.py"},
         ],
         "owners": [],
         "hits": [],
+        "findings": [],
+        "notes": [],
         "searchSynthesis": {"algorithm": "seed-frontier"},
         "reasoningProfiles": [
             {

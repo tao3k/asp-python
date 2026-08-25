@@ -460,9 +460,9 @@ function orderedHeaderFields(kind, headerFields, query, algorithm) {
   if (kind === "search-lexical" || kind === "search-query") {
     const leading = {
       ...(query === undefined ? {} : { q: query }),
-      ...(headerFields.view === undefined ? {} : { view: headerFields.view }),
       ...(headerFields.querySet === undefined ? {} : { querySet: headerFields.querySet }),
       ...(headerFields.selector === undefined ? {} : { selector: headerFields.selector }),
+      ...(headerFields.view === undefined ? {} : { view: headerFields.view }),
       ...(algorithm === undefined ? {} : { alg: algorithm }),
     };
     return {

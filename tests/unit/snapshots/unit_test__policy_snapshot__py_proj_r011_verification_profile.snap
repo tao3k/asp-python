@@ -7,4 +7,4 @@ expression: rendered
   --> pyproject.toml:1:1
    1 | [project]
      | `- configure parser-backed verification profile hints
-     | Required: Configure `[tool.python-lang-project-harness.verification].profile_hints` from parser-suggested owners, or run `py-harness --agent-snapshot` to copy the compact `[verify-profile]` hints.
+     | Required: Configure `[tool.python-lang-project-harness.verification].profile_hints` from parser-suggested owners, or run `asp-python --agent-snapshot` to copy the compact `[verify-profile]` hints.

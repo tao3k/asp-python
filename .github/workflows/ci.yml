@@ -49,10 +49,10 @@ jobs:
         run: uv run --group test pytest tests -q
 
       - name: Self harness
-        run: uv run --group test py-harness .
+        run: uv run --group test asp-python .
 
       - name: Agent snapshot
-        run: uv run --group test py-harness --agent-snapshot .
+        run: uv run --group test asp-python --agent-snapshot .
 
       - name: Build package
         run: uv build

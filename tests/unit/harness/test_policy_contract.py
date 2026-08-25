@@ -246,8 +246,8 @@ def test_project_is_clean_under_its_own_harness() -> None:
     rendered = render_python_lang_harness(report)
 
     assert report.is_clean, rendered
-    assert rendered.startswith("[ok]")
-    assert "Files:" in rendered
+    assert "[fail]" not in rendered
+    assert "[advice]" in rendered
 
 
 def _all_default_rule_ids() -> tuple[str, ...]:

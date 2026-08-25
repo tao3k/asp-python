@@ -84,7 +84,7 @@ test_python_project_harness_policy = python_project_harness_test()
 ```
 
 The helper defaults to `Path(".")` and returns a pytest-collectable callable.
-Callers can pass the same project-scope options used by the library runner:
+Callers can pass the same project-resolution options used by the library runner:
 
 ```python
 from python_lang_parser import PythonDiagnosticSeverity

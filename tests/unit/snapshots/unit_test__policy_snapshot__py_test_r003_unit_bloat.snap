@@ -8,4 +8,3 @@ expression: rendered
 |summary test_large_policy.py has 330 effective lines across 10 test functions.
 |repair split this large unit test leaf into focused pytest modules
 |hotBlock selector=tests/unit/test_large_policy.py:1:1 reason=blocking-finding
-|next action=owner-local-projection selector=tests/unit/test_large_policy.py:1:1 root=.

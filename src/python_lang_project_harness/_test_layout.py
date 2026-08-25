@@ -44,9 +44,11 @@ class PythonTestLayoutRulePack:
     def evaluate_project(self, project_root: Path) -> Iterable[PythonHarnessFinding]:
         """Evaluate project-level pytest layout rules."""
 
-        return self.evaluate_project_scope(python_project_harness_scope(project_root))
+        return self.evaluate_project_resolution(
+            python_project_harness_scope(project_root)
+        )
 
-    def evaluate_project_scope(
+    def evaluate_project_resolution(
         self,
         scope: PythonProjectHarnessScope,
     ) -> Iterable[PythonHarnessFinding]:

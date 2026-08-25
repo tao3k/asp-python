@@ -34,7 +34,7 @@ def render_semantic_graph_facts(
         "protocolId": "agent.semantic-protocols.semantic-language",
         "protocolVersion": "1",
         "languageId": "python",
-        "providerId": "py-harness",
+        "providerId": "asp-python",
         "projectRoot": project_root.as_posix(),
         "query": args.query or "",
         "nodes": [*field_payload["nodes"], *project_payload["nodes"]],
@@ -52,7 +52,6 @@ def _supports_semantic_graph_facts(args: ProtocolArgs) -> bool:
         args.command == "search"
         and args.view == "semantic-facts"
         and args.json
-        and not args.code_only
         and args.query is not None
     )
 

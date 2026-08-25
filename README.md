@@ -86,20 +86,20 @@ The semantic-language console script exposes search, registry, and check
 surfaces aligned with the Rust and TypeScript harnesses:
 
 ```shell
-py-harness search workspace .
-py-harness search prime .
-py-harness search lexical PythonHarnessReport owner tests .
-py-harness search lexical --query-set PythonHarnessReport --query-set PythonSemanticSearchOptions owner tests .
-py-harness search public-external-types pytest .
-py-harness search callsite PythonHarnessReport .
-py-harness search deps pytest .
-py-harness agent doctor --json .
-py-harness agent guide .
-py-harness check --full .
-py-harness .
-py-harness --json .
-py-harness --agent-snapshot .
-py-harness --source-dir lib --extra-path tools --no-tests .
+asp-python search workspace .
+asp-python search prime .
+asp-python search lexical PythonHarnessReport owner tests .
+asp-python search lexical --query-set PythonHarnessReport --query-set PythonSemanticSearchOptions owner tests .
+asp-python search public-external-types pytest .
+asp-python search callsite PythonHarnessReport .
+asp-python search deps pytest .
+asp-python agent doctor --json .
+asp-python agent guide .
+asp-python check --full .
+asp-python .
+asp-python --json .
+asp-python --agent-snapshot .
+asp-python --source-dir lib --extra-path tools --no-tests .
 python -m python_lang_project_harness .
 ```
 

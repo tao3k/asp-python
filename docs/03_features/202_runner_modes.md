@@ -28,7 +28,7 @@ and produce CLI exit code `2`.
 
 ## Configuration
 
-`PythonHarnessConfig` owns project-scope classification and parser inclusion:
+`PythonHarnessConfig` owns project-resolution classification and parser inclusion:
 
 ```python
 from python_lang_project_harness import PythonHarnessConfig
@@ -116,7 +116,7 @@ opts out of project-local config loading for that call.
 
 Use `run_python_lang_harness()` or `assert_python_lang_harness_clean()` for
 explicit files or directories. Requested paths must exist. This runner does not
-attach a project scope, so project-scope evaluators stay quiet. File-local rule
+attach a project scope, so project-resolution evaluators stay quiet. File-local rule
 packs can still run when they only need parser facts.
 
 The explicit-path runner is useful for editor integrations, focused parser

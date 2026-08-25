@@ -21,7 +21,6 @@ class ParsedSemanticSearchArgs:
     query_set: tuple[str, ...] = ()
     pipes: tuple[str, ...] = ()
     json: bool = False
-    code_only: bool = False
     render_mode: str | None = None
     error: str | None = None
 
@@ -32,7 +31,6 @@ class _SearchOptionState:
     query_set: list[str] = field(default_factory=list)
     item_query: str | None = None
     json: bool = False
-    code_only: bool = False
     render_mode: str | None = None
     package_path: Path | None = None
     workspace: bool = False
@@ -76,9 +74,9 @@ def _search_view_descriptor(
 
 def _semantic_search_usage() -> str:
     return (
-        "usage: py-harness search "
+        "usage: asp-python search "
         "<workspace|prime|owner|dependency|deps|api|public-external-types|policy|symbol|callsite|import|tests|lexical|reasoning|env|runtime-source|lang|std|capability|extension|pattern|compare|text|ingest|semantic-facts> "
-        "... [--json] [--code] [--package PATH] [--workspace <workspace-root>]; "
+        "... [--json] [--package PATH] [--workspace <workspace-root>]; "
         "dependency/deps are manifest-first, import-usage backed, and cache hashes not raw source"
     )
 
@@ -91,10 +89,6 @@ def _validate_search_option_state(
         return f"search {view} does not support repeated --query"
     if state.item_query is not None and view not in {"owner", "reasoning"}:
         return "--query is only supported by search owner items"
-    if state.code_only and state.json:
-        return "--code cannot be combined with --json"
-    if state.code_only and not (view == "owner" and state.item_query is not None):
-        return "--code requires search owner <path> items --query <symbol>"
     if state.owner_path is not None and view not in {"lexical", "reasoning"}:
         return "--owner is only supported by search lexical or reasoning"
     if state.dependency is not None and view != "reasoning":
@@ -148,8 +142,6 @@ def _consume_search_option(
     match arg:
         case "--json":
             state.json = True
-        case "--code":
-            state.code_only = True
         case "--view":
             value = _optional_arg(args, index + 1)
             if value not in {"graph", "hits", "both", "seeds"}:
@@ -241,7 +233,6 @@ def _required_query_args(
         workspace=state.workspace,
         pipes=tuple(pipes),
         json=state.json,
-        code_only=state.code_only,
         render_mode=state.render_mode,
     )
 
@@ -267,7 +258,6 @@ def _required_term_query_args(
         package_path=state.package_path,
         workspace=state.workspace,
         json=state.json,
-        code_only=state.code_only,
         render_mode=state.render_mode,
     )
 
@@ -307,7 +297,6 @@ def _project_only_args(
         workspace=state.workspace,
         pipes=tuple(pipes),
         json=state.json,
-        code_only=state.code_only,
         render_mode=state.render_mode,
     )
 
@@ -350,7 +339,6 @@ def _optional_query_args(
             query_set=tuple(state.query_set),
             pipes=tuple(pipes),
             json=state.json,
-            code_only=state.code_only,
             render_mode=state.render_mode,
         )
     project_root = (
@@ -363,7 +351,6 @@ def _optional_query_args(
         package_path=state.package_path,
         workspace=state.workspace,
         json=state.json,
-        code_only=state.code_only,
         render_mode=state.render_mode,
     )
 
@@ -422,18 +409,8 @@ def _is_flag_like_literal_search_query(
         and not positionals
         and not query_set
         and arg.startswith("-")
-        and arg
-        not in {
-            "--view",
-            "--package",
-            "--workspace",
-            "--owner",
-            "--dependency",
-            "--query",
-            "--code",
-            "--help",
-            "-h",
-        }
+        and not arg.startswith("--")
+        and arg != "-h"
     )
 
 

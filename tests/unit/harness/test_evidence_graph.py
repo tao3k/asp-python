@@ -27,7 +27,7 @@ def test_cli_evidence_graph_renders_json_contract(tmp_path: Path) -> None:
     assert payload["schemaId"] == "agent.semantic-protocols.semantic-evidence-graph"
     assert payload["protocolId"] == "agent.semantic-protocols.evidence-graph"
     assert payload["producer"]["languageId"] == "python"
-    assert payload["producer"]["providerId"] == "py-harness"
+    assert payload["producer"]["providerId"] == "asp-python"
     assert payload["project"]["package"] == "evidence-fixture"
     assert payload["summary"] == {
         "nodes": 4,
@@ -39,7 +39,7 @@ def test_cli_evidence_graph_renders_json_contract(tmp_path: Path) -> None:
     }
     assert any(node["kind"] == "owner" for node in payload["nodes"])
     assert any(edge["kind"] == "requires-evidence" for edge in payload["edges"])
-    assert payload["gaps"][0]["fields"]["nextCommand"] == "py-harness check --full ."
+    assert payload["gaps"][0]["fields"]["nextCommand"] == "asp-python check --full ."
 
 
 def test_cli_evidence_analyze_renders_graph_turbo_request(tmp_path: Path) -> None:
@@ -86,7 +86,7 @@ def test_agent_registry_advertises_evidence_methods(tmp_path: Path) -> None:
 
     assert exit_code == 0
     registry = json.loads(stdout.getvalue())
-    language = registry["languages"][0]
+    language = registry["registry"]["languages"][0]
     assert "evidence/graph" in language["methods"]
     assert "evidence/analyze" in language["methods"]
     analyze = next(

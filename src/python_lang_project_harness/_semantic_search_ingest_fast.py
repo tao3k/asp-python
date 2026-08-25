@@ -36,7 +36,6 @@ def _supports_fast_empty_ingest(args: ProtocolArgs, stdin: str) -> bool:
         and args.view == "ingest"
         and args.render_mode == "seeds"
         and not args.json
-        and not args.code_only
         and stdin == ""
         and args.query is None
         and args.item_query is None

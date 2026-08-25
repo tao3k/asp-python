@@ -53,7 +53,6 @@ def _supports_fast_prime_search(args: ProtocolArgs) -> bool:
         and args.view == "prime"
         and args.render_mode == "seeds"
         and not args.json
-        and not args.code_only
         and args.query is None
         and args.item_query is None
         and args.owner_path is None

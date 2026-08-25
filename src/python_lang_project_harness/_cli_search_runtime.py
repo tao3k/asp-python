@@ -32,20 +32,6 @@ _QUERY_PREFILTER_VIEWS = frozenset(
 )
 
 
-def _render_search_code_only(packet: dict[str, object]) -> str:
-    items = packet.get("items", ())
-    if not isinstance(items, list):
-        return "\n"
-    code = "\n".join(
-        str(fields["code"])
-        for item in items
-        if isinstance(item, dict)
-        and isinstance(fields := item.get("fields"), dict)
-        and isinstance(fields.get("code"), str)
-    )
-    return f"{code}\n" if code else "\n"
-
-
 def _run_search_harness(
     project_root: Path,
     args: ProtocolArgs,
@@ -153,7 +139,7 @@ def _run_exact_owner_items_search(
 
     return _TextSearchReport(
         modules=(parse_python_file(owner_path),),
-        project_scope=_fast_owner_items_scope(project_root, owner_path),
+        project_resolution=_fast_owner_items_scope(project_root, owner_path),
         root_paths=(str(owner_path),),
     )
 
@@ -170,7 +156,7 @@ def _run_exact_owner_search(
     paths = _exact_owner_related_paths(project_root, owner_path)
     return _TextSearchReport(
         modules=tuple(parse_python_file(path) for path in paths),
-        project_scope=_fast_text_search_scope(project_root),
+        project_resolution=_fast_text_search_scope(project_root),
         root_paths=tuple(str(path) for path in paths),
     )
 
@@ -190,7 +176,7 @@ def _run_metadata_dependency_search(
 
     return _TextSearchReport(
         modules=(),
-        project_scope=_TextSearchScope(
+        project_resolution=_TextSearchScope(
             project_root=project_root,
             project_metadata=read_python_project_metadata(project_root),
             fallback_paths=(project_root,),
@@ -208,7 +194,7 @@ def _run_metadata_only_search(
 
     return _TextSearchReport(
         modules=(),
-        project_scope=_TextSearchScope(
+        project_resolution=_TextSearchScope(
             project_root=project_root,
             project_metadata=read_python_project_metadata(project_root),
             fallback_paths=(project_root,),
@@ -230,7 +216,7 @@ def _run_workspace_seed_metadata_search(
 
     return _TextSearchReport(
         modules=(),
-        project_scope=_TextSearchScope(
+        project_resolution=_TextSearchScope(
             project_root=project_root,
             project_metadata=read_python_project_metadata(project_root),
             fallback_paths=(project_root,),
@@ -330,7 +316,7 @@ def _exact_owner_related_paths(
 @dataclass(frozen=True, slots=True)
 class _TextSearchReport:
     modules: tuple[object, ...]
-    project_scope: _TextSearchScope
+    project_resolution: _TextSearchScope
     findings: tuple[object, ...] = ()
     root_paths: tuple[str, ...] = ()
 
@@ -364,7 +350,7 @@ def _run_prefiltered_text_search(
 
     return _TextSearchReport(
         modules=tuple(parse_python_file(path) for path in paths),
-        project_scope=_fast_text_search_scope(project_root),
+        project_resolution=_fast_text_search_scope(project_root),
         root_paths=tuple(str(path) for path in paths),
     )
 

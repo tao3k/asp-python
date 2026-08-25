@@ -11,7 +11,7 @@ from ._cli_agent import (
     render_agent_guide,
 )
 from ._cli_args import ProtocolArgs, help_text
-from ._cli_search_runtime import _render_search_code_only, _run_search_harness
+from ._cli_search_runtime import _run_search_harness
 
 
 def run_protocol_cli(
@@ -19,7 +19,7 @@ def run_protocol_cli(
     *,
     stdout: TextIO,
     stderr: TextIO,
-    stdin: str,
+    stdin: str | bytes,
     cwd: Path,
 ) -> int:
     if args.command == "error":
@@ -28,7 +28,6 @@ def run_protocol_cli(
     if args.command == "help":
         stdout.write(help_text())
         return 0
-
     project_root = _resolve_project_root(args, cwd)
     if args.command == "agent":
         return _run_agent_command(args, project_root=project_root, stdout=stdout)
@@ -156,6 +155,10 @@ def _render_fast_protocol_command(
     project_root: Path,
     stdin: str,
 ) -> str | None:
+    if args.command == "search" and args.view == "dependency-topology":
+        from ._dependency_topology import render_dependency_topology_packet
+
+        return render_dependency_topology_packet(project_root)
     from ._semantic_graph_facts import render_semantic_graph_facts
     from ._semantic_search_ingest_fast import render_fast_empty_ingest_search
     from ._semantic_search_lexical_fast import render_fast_lexical_seed_search
@@ -267,12 +270,9 @@ def _run_search_command(
             runtime_cost=runtime_cost,
         ),
     )
-    if args.code_only:
-        stdout.write(_render_search_code_only(packet))
-    else:
-        stdout.write(
-            render_python_semantic_search_packet_json(packet)
-            if args.json
-            else render_python_semantic_search_packet(packet)
-        )
+    stdout.write(
+        render_python_semantic_search_packet_json(packet)
+        if args.json
+        else render_python_semantic_search_packet(packet)
+    )
     return 0

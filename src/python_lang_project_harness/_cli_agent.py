@@ -2,7 +2,10 @@
 
 from __future__ import annotations
 
+import json
 from pathlib import Path
+
+from ._semantic_provider_doctor import semantic_provider_doctor_document
 
 
 def render_agent_guide(project_root: Path) -> str:
@@ -12,12 +15,11 @@ def render_agent_guide(project_root: Path) -> str:
     return (
         "\n".join(
             (
-                f"[py-harness-guide] project={project}",
+                f"[asp-python-guide] project={project}",
                 (
                     "|catalog reasoningProfiles=owner-query,query-deps,owner-tests,"
                     "finding-frontier,feature-cfg entries=owner-query,query-deps,"
-                    "owner-tests routes=read-frontier,syntax-locate,syntax-code,"
-                    "query-code"
+                    "owner-tests routes=syntax-locate,exact-source,callable-skeleton"
                 ),
                 "|routing evidence-state prime=owner-map-only pipe=ambiguous-query "
                 "owner=known-owner selector=exact-parser-id deps=known-dependency "
@@ -29,23 +31,8 @@ def render_agent_guide(project_root: Path) -> str:
                     f"'(function_definition name: (identifier) @function.name)' "
                     f"--selector <owner-path-or-structural-scope> {workspace}"
                 ),
-                (
-                    f"|route syntax-code selectors=S:tree-sitter-query,R:exact-selector "
-                    f"returns=code code=pure cmd=asp python query --treesitter-query "
-                    f"'(function_definition name: (identifier) @function.name)' "
-                    f"--selector <exact-structural-selector> {workspace} --code"
-                ),
-                (
-                    f"|route read-plan selectors=R:selector,T:term "
-                    f"returns=owners,tests,window-set code=false cmd=asp python "
-                    f"query --from-hook owner-local-projection --selector <selector> "
-                    f"--term <term> --surface owners,tests {workspace} --view seeds"
-                ),
-                (
-                    f"|route query-code selectors=O:owner,Q:symbol returns=code "
-                    f"code=pure cmd=asp python query <owner-path> --term <symbol> "
-                    f"{workspace} --code"
-                ),
+                f"|route exact-source selectors=R:exact-selector returns=source cmd=asp python query --selector <exact-structural-selector> --projection source {workspace}",
+                f"|route callable-skeleton selectors=R:exact-callable-selector returns=callable-skeleton cmd=asp python query --selector <exact-structural-selector> --projection callable-skeleton {workspace}",
                 f"|cmd prime=asp python search prime {root} --view seeds condition=owner-map-unknown",
                 f"|cmd pipe=asp python search pipe <query> {root} --view seeds condition=ambiguous-query",
                 f"|cmd owner=asp python search owner <owner-path> {root} --view seeds",
@@ -63,31 +50,17 @@ def render_agent_guide(project_root: Path) -> str:
                     f"query-deps --query <symbol> --dependency <pkg> "
                     f"{root} --view seeds"
                 ),
-                f"|cmd names=asp python query <owner-path> --term <symbol> {workspace} --names-only",
-                f"|cmd query-code=asp python query <owner-path> --term <symbol> {workspace} --code",
                 f"|cmd catalog-json=asp python query --catalog declarations --json {root}",
                 (
                     f"|cmd syntax-locate=asp python query --treesitter-query "
                     f"'(function_definition name: (identifier) @function.name)' "
                     f"--selector <owner-path-or-structural-scope> {workspace}"
                 ),
-                (
-                    f"|cmd syntax-code=asp python query --treesitter-query "
-                    f"'(function_definition name: (identifier) @function.name)' "
-                    f"--selector <exact-structural-selector> {workspace} --code"
-                ),
-                (
-                    f"|cmd owner-items-code=asp python search owner <owner-path> items "
-                    f"--query <symbol|a|b> {workspace} --code"
-                ),
+                f"|cmd exact-source=asp python query --selector <exact-structural-selector> --projection source {workspace}",
+                f"|cmd callable-skeleton=asp python query --selector <exact-structural-selector> --projection callable-skeleton {workspace}",
                 (
                     f"|cmd policy=asp python search policy <rule-id-or-alias> "
                     f"owner tests {root} --view seeds"
-                ),
-                (
-                    f"|cmd read-plan=asp python query --from-hook owner-local-projection "
-                    f"--selector <selector> --term <term> --surface owners,tests "
-                    f"{workspace} --view seeds"
                 ),
                 f"|cmd lexical=asp python search lexical <query> owner tests {root} --view seeds",
                 "|cmd ast-patch=asp python ast-patch dry-run --packet <semantic-ast-patch.json|->",
@@ -118,19 +91,12 @@ def render_agent_guide(project_root: Path) -> str:
                     "#match?,#any-match?,#not-eq?,#not-match? "
                     "unsupported=none unsupportedReported=true"
                 ),
-                (
-                    "|rule query --code is pure code; search/read-plan returns "
-                    "locators/frontier, not inline code"
-                ),
+                "|rule exact query requires a parser-owned selector and an explicit source or callable-skeleton projection",
                 (
                     "|rule displayLineRange/sourceLocatorHint are display hints; "
                     "execute structural selectors or owner/symbol routes, not line ranges"
                 ),
-                (
-                    "|rule --view metadata is document-only for asp md/org query; "
-                    "Python code query uses search --view seeds for discovery and "
-                    "query <owner-path> --term <symbol> --code|--names-only"
-                ),
+                "|rule Python discovery uses search --view seeds; query only materializes an exact structural selector",
                 (
                     "|rule provider-knowledge-axes env/lang/std/pattern/runtime-source "
                     "return facts or explicit frontier gaps; do not fill missing "
@@ -173,13 +139,9 @@ def render_agent_doctor(project_root: Path) -> str:
 
 
 def render_agent_doctor_json(project_root: Path) -> str:
-    import json
-
-    from ._semantic_language import semantic_language_registry_document
-
     return (
         json.dumps(
-            semantic_language_registry_document(str(project_root)),
+            semantic_provider_doctor_document(),
             separators=(",", ":"),
         )
         + "\n"

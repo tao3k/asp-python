@@ -13,7 +13,7 @@ from ._semantic_graph_fact_render_fields import (
 )
 
 LANGUAGE_ID = "python"
-PROVIDER_ID = "py-harness"
+PROVIDER_ID = "asp-python"
 
 
 def graph_payload(

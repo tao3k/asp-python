@@ -24,20 +24,30 @@ def parse_python_project_metadata(
 
     root = Path(project_root)
     pyproject_path = root / "pyproject.toml"
-    payload = _read_pyproject_payload(pyproject_path)
-    if payload is None:
+    try:
+        payload = parse_python_pyproject_document(pyproject_path)
+    except PythonPyprojectParseError:
         return None
     return _metadata_from_payload(root, pyproject_path, payload)
 
 
-def _read_pyproject_payload(pyproject_path: Path) -> dict[str, Any] | None:
-    if not pyproject_path.exists():
-        return None
+class PythonPyprojectParseError(ValueError):
+    """Raised when a pyproject document cannot be parsed by the Python parser."""
 
+
+def parse_python_pyproject_document(path: str | Path) -> dict[str, Any]:
+    """Return the complete pyproject document or raise a parser-owned error."""
+    pyproject_path = Path(path)
+    if not pyproject_path.is_file():
+        raise PythonPyprojectParseError(
+            f"Python pyproject document is missing: {pyproject_path}"
+        )
     try:
         return tomllib.loads(pyproject_path.read_text(encoding="utf-8"))
-    except (OSError, tomllib.TOMLDecodeError, UnicodeDecodeError):
-        return None
+    except (OSError, tomllib.TOMLDecodeError, UnicodeDecodeError) as error:
+        raise PythonPyprojectParseError(
+            f"failed to parse Python pyproject document `{pyproject_path}`: {error}"
+        ) from error
 
 
 def _metadata_from_payload(
