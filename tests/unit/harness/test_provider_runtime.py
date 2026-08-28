@@ -4,8 +4,10 @@ from __future__ import annotations
 
 import http.client
 import json
+import shutil
 import subprocess
-import sys
+from concurrent.futures import ThreadPoolExecutor
+from concurrent.futures import TimeoutError as FutureTimeoutError
 from pathlib import Path
 from urllib.parse import urlsplit
 
@@ -20,6 +22,28 @@ from provider_runtime_live_support import (
 )
 
 from python_lang_project_harness._runtime import _health, _response_frame
+
+
+def _read_bootstrap(process: subprocess.Popen[str]) -> dict[str, object]:
+    assert process.stdout is not None
+    assert process.stderr is not None
+    with ThreadPoolExecutor(max_workers=1) as executor:
+        line = executor.submit(process.stdout.readline)
+        try:
+            bootstrap_line = line.result(timeout=2)
+        except FutureTimeoutError as error:
+            process.kill()
+            _, stderr = process.communicate(timeout=2)
+            raise AssertionError(
+                f"Python provider exceeded the 2s bootstrap deadline: stderr={stderr!r}"
+            ) from error
+    if bootstrap_line:
+        return json.loads(bootstrap_line)
+    status = process.wait(timeout=2)
+    stderr = process.stderr.read()
+    raise AssertionError(
+        f"Python provider exited before bootstrap: status={status} stderr={stderr!r}"
+    )
 
 
 def test_resident_runtime_publishes_manifest_operations_and_structured_frames(
@@ -47,8 +71,10 @@ def test_resident_runtime_publishes_manifest_operations_and_structured_frames(
 
 
 def test_http_json_live_corpus_stream_query_concurrency_and_latency() -> None:
+    provider = shutil.which("asp-python")
+    assert provider is not None, "uv project environment omitted asp-python"
     process = subprocess.Popen(
-        [sys.executable, "-m", "python_lang_project_harness", "serve"],
+        [provider, "serve"],
         cwd=Path(__file__).parents[3],
         env=environment(),
         stdin=subprocess.DEVNULL,
@@ -56,8 +82,7 @@ def test_http_json_live_corpus_stream_query_concurrency_and_latency() -> None:
         stderr=subprocess.PIPE,
         text=True,
     )
-    assert process.stdout is not None
-    bootstrap = json.loads(process.stdout.readline())
+    bootstrap = _read_bootstrap(process)
     assert (
         bootstrap["schemaId"] == "agent.semantic-protocols.asp-client-server-bootstrap"
     )

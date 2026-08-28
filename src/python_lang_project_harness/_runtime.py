@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import json
 import os
 from pathlib import Path
 from typing import Any
@@ -9,23 +10,31 @@ from typing import Any
 _REQUEST_SCHEMA_ID = "agent.semantic-protocols.provider-runtime-request-frame"
 _RESPONSE_SCHEMA_ID = "agent.semantic-protocols.provider-runtime-response-frame"
 _HEALTH_SCHEMA_ID = "agent.semantic-protocols.provider-runtime-contract-receipt"
-_OPERATIONS = [
-    {
-        "operation": "projection-batch",
-        "requestSchemaId": "https://schemas.agent-semantic-protocols.dev/provider-language-projection-batch-request.schema.json",
-        "responseSchemaId": "https://schemas.agent-semantic-protocols.dev/provider-language-projection-batch-response.schema.json",
-    },
-    {
-        "operation": "project-resolution",
-        "requestSchemaId": "https://schemas.agent-semantic-protocols.dev/provider-project-resolution-request.schema.json",
-        "responseSchemaId": "https://schemas.agent-semantic-protocols.dev/provider-project-resolution-response.schema.json",
-    },
-    {
-        "operation": "query",
-        "requestSchemaId": "https://agent-semantic-protocols.dev/schemas/provider-native-exact-request.v1.schema.json",
-        "responseSchemaId": "https://agent-semantic-protocols.dev/schemas/provider-native-exact-response.v1.schema.json",
-    },
-]
+
+
+def _project_projection(payload: dict[str, Any], _cwd: Path) -> dict[str, Any]:
+    from ._projection_batch import project_projection_batch
+
+    return project_projection_batch(payload)
+
+
+def _resolve_project(payload: dict[str, Any], cwd: Path) -> dict[str, Any]:
+    from ._project_resolution import resolve_project_resolution_request
+
+    return resolve_project_resolution_request(payload, cwd=cwd)
+
+
+def _query_exact_source(payload: dict[str, Any], cwd: Path) -> dict[str, Any]:
+    from ._exact_source_projection import project_provider_native_exact_request
+
+    return project_provider_native_exact_request(payload, cwd=cwd)
+
+
+_OPERATION_HANDLERS = {
+    "projection-batch": _project_projection,
+    "project-resolution": _resolve_project,
+    "query": _query_exact_source,
+}
 
 
 def _required_env(name: str) -> str:
@@ -33,6 +42,28 @@ def _required_env(name: str) -> str:
     if not value:
         raise RuntimeError(f"resident Python provider omitted {name}")
     return value
+
+
+def _runtime_operations() -> list[dict[str, str]]:
+    name = "ASP_PROVIDER_RUNTIME_OPERATIONS_JSON"
+    try:
+        operations = json.loads(_required_env(name))
+    except json.JSONDecodeError as error:
+        raise RuntimeError(
+            f"resident Python provider received invalid {name}"
+        ) from error
+    if not isinstance(operations, list) or not all(
+        isinstance(operation, dict) for operation in operations
+    ):
+        raise RuntimeError(f"resident Python provider received invalid {name}")
+    operation_names = {operation.get("operation") for operation in operations}
+    if operation_names != set(_OPERATION_HANDLERS) or len(operations) != len(
+        operation_names
+    ):
+        raise RuntimeError(
+            "resident Python provider runtime operations do not match supported handlers"
+        )
+    return operations
 
 
 def _health() -> dict[str, Any]:
@@ -45,26 +76,17 @@ def _health() -> dict[str, Any]:
         "registrationDigest": _required_env("ASP_PROVIDER_REGISTRATION_DIGEST"),
         "contractDigest": _required_env("ASP_PROVIDER_RUNTIME_CONTRACT_DIGEST"),
         "transport": "http-json",
-        "operations": _OPERATIONS,
+        "operations": _runtime_operations(),
     }
 
 
 def _execute(operation: str, payload: dict[str, Any], cwd: Path) -> dict[str, Any]:
-    if operation == "projection-batch":
-        from ._projection_batch import project_projection_batch
-
-        return project_projection_batch(payload)
-    if operation == "project-resolution":
-        from ._project_resolution import resolve_project_resolution_request
-
-        return resolve_project_resolution_request(payload, cwd=cwd)
-    if operation == "query":
-        from ._exact_source_projection import project_provider_native_exact_request
-
-        return project_provider_native_exact_request(payload, cwd=cwd)
-    raise RuntimeError(
-        f"resident Python provider operation is not admitted: {operation}"
-    )
+    handler = _OPERATION_HANDLERS.get(operation)
+    if handler is None:
+        raise RuntimeError(
+            f"resident Python provider operation is not admitted: {operation}"
+        )
+    return handler(payload, cwd)
 
 
 def _response_frame(request: dict[str, Any], cwd: Path) -> dict[str, Any]:

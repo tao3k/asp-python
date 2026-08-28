@@ -20,6 +20,26 @@ def environment() -> dict[str, str]:
         "ASP_PROVIDER_ARTIFACT_DIGEST": "blake3-256:" + "a" * 64,
         "ASP_PROVIDER_REGISTRATION_DIGEST": "sha256:" + "b" * 64,
         "ASP_PROVIDER_RUNTIME_CONTRACT_DIGEST": "blake3-256:" + "c" * 64,
+        "ASP_PROVIDER_RUNTIME_OPERATIONS_JSON": json.dumps(
+            [
+                {
+                    "operation": "projection-batch",
+                    "requestSchemaId": "schema:projection-request",
+                    "responseSchemaId": "schema:projection-response",
+                },
+                {
+                    "operation": "project-resolution",
+                    "requestSchemaId": "schema:resolution-request",
+                    "responseSchemaId": "schema:resolution-response",
+                },
+                {
+                    "operation": "query",
+                    "requestSchemaId": "schema:query-request",
+                    "responseSchemaId": "schema:query-response",
+                },
+            ],
+            separators=(",", ":"),
+        ),
         "ASP_PROVIDER_ID": "asp-python",
         "ASP_PROVIDER_LANGUAGE_ID": "python",
         "ASP_CLIENT_SERVER_HOST": "127.0.0.1:0",

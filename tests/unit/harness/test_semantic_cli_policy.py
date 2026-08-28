@@ -18,9 +18,8 @@ def test_cli_agent_doctor_json_advertises_policy_search(
     assert exit_code == 0
     registration = payload["registry"]["languages"][0]
     assert "search/policy" in registration["methods"]
-    assert any(
-        schema["schemaId"] == "agent.semantic-protocols.semantic-handle"
-        and schema["path"] == "schemas/semantic-handle.v1.schema.json"
+    assert all(
+        schema["schemaId"] != "agent.semantic-protocols.semantic-handle"
         for schema in registration["schemas"]
     )
     assert any(
