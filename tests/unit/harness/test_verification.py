@@ -3,7 +3,7 @@ from __future__ import annotations
 import json
 from typing import TYPE_CHECKING
 
-from python_lang_project_harness import (
+from asp_python import (
     PythonOwnerResponsibility,
     PythonVerificationDependencySignal,
     PythonVerificationPhase,
@@ -19,8 +19,8 @@ from python_lang_project_harness import (
     build_python_verification_report_bundle,
     default_python_harness_config,
     plan_python_project_verification_with_config,
-    read_python_project_harness_config,
-    render_python_project_harness_agent_snapshot_with_config,
+    read_asp_python_config,
+    render_asp_python_agent_snapshot_with_config,
     render_python_verification_plan,
     render_python_verification_profile_index,
     render_python_verification_profile_index_json,
@@ -192,7 +192,7 @@ def test_verification_policy_can_be_loaded_from_pyproject_config(
     _write_public_api_project(
         tmp_path,
         harness_config="""
-[tool.python-lang-project-harness.verification]
+[tool.asp-python.verification]
 profile_hints = [
   { owner_path = "src/pkg/api.py", responsibilities = ["public_api"], task_kinds = ["security"], rationale = "authz-sensitive public API" },
 ]
@@ -200,18 +200,18 @@ dependency_signals = [
   { package_name = "httpx", responsibilities = ["network"], task_kinds = ["stress"] },
 ]
 
-[tool.python-lang-project-harness.verification.task_contracts]
+[tool.asp-python.verification.task_contracts]
 security = { phase = "before_release", summary = "security skill must report authz evidence", requirements = [{ label = "authz", detail = "tenant authorization result" }] }
 
-[tool.python-lang-project-harness.verification.skill_bindings]
+[tool.asp-python.verification.skill_bindings]
 security = { skill = "python-security-review", adapter = "bandit" }
 
-[tool.python-lang-project-harness.verification.skill_descriptors]
+[tool.asp-python.verification.skill_descriptors]
 python-security-review = { task_kind = "security", adapter = "bandit", summary = "run bandit plus tenant authz probes", requirements = [{ label = "bandit", detail = "bandit report artifact" }] }
 """,
     )
 
-    config = read_python_project_harness_config(tmp_path)
+    config = read_asp_python_config(tmp_path)
 
     assert config is not None
     assert config.verification_policy.profile_hints[0].owner_path == "src/pkg/api.py"
@@ -309,7 +309,7 @@ def test_agent_snapshot_includes_active_verification_tasks(
         .with_rationale("this public API needs a security review")
     )
 
-    rendered = render_python_project_harness_agent_snapshot_with_config(
+    rendered = render_asp_python_agent_snapshot_with_config(
         tmp_path,
         config,
     )

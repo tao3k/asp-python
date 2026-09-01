@@ -2,14 +2,14 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from python_lang_parser import PythonDiagnosticSeverity, SourceLocation
-from python_lang_project_harness import (
-    PythonHarnessConfig,
-    PythonHarnessFinding,
+from asp_python import (
+    AspPythonConfig,
+    AspPythonFinding,
     assert_python_lang_harness_clean,
     render_python_lang_harness,
     run_python_lang_harness,
 )
+from python_lang_parser import PythonDiagnosticSeverity, SourceLocation
 
 if TYPE_CHECKING:
     from pathlib import Path
@@ -136,7 +136,7 @@ def test_assert_python_lang_harness_clean_honors_configured_blocking_severities(
 ) -> None:
     source = tmp_path / "module.py"
     source.write_text("VALUE = 1\n", encoding="utf-8")
-    config = PythonHarnessConfig(
+    config = AspPythonConfig(
         blocking_severities=frozenset({PythonDiagnosticSeverity.ERROR}),
         rule_packs=(_WarningRulePack(),),
     )
@@ -154,7 +154,7 @@ def test_assert_python_lang_harness_clean_honors_severities_override(
 ) -> None:
     source = tmp_path / "module.py"
     source.write_text("VALUE = 1\n", encoding="utf-8")
-    config = PythonHarnessConfig(
+    config = AspPythonConfig(
         blocking_severities=frozenset({PythonDiagnosticSeverity.ERROR}),
         rule_packs=(_WarningRulePack(),),
     )
@@ -177,9 +177,9 @@ def test_assert_python_lang_harness_clean_honors_severities_override(
 class _WarningRulePack:
     pack_id = "test.warning"
 
-    def evaluate(self, report: PythonModuleReport) -> tuple[PythonHarnessFinding, ...]:
+    def evaluate(self, report: PythonModuleReport) -> tuple[AspPythonFinding, ...]:
         return (
-            PythonHarnessFinding(
+            AspPythonFinding(
                 rule_id="python.project.warning",
                 pack_id=self.pack_id,
                 severity=PythonDiagnosticSeverity.WARNING,

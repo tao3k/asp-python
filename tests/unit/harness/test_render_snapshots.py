@@ -4,6 +4,14 @@ from pathlib import Path
 
 from snapshot_support import assert_snapshot
 
+from asp_python import (
+    AspPythonFinding,
+    AspPythonReport,
+    PythonProjectHarnessScope,
+    render_python_lang_harness,
+    render_python_lang_harness_json,
+    render_python_reasoning_tree,
+)
 from python_lang_parser import (
     PythonDiagnosticSeverity,
     PythonModuleReport,
@@ -14,26 +22,18 @@ from python_lang_parser import (
     SourceLocation,
     parse_python_source,
 )
-from python_lang_project_harness import (
-    PythonHarnessFinding,
-    PythonHarnessReport,
-    PythonProjectHarnessScope,
-    render_python_lang_harness,
-    render_python_lang_harness_json,
-    render_python_reasoning_tree,
-)
 
 
 def test_compact_text_render_matches_snapshot() -> None:
     rendered = render_python_lang_harness(_snapshot_report())
 
-    assert_snapshot("python_project_harness_compact_text", rendered)
+    assert_snapshot("asp_python_compact_text", rendered)
 
 
 def test_json_render_matches_snapshot() -> None:
     rendered = render_python_lang_harness_json(_snapshot_report())
 
-    assert_snapshot("python_project_harness_json", rendered)
+    assert_snapshot("asp_python_json", rendered)
 
 
 def test_reasoning_tree_render_matches_snapshot() -> None:
@@ -46,7 +46,7 @@ def test_reasoning_tree_render_uses_project_relative_paths(tmp_path: Path) -> No
     src = tmp_path / "src"
     package = src / "pkg"
     package.mkdir(parents=True)
-    report = PythonHarnessReport(
+    report = AspPythonReport(
         modules=(
             parse_python_source(
                 '"""Package docs."""\n\nVALUE = 1\n',
@@ -95,10 +95,10 @@ def test_compact_text_render_uses_project_relative_finding_paths(
 ) -> None:
     src = tmp_path / "src"
     src.mkdir()
-    report = PythonHarnessReport(
+    report = AspPythonReport(
         modules=(),
         findings=(
-            PythonHarnessFinding(
+            AspPythonFinding(
                 rule_id="PY-MOD-R002",
                 pack_id="python.modern_design",
                 severity=PythonDiagnosticSeverity.WARNING,
@@ -125,9 +125,9 @@ def test_compact_text_render_uses_project_relative_finding_paths(
     assert "path=src/library.py line=3 column=5" in rendered
 
 
-def _snapshot_report() -> PythonHarnessReport:
+def _snapshot_report() -> AspPythonReport:
     source_path = "$TEMP/src/service.py"
-    return PythonHarnessReport(
+    return AspPythonReport(
         modules=(
             PythonModuleReport(
                 path=source_path,
@@ -135,7 +135,7 @@ def _snapshot_report() -> PythonHarnessReport:
             ),
         ),
         findings=(
-            PythonHarnessFinding(
+            AspPythonFinding(
                 rule_id="PY-MOD-R002",
                 pack_id="python.modern_design",
                 severity=PythonDiagnosticSeverity.WARNING,
@@ -155,10 +155,10 @@ def _snapshot_report() -> PythonHarnessReport:
     )
 
 
-def _reasoning_tree_snapshot_report() -> PythonHarnessReport:
+def _reasoning_tree_snapshot_report() -> AspPythonReport:
     root = Path("$TEMP")
     src = root / "src"
-    return PythonHarnessReport(
+    return AspPythonReport(
         modules=(
             parse_python_source(
                 '"""Domain package owner."""\n\nfrom .service import build\n\n__all__ = ("build",)\n',

@@ -103,7 +103,7 @@ class PythonPytestOptions:
     addopts: tuple[str, ...] = ()
 
     @property
-    def enables_python_project_harness(self) -> bool:
+    def enables_asp_python(self) -> bool:
         """Return whether pytest addopts mounts the project harness plugin."""
 
         return "--python-project-harness" in self.addopts
@@ -113,7 +113,7 @@ class PythonPytestOptions:
 
         return {
             "addopts": list(self.addopts),
-            "enables_python_project_harness": self.enables_python_project_harness,
+            "enables_asp_python": self.enables_asp_python,
         }
 
 

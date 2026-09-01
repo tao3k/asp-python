@@ -11,7 +11,7 @@ _PROJECT_ROOT = next(
 
 def test_harness_policy_does_not_parse_python_source_directly() -> None:
     harness_sources = sorted(
-        (_PROJECT_ROOT / "src" / "python_lang_project_harness").glob("*_policy*.py")
+        (_PROJECT_ROOT / "src" / "asp_python").glob("*_policy*.py")
     )
 
     for path in harness_sources:
@@ -23,9 +23,7 @@ def test_harness_policy_does_not_parse_python_source_directly() -> None:
 
 
 def test_harness_semantic_roles_use_parser_symbol_helpers() -> None:
-    harness_sources = sorted(
-        (_PROJECT_ROOT / "src" / "python_lang_project_harness").rglob("*.py")
-    )
+    harness_sources = sorted((_PROJECT_ROOT / "src" / "asp_python").rglob("*.py"))
     for path in harness_sources:
         if path.name == "__init__.py":
             continue
@@ -33,22 +31,16 @@ def test_harness_semantic_roles_use_parser_symbol_helpers() -> None:
         assert "PythonSymbolKind" not in source, path
 
     test_bloat = (
-        _PROJECT_ROOT / "src" / "python_lang_project_harness" / "_test_layout_bloat.py"
+        _PROJECT_ROOT / "src" / "asp_python" / "_test_layout_bloat.py"
     ).read_text(encoding="utf-8")
     agent_policy = (
-        _PROJECT_ROOT / "src" / "python_lang_project_harness" / "_agent_policy.py"
+        _PROJECT_ROOT / "src" / "asp_python" / "_agent_policy.py"
     ).read_text(encoding="utf-8")
     typed_policy = (
-        _PROJECT_ROOT
-        / "src"
-        / "python_lang_project_harness"
-        / "_project_policy_typed.py"
+        _PROJECT_ROOT / "src" / "asp_python" / "_project_policy_typed.py"
     ).read_text(encoding="utf-8")
     namespace_index = (
-        _PROJECT_ROOT
-        / "src"
-        / "python_lang_project_harness"
-        / "_agent_namespace_index.py"
+        _PROJECT_ROOT / "src" / "asp_python" / "_agent_namespace_index.py"
     ).read_text(encoding="utf-8")
 
     assert "python_symbol_is_test_function(" in test_bloat
@@ -70,9 +62,9 @@ def test_harness_semantic_roles_use_parser_symbol_helpers() -> None:
 
 
 def test_agent_namespace_policy_uses_parser_module_identity_helpers() -> None:
-    source = (
-        _PROJECT_ROOT / "src" / "python_lang_project_harness" / "_agent_namespace.py"
-    ).read_text(encoding="utf-8")
+    source = (_PROJECT_ROOT / "src" / "asp_python" / "_agent_namespace.py").read_text(
+        encoding="utf-8"
+    )
 
     assert "python_module_namespace_parts(" in source
     assert "relative_to(" not in source
@@ -81,13 +73,10 @@ def test_agent_namespace_policy_uses_parser_module_identity_helpers() -> None:
 
 def test_python_semantic_policy_uses_parser_name_helpers() -> None:
     typed_policy = (
-        _PROJECT_ROOT
-        / "src"
-        / "python_lang_project_harness"
-        / "_project_policy_typed.py"
+        _PROJECT_ROOT / "src" / "asp_python" / "_project_policy_typed.py"
     ).read_text(encoding="utf-8")
     modern_design = (
-        _PROJECT_ROOT / "src" / "python_lang_project_harness" / "_modern_design.py"
+        _PROJECT_ROOT / "src" / "asp_python" / "_modern_design.py"
     ).read_text(encoding="utf-8")
 
     assert "python_symbol_is_public_class(" in typed_policy
@@ -97,14 +86,11 @@ def test_python_semantic_policy_uses_parser_name_helpers() -> None:
 
 
 def test_test_layout_python_source_lines_use_parser_reports() -> None:
-    layout = (
-        _PROJECT_ROOT / "src" / "python_lang_project_harness" / "_test_layout.py"
-    ).read_text(encoding="utf-8")
+    layout = (_PROJECT_ROOT / "src" / "asp_python" / "_test_layout.py").read_text(
+        encoding="utf-8"
+    )
     entries = (
-        _PROJECT_ROOT
-        / "src"
-        / "python_lang_project_harness"
-        / "_test_layout_entries.py"
+        _PROJECT_ROOT / "src" / "asp_python" / "_test_layout_entries.py"
     ).read_text(encoding="utf-8")
 
     assert "tests_root_entry_findings(tests_dir, pack_id, modules)" in layout
@@ -113,9 +99,7 @@ def test_test_layout_python_source_lines_use_parser_reports() -> None:
 
 
 def test_harness_pyproject_metadata_comes_from_parser_boundary() -> None:
-    harness_sources = sorted(
-        (_PROJECT_ROOT / "src" / "python_lang_project_harness").rglob("*.py")
-    )
+    harness_sources = sorted((_PROJECT_ROOT / "src" / "asp_python").rglob("*.py"))
 
     for path in harness_sources:
         if path.name in {
@@ -130,9 +114,7 @@ def test_harness_pyproject_metadata_comes_from_parser_boundary() -> None:
 
 
 def test_agent_readability_policy_consumes_parser_function_facts() -> None:
-    readability_root = (
-        _PROJECT_ROOT / "src" / "python_lang_project_harness" / "agent_readability"
-    )
+    readability_root = _PROJECT_ROOT / "src" / "asp_python" / "agent_readability"
 
     for path in sorted(readability_root.glob("*.py")):
         source = path.read_text(encoding="utf-8")

@@ -5,7 +5,7 @@ from __future__ import annotations
 import io
 import json
 
-from python_lang_project_harness import run_cli
+from asp_python import run_cli
 
 
 def test_search_semantic_facts_emits_field_type_collection_graph(tmp_path):

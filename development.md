@@ -24,7 +24,7 @@ agent snapshot, and `git diff --check`.
 This repo is a standalone Python library project. It ships:
 
 - `python_lang_parser` for Python-native parser facts
-- `python_lang_project_harness` for discovery, rule packs, rendering,
+- `asp_python` for discovery, rule packs, rendering,
   and pytest embedding
 
 Keep these boundaries separate. Parser modules should not know about project
@@ -57,7 +57,7 @@ Rendered output and policy diagnostics are locked under `tests/unit/snapshots`.
 Normal tests compare snapshots only. Refresh them intentionally:
 
 ```shell
-PYTHON_HARNESS_UPDATE_SNAPSHOTS=1 direnv exec . uv run --group test pytest \
+ASP_PYTHON_UPDATE_SNAPSHOTS=1 direnv exec . uv run --group test pytest \
   tests/unit/harness/test_render_snapshots.py \
   tests/unit/harness/test_agent_policy_snapshots.py \
   tests/unit/harness/test_policy_snapshots.py -q

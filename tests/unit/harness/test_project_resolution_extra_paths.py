@@ -2,13 +2,13 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from python_lang_project_harness import run_python_project_harness
+from asp_python import run_asp_python
 
 if TYPE_CHECKING:
     from pathlib import Path
 
 
-def test_run_python_project_harness_can_include_extra_project_paths(
+def test_run_asp_python_can_include_extra_project_paths(
     tmp_path: Path,
 ) -> None:
     src = tmp_path / "src"
@@ -24,8 +24,8 @@ def test_run_python_project_harness_can_include_extra_project_paths(
     tool.write_text('"""Tool docs."""\n', encoding="utf-8")
     (shared / "shared.py").write_text('"""Shared docs."""\n', encoding="utf-8")
 
-    default_report = run_python_project_harness(tmp_path)
-    report = run_python_project_harness(
+    default_report = run_asp_python(tmp_path)
+    report = run_asp_python(
         tmp_path,
         extra_path_names=("../shared_tools",),
     )

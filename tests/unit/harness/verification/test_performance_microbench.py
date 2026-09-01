@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from python_lang_project_harness import (
+from asp_python import (
     PythonOwnerResponsibility,
     PythonVerificationEvidence,
     PythonVerificationProfileHint,

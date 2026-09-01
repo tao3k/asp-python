@@ -9,7 +9,7 @@ from pathlib import Path
 
 from semantic_search_fixture import write_search_fixture
 
-from python_lang_project_harness import run_cli
+from asp_python import run_cli
 
 OWNER_ITEMS_WARM_PATH_GATE_MS = 100.0
 OWNER_WARM_PATH_GATE_MS = 100.0
@@ -26,9 +26,9 @@ def test_cli_search_owner_items_query_uses_exact_owner_fast_path(
     def fail_full_harness(*_args: object, **_kwargs: object) -> object:
         raise AssertionError("owner-items should not run the full Python harness")
 
-    from python_lang_project_harness import _runner
+    from asp_python import _runner
 
-    monkeypatch.setattr(_runner, "run_python_project_harness", fail_full_harness)
+    monkeypatch.setattr(_runner, "run_asp_python", fail_full_harness)
 
     exit_code = run_cli(
         [
@@ -95,9 +95,9 @@ def test_cli_search_owner_path_uses_exact_owner_fast_path(
     def fail_full_harness(*_args: object, **_kwargs: object) -> object:
         raise AssertionError("owner path search should not run the full Python harness")
 
-    from python_lang_project_harness import _runner
+    from asp_python import _runner
 
-    monkeypatch.setattr(_runner, "run_python_project_harness", fail_full_harness)
+    monkeypatch.setattr(_runner, "run_asp_python", fail_full_harness)
 
     exit_code = run_cli(
         [
@@ -158,7 +158,7 @@ def test_cli_search_owner_seed_view_uses_text_fast_path(
     def fail_full_harness(*_args: object, **_kwargs: object) -> object:
         raise AssertionError("owner seed view should not run the full Python harness")
 
-    from python_lang_project_harness import _cli_protocol
+    from asp_python import _cli_protocol
 
     monkeypatch.setattr(_cli_protocol, "_run_search_harness", fail_full_harness)
 
@@ -195,9 +195,9 @@ def test_cli_search_dependency_uses_metadata_fast_path(
     def fail_full_harness(*_args: object, **_kwargs: object) -> object:
         raise AssertionError("dependency search should not run the full Python harness")
 
-    from python_lang_project_harness import _runner
+    from asp_python import _runner
 
-    monkeypatch.setattr(_runner, "run_python_project_harness", fail_full_harness)
+    monkeypatch.setattr(_runner, "run_asp_python", fail_full_harness)
 
     exit_code = run_cli(
         [

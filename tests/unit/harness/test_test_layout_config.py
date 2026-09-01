@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from python_lang_project_harness import run_python_project_harness
+from asp_python import run_asp_python
 
 if TYPE_CHECKING:
     from pathlib import Path
@@ -28,7 +28,7 @@ allowed_root_files = [
 ]
 """,
     )
-    report = run_python_project_harness(tmp_path)
+    report = run_asp_python(tmp_path)
     assert [finding.rule_id for finding in report.findings] == ["PY-TEST-R001"]
 
     _write_policy(
@@ -40,7 +40,7 @@ allowed_root_files = [
 ]
 """,
     )
-    report = run_python_project_harness(tmp_path)
+    report = run_asp_python(tmp_path)
     assert not any(finding.rule_id == "PY-TEST-R001" for finding in report.findings)
 
 
@@ -64,7 +64,7 @@ allowed_directories = [
 ]
 """,
     )
-    report = run_python_project_harness(tmp_path)
+    report = run_asp_python(tmp_path)
     assert [finding.rule_id for finding in report.findings] == ["PY-TEST-R002"]
 
     _write_policy(
@@ -76,7 +76,7 @@ allowed_directories = [
 ]
 """,
     )
-    report = run_python_project_harness(tmp_path)
+    report = run_asp_python(tmp_path)
     assert not any(finding.rule_id == "PY-TEST-R002" for finding in report.findings)
 
 

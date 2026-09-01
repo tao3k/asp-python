@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from python_lang_project_harness._projection_batch import project_projection_batch
+from asp_python._projection_batch import project_projection_batch
 
 
 def test_projection_batch_projects_canonical_python_items() -> None:

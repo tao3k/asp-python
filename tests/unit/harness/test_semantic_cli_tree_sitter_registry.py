@@ -6,7 +6,7 @@ import io
 import json
 from pathlib import Path
 
-from python_lang_project_harness import run_cli
+from asp_python import run_cli
 
 
 def test_agent_doctor_advertises_tree_sitter_query_descriptor(

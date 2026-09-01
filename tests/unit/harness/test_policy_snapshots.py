@@ -5,9 +5,9 @@ from typing import TYPE_CHECKING
 
 from snapshot_support import assert_snapshot, normalize_temp_root
 
-from python_lang_project_harness import (
+from asp_python import (
     render_python_lang_harness,
-    run_python_project_harness,
+    run_asp_python,
 )
 
 if TYPE_CHECKING:
@@ -261,7 +261,7 @@ requires-python = ">=3.12"
 
 [dependency-groups]
 test = [
-    "python-lang-project-harness[pytest]>=0.1.0",
+    "asp-python[pytest]>=0.1.0",
 ]
 """.lstrip(),
         encoding="utf-8",
@@ -291,7 +291,7 @@ requires-python = ">=3.12"
 
 [dependency-groups]
 test = [
-    "python-lang-project-harness[pytest]>=0.1.0",
+    "asp-python[pytest]>=0.1.0",
 ]
 
 [tool.pytest.ini_options]
@@ -334,7 +334,7 @@ def test_py_test_r003_unit_bloat_snapshot(tmp_path: Path) -> None:
 
 
 def _assert_project_snapshot(root: Path, rule_id: str, snapshot_name: str) -> None:
-    report = run_python_project_harness(root)
+    report = run_asp_python(root)
     findings = tuple(
         finding for finding in report.findings if finding.rule_id == rule_id
     )

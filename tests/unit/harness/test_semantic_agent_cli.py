@@ -5,7 +5,7 @@ from __future__ import annotations
 import io
 from pathlib import Path
 
-from python_lang_project_harness import run_cli
+from asp_python import run_cli
 
 
 def test_cli_agent_install_reports_root_asp_owner(

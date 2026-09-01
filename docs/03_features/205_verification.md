@@ -13,7 +13,7 @@ project facts to produce external obligations that an Agent skill can satisfy
 with receipts or complete waivers.
 
 ```python
-from python_lang_project_harness import (
+from asp_python import (
     PythonOwnerResponsibility,
     PythonVerificationProfileHint,
     PythonVerificationTaskKind,
@@ -73,21 +73,21 @@ can patch the policy from the profile index without reparsing `pyproject.toml`.
 The verification policy supports profile hints, dependency signals, receipts,
 waivers, responsibility task-kind mappings, task contracts, skill bindings, and
 skill descriptors through `PythonVerificationPolicy` or
-`[tool.python-lang-project-harness.verification]`.
+`[tool.asp-python.verification]`.
 
 ```toml
-[tool.python-lang-project-harness.verification]
+[tool.asp-python.verification]
 profile_hints = [
   { owner_path = "src/pkg/api.py", responsibilities = ["public_api"], task_kinds = ["security"], rationale = "authz-sensitive public API" },
 ]
 
-[tool.python-lang-project-harness.verification.task_contracts]
+[tool.asp-python.verification.task_contracts]
 security = { phase = "before_release", summary = "security skill must report authz evidence", requirements = [{ label = "authz", detail = "tenant authorization result" }] }
 
-[tool.python-lang-project-harness.verification.skill_bindings]
+[tool.asp-python.verification.skill_bindings]
 security = { skill = "python-security-review", adapter = "bandit" }
 
-[tool.python-lang-project-harness.verification.skill_descriptors]
+[tool.asp-python.verification.skill_descriptors]
 python-security-review = { task_kind = "security", adapter = "bandit", summary = "run bandit plus tenant authz probes", requirements = [{ label = "bandit", detail = "bandit report artifact" }] }
 ```
 

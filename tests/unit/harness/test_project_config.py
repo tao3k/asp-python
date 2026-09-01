@@ -2,19 +2,19 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+from asp_python import read_asp_python_config
 from python_lang_parser import PythonDiagnosticSeverity
-from python_lang_project_harness import read_python_project_harness_config
 
 if TYPE_CHECKING:
     from pathlib import Path
 
 
-def test_read_python_project_harness_config_from_pyproject(
+def test_read_asp_python_config_from_pyproject(
     tmp_path: Path,
 ) -> None:
     (tmp_path / "pyproject.toml").write_text(
         """
-[tool.python-lang-project-harness]
+[tool.asp-python]
 include_tests = false
 source_dir_names = ["lib"]
 test_dir_names = ["checks"]
@@ -27,7 +27,7 @@ blocking_severities = ["error"]
         encoding="utf-8",
     )
 
-    config = read_python_project_harness_config(tmp_path)
+    config = read_asp_python_config(tmp_path)
 
     assert config is not None
     assert config.include_tests is False
@@ -40,7 +40,7 @@ blocking_severities = ["error"]
     assert config.blocking_severities == frozenset({PythonDiagnosticSeverity.ERROR})
 
 
-def test_read_python_project_harness_config_returns_none_without_table(
+def test_read_asp_python_config_returns_none_without_table(
     tmp_path: Path,
 ) -> None:
     (tmp_path / "pyproject.toml").write_text(
@@ -51,22 +51,22 @@ addopts = ["--import-mode=importlib"]
         encoding="utf-8",
     )
 
-    assert read_python_project_harness_config(tmp_path) is None
+    assert read_asp_python_config(tmp_path) is None
 
 
-def test_read_python_project_harness_config_rejects_invalid_values(
+def test_read_asp_python_config_rejects_invalid_values(
     tmp_path: Path,
 ) -> None:
     (tmp_path / "pyproject.toml").write_text(
         """
-[tool.python-lang-project-harness]
+[tool.asp-python]
 blocking_severities = ["critical"]
 """.lstrip(),
         encoding="utf-8",
     )
 
     try:
-        read_python_project_harness_config(tmp_path)
+        read_asp_python_config(tmp_path)
     except ValueError as error:
         assert "unknown severity: critical" in str(error)
     else:

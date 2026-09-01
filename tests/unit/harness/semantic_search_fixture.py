@@ -8,7 +8,7 @@ from pathlib import Path
 
 import pytest
 
-from python_lang_project_harness._semantic_search_graph_render import (
+from asp_python._semantic_search_graph_render import (
     SEMANTIC_AGENT_PROTOCOL_BIN_ENV,
 )
 

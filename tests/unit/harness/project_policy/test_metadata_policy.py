@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from python_lang_project_harness import run_python_project_harness
+from asp_python import run_asp_python
 
 if TYPE_CHECKING:
     from pathlib import Path
@@ -21,7 +21,7 @@ build-backend = "hatchling.build"
 """,
     )
 
-    report = run_python_project_harness(tmp_path)
+    report = run_asp_python(tmp_path)
 
     assert [
         (finding.rule_id, finding.location.path) for finding in report.findings
@@ -45,7 +45,7 @@ build-backend = "hatchling.build"
 """,
     )
 
-    report = run_python_project_harness(tmp_path)
+    report = run_asp_python(tmp_path)
 
     assert [
         (finding.rule_id, finding.location.path) for finding in report.findings
@@ -69,7 +69,7 @@ build-backend = "hatchling.build"
 """,
     )
 
-    report = run_python_project_harness(tmp_path)
+    report = run_asp_python(tmp_path)
 
     assert [
         (finding.rule_id, finding.location.path) for finding in report.findings
@@ -87,7 +87,7 @@ addopts = ["--import-mode=importlib"]
 """,
     )
 
-    report = run_python_project_harness(tmp_path)
+    report = run_asp_python(tmp_path)
 
     assert not any(
         finding.rule_id.startswith("PY-PROJ-") for finding in report.findings
@@ -106,12 +106,12 @@ requires-python = ">=3.12"
 
 [dependency-groups]
 test = [
-    "python-lang-project-harness[pytest]>=0.1.0",
+    "asp-python[pytest]>=0.1.0",
 ]
 """,
     )
 
-    report = run_python_project_harness(tmp_path)
+    report = run_asp_python(tmp_path)
 
     assert [
         (finding.rule_id, finding.location.path) for finding in report.findings
@@ -130,7 +130,7 @@ requires-python = ">=3.12"
 
 [dependency-groups]
 test = [
-    "python-lang-project-harness[pytest]>=0.1.0",
+    "asp-python[pytest]>=0.1.0",
 ]
 
 [tool.pytest.ini_options]
@@ -138,7 +138,7 @@ addopts = ["--python-project-harness"]
 """,
     )
 
-    report = run_python_project_harness(tmp_path)
+    report = run_asp_python(tmp_path)
 
     assert not any(
         finding.rule_id == "PY-AGENT-PROJECT-010" for finding in report.findings
@@ -155,19 +155,19 @@ requires-python = ">=3.12"
 
 [dependency-groups]
 test = [
-    "python-lang-project-harness[pytest]>=0.1.0",
+    "asp-python[pytest]>=0.1.0",
 ]
 """,
     )
     tests = tmp_path / "tests" / "unit"
     tests.mkdir(parents=True)
     (tests / "test_harness_policy.py").write_text(
-        "from python_lang_project_harness.pytest import python_project_harness_test\n"
-        "test_python_project_harness_policy = python_project_harness_test()\n",
+        "from asp_python.pytest import asp_python_test\n"
+        "test_asp_python_policy = asp_python_test()\n",
         encoding="utf-8",
     )
 
-    report = run_python_project_harness(tmp_path)
+    report = run_asp_python(tmp_path)
 
     assert not any(
         finding.rule_id == "PY-AGENT-PROJECT-010" for finding in report.findings
@@ -186,7 +186,7 @@ requires-python = ">=3.12"
 
 [dependency-groups]
 test = [
-    "python-lang-project-harness[pytest]>=0.1.0",
+    "asp-python[pytest]>=0.1.0",
 ]
 
 [tool.pytest.ini_options]
@@ -204,7 +204,7 @@ addopts = ["--python-project-harness"]
         encoding="utf-8",
     )
 
-    report = run_python_project_harness(tmp_path)
+    report = run_asp_python(tmp_path)
     finding = next(
         finding
         for finding in report.findings
@@ -228,13 +228,13 @@ requires-python = ">=3.12"
 
 [dependency-groups]
 test = [
-    "python-lang-project-harness[pytest]>=0.1.0",
+    "asp-python[pytest]>=0.1.0",
 ]
 
 [tool.pytest.ini_options]
 addopts = ["--python-project-harness"]
 
-[tool.python-lang-project-harness.verification]
+[tool.asp-python.verification]
 profile_hints = [
   { owner_path = "src/pkg/__init__.py", responsibilities = ["public_api"], task_kinds = ["regression"], rationale = "package facade" },
 ]
@@ -251,7 +251,7 @@ profile_hints = [
         encoding="utf-8",
     )
 
-    report = run_python_project_harness(tmp_path)
+    report = run_asp_python(tmp_path)
 
     assert not any(
         finding.rule_id == "PY-AGENT-PROJECT-011" for finding in report.findings

@@ -9,7 +9,7 @@
   "providerRegistration": "asp-provider-registration.json",
   "schemaBundleReceipt": "../schemas/.asp-schema-manager-receipt.json",
   "workspaceArtifact": {
-    "root": "languages/python-lang-project-harness/.venv",
+    "root": "languages/asp-python/.venv",
     "entrypoint": "bin/asp-python",
     "runtimeDependencies": [
       {
@@ -34,15 +34,15 @@
       "--no-editable",
       "--no-cache",
       "--reinstall-package",
-      "python-lang-project-harness"
+      "asp-python"
     ],
-    "workingDirectory": "languages/python-lang-project-harness",
+    "workingDirectory": "languages/asp-python",
     "sourceSnapshotAnchors": [
-      "languages/python-lang-project-harness/pyproject.toml",
-      "languages/python-lang-project-harness/uv.lock"
+      "languages/asp-python/pyproject.toml",
+      "languages/asp-python/uv.lock"
     ],
     "derivedPaths": [
-      "languages/python-lang-project-harness/.venv"
+      "languages/asp-python/.venv"
     ],
     "env": {}
   }

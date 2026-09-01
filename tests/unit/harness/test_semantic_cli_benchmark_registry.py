@@ -1,6 +1,6 @@
 """Registry benchmark invocation contract tests."""
 
-from python_lang_project_harness import python_semantic_language_registration
+from asp_python import python_semantic_language_registration
 
 
 def test_registered_search_methods_publish_public_benchmark_invocations() -> None:

@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from python_lang_project_harness import run_python_lang_harness
+from asp_python import run_python_lang_harness
 
 if TYPE_CHECKING:
     from pathlib import Path

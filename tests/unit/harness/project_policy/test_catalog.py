@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from python_lang_project_harness import (
+from asp_python import (
     PythonProjectPolicyRulePack,
     python_project_policy_rules,
 )

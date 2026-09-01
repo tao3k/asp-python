@@ -5,10 +5,10 @@ from typing import TYPE_CHECKING
 
 from snapshot_support import assert_snapshot, normalize_temp_root
 
-from python_lang_project_harness import (
+from asp_python import (
     render_python_lang_harness,
+    run_asp_python,
     run_python_lang_harness,
-    run_python_project_harness,
 )
 
 if TYPE_CHECKING:
@@ -166,7 +166,7 @@ def _assert_project_snapshot(
     rule_id: str,
     snapshot_name: str,
 ) -> None:
-    report = run_python_project_harness(root)
+    report = run_asp_python(root)
     _assert_filtered_snapshot(root, report, rule_id, snapshot_name)
 
 

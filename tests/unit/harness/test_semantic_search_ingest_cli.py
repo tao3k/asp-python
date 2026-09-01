@@ -8,8 +8,8 @@ from pathlib import Path
 
 import pytest
 
-from python_lang_project_harness import python_semantic_language_registration, run_cli
-from python_lang_project_harness._semantic_search_cli import parse_semantic_search_args
+from asp_python import python_semantic_language_registration, run_cli
+from asp_python._semantic_search_cli import parse_semantic_search_args
 
 FAST_INGEST_BUDGET_SECONDS = 0.25
 
@@ -56,7 +56,7 @@ def test_search_ingest_empty_stdin_seeds_explains_prime_route(
         '[project]\nname = "sample"\nversion = "0.1.0"\n',
         encoding="utf-8",
     )
-    from python_lang_project_harness import _cli_protocol
+    from asp_python import _cli_protocol
 
     def fail_full_harness(*_args: object, **_kwargs: object) -> object:
         raise AssertionError("full harness should not run for empty ingest seeds")

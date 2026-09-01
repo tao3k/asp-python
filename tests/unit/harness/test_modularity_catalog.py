@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from python_lang_project_harness import run_python_project_harness
+from asp_python import run_asp_python
 
 if TYPE_CHECKING:
     from pathlib import Path
@@ -16,7 +16,7 @@ def test_modularity_rule_pack_blocks_large_class_only_service_module(
     source = src / "services.py"
     source.write_text(_large_class_only_service_module_source(), encoding="utf-8")
 
-    report = run_python_project_harness(tmp_path)
+    report = run_asp_python(tmp_path)
 
     assert [
         (finding.rule_id, finding.location.path) for finding in report.findings
@@ -33,7 +33,7 @@ def test_modularity_rule_pack_allows_large_single_signal_state_module(
     source = src / "constants.py"
     source.write_text(_large_state_only_module_source(), encoding="utf-8")
 
-    report = run_python_project_harness(tmp_path)
+    report = run_asp_python(tmp_path)
 
     assert [finding.rule_id for finding in report.findings] == []
 
@@ -46,7 +46,7 @@ def test_modularity_rule_pack_allows_large_single_return_literal_fixture(
     source = src / "schema_fixture.py"
     source.write_text(_large_return_literal_fixture_module_source(), encoding="utf-8")
 
-    report = run_python_project_harness(tmp_path)
+    report = run_asp_python(tmp_path)
 
     assert [finding.rule_id for finding in report.findings] == []
 
@@ -59,7 +59,7 @@ def test_modularity_rule_pack_blocks_large_module_with_long_function(
     source = src / "orchestrator.py"
     source.write_text(_large_long_function_module_source(), encoding="utf-8")
 
-    report = run_python_project_harness(tmp_path)
+    report = run_asp_python(tmp_path)
 
     findings = [
         finding for finding in report.findings if finding.rule_id == "PY-MOD-R006"

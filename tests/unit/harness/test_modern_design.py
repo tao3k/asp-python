@@ -2,13 +2,13 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from python_lang_parser import PythonDiagnosticSeverity
-from python_lang_project_harness import (
+from asp_python import (
     PythonModernDesignRulePack,
     python_modern_design_rules,
     render_python_lang_harness,
     run_python_lang_harness,
 )
+from python_lang_parser import PythonDiagnosticSeverity
 
 if TYPE_CHECKING:
     from pathlib import Path

@@ -2,10 +2,10 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from python_lang_project_harness import (
-    PythonHarnessConfig,
+from asp_python import (
+    AspPythonConfig,
+    run_asp_python,
     run_python_lang_harness,
-    run_python_project_harness,
 )
 
 if TYPE_CHECKING:
@@ -31,9 +31,9 @@ def test_project_runner_uses_configured_source_and_test_roots(
         encoding="utf-8",
     )
 
-    report = run_python_project_harness(
+    report = run_asp_python(
         tmp_path,
-        config=PythonHarnessConfig(
+        config=AspPythonConfig(
             source_dir_names=("lib",),
             test_dir_names=("checks",),
         ),
@@ -60,9 +60,9 @@ def test_project_runner_parameters_override_configured_roots(
     (lib / "included.py").write_text('"""Included docs."""\n', encoding="utf-8")
     (src / "service.py").write_text('"""Service docs."""\n', encoding="utf-8")
 
-    report = run_python_project_harness(
+    report = run_asp_python(
         tmp_path,
-        config=PythonHarnessConfig(source_dir_names=("lib",)),
+        config=AspPythonConfig(source_dir_names=("lib",)),
         source_dir_names=("src",),
         include_tests=False,
     )
@@ -89,9 +89,9 @@ def test_project_runner_parameters_override_configured_extra_paths(
     (examples / "demo.py").write_text('"""Example docs."""\n', encoding="utf-8")
     (tools / "check.py").write_text('"""Check docs."""\n', encoding="utf-8")
 
-    report = run_python_project_harness(
+    report = run_asp_python(
         tmp_path,
-        config=PythonHarnessConfig(extra_path_names=("examples",)),
+        config=AspPythonConfig(extra_path_names=("examples",)),
         extra_path_names=("tools",),
     )
 
@@ -113,9 +113,9 @@ def test_project_runner_can_exclude_tests_from_config(tmp_path: Path) -> None:
     (src / "service.py").write_text('"""Service docs."""\n', encoding="utf-8")
     (tests / "test_bad.py").write_text("def broken(:\n    pass\n", encoding="utf-8")
 
-    report = run_python_project_harness(
+    report = run_asp_python(
         tmp_path,
-        config=PythonHarnessConfig(include_tests=False),
+        config=AspPythonConfig(include_tests=False),
     )
 
     assert report.is_clean
@@ -133,9 +133,9 @@ def test_project_runner_can_disable_policy_rules_from_config(tmp_path: Path) -> 
         encoding="utf-8",
     )
 
-    report = run_python_project_harness(
+    report = run_asp_python(
         tmp_path,
-        config=PythonHarnessConfig(disabled_rule_ids=frozenset({"PY-MOD-R002"})),
+        config=AspPythonConfig(disabled_rule_ids=frozenset({"PY-MOD-R002"})),
     )
 
     assert report.is_clean
@@ -148,7 +148,7 @@ def test_project_runner_loads_policy_config_from_pyproject(tmp_path: Path) -> No
     src.mkdir()
     (tmp_path / "pyproject.toml").write_text(
         """
-[tool.python-lang-project-harness]
+[tool.asp-python]
 disabled_rule_ids = ["PY-MOD-R002"]
 """.lstrip(),
         encoding="utf-8",
@@ -158,7 +158,7 @@ disabled_rule_ids = ["PY-MOD-R002"]
         encoding="utf-8",
     )
 
-    report = run_python_project_harness(tmp_path)
+    report = run_asp_python(tmp_path)
 
     assert report.is_clean
     assert report.disabled_rule_ids == frozenset({"PY-MOD-R002"})
@@ -171,7 +171,7 @@ def test_explicit_project_config_overrides_pyproject_policy_config(
     src.mkdir()
     (tmp_path / "pyproject.toml").write_text(
         """
-[tool.python-lang-project-harness]
+[tool.asp-python]
 disabled_rule_ids = ["PY-MOD-R002"]
 """.lstrip(),
         encoding="utf-8",
@@ -181,7 +181,7 @@ disabled_rule_ids = ["PY-MOD-R002"]
         encoding="utf-8",
     )
 
-    report = run_python_project_harness(tmp_path, config=PythonHarnessConfig())
+    report = run_asp_python(tmp_path, config=AspPythonConfig())
 
     assert not report.is_clean
     assert report.disabled_rule_ids == frozenset()
@@ -195,11 +195,9 @@ def test_project_runner_can_promote_policy_rules_from_config(tmp_path: Path) -> 
         encoding="utf-8",
     )
 
-    report = run_python_project_harness(
+    report = run_asp_python(
         tmp_path,
-        config=PythonHarnessConfig(
-            blocking_rule_ids=frozenset({"PY-AGENT-POLICY-001"})
-        ),
+        config=AspPythonConfig(blocking_rule_ids=frozenset({"PY-AGENT-POLICY-001"})),
     )
 
     assert not report.is_clean
@@ -213,7 +211,7 @@ def test_runner_rejects_missing_project_root_and_explicit_path(tmp_path: Path) -
     missing = tmp_path / "missing"
 
     try:
-        run_python_project_harness(missing)
+        run_asp_python(missing)
     except ValueError as error:
         assert str(error) == f"project root does not exist: {missing}"
     else:

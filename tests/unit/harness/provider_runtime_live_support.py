@@ -11,7 +11,7 @@ from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 from urllib.parse import SplitResult
 
-from python_lang_project_harness._runtime import _response_frame
+from asp_python._runtime import _response_frame
 
 
 def environment() -> dict[str, str]:
@@ -20,6 +20,44 @@ def environment() -> dict[str, str]:
         "ASP_PROVIDER_ARTIFACT_DIGEST": "blake3-256:" + "a" * 64,
         "ASP_PROVIDER_REGISTRATION_DIGEST": "sha256:" + "b" * 64,
         "ASP_PROVIDER_RUNTIME_CONTRACT_DIGEST": "blake3-256:" + "c" * 64,
+        "ASP_PROVIDER_RUNTIME_OPERATIONS_JSON": json.dumps(
+            [
+                {
+                    "operation": "projection-batch",
+                    "requestSchema": {
+                        "schemaId": "schema:projection-request",
+                        "schemaVersion": "1",
+                    },
+                    "responseSchema": {
+                        "schemaId": "schema:projection-response",
+                        "schemaVersion": "1",
+                    },
+                },
+                {
+                    "operation": "project-resolution",
+                    "requestSchema": {
+                        "schemaId": "schema:resolution-request",
+                        "schemaVersion": "1",
+                    },
+                    "responseSchema": {
+                        "schemaId": "schema:resolution-response",
+                        "schemaVersion": "1",
+                    },
+                },
+                {
+                    "operation": "query",
+                    "requestSchema": {
+                        "schemaId": "schema:query-request",
+                        "schemaVersion": "1",
+                    },
+                    "responseSchema": {
+                        "schemaId": "schema:query-response",
+                        "schemaVersion": "1",
+                    },
+                },
+            ],
+            separators=(",", ":"),
+        ),
         "ASP_PROVIDER_ID": "asp-python",
         "ASP_PROVIDER_LANGUAGE_ID": "python",
         "ASP_CLIENT_SERVER_HOST": "127.0.0.1:0",

@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING
 
 from snapshot_support import assert_snapshot, normalize_temp_root
 
-from python_lang_project_harness import (
+from asp_python import (
     render_python_lang_harness,
     run_python_lang_harness,
 )

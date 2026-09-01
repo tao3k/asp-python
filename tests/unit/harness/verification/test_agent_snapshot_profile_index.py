@@ -2,9 +2,9 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from python_lang_project_harness import (
+from asp_python import (
     default_python_harness_config,
-    render_python_project_harness_agent_snapshot_with_config,
+    render_asp_python_agent_snapshot_with_config,
 )
 
 if TYPE_CHECKING:
@@ -16,7 +16,7 @@ def test_agent_snapshot_reminds_when_verification_profile_is_unconfigured(
 ) -> None:
     _write_public_api_project(tmp_path)
 
-    rendered = render_python_project_harness_agent_snapshot_with_config(
+    rendered = render_asp_python_agent_snapshot_with_config(
         tmp_path,
         default_python_harness_config(),
     )

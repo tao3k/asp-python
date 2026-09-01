@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from python_lang_project_harness import run_python_project_harness
+from asp_python import run_asp_python
 
 _PROJECT_ROOT = next(
     parent
@@ -26,7 +26,7 @@ def test_modularity_rule_pack_blocks_shadowed_reasoning_tree_owner(
         encoding="utf-8",
     )
 
-    report = run_python_project_harness(tmp_path)
+    report = run_asp_python(tmp_path)
 
     assert [
         (finding.rule_id, finding.location.path) for finding in report.findings
@@ -45,7 +45,7 @@ def test_agent_policy_reports_branch_package_without_reasoning_tree_intent(
     (branch / "service.py").write_text('"""Service leaf."""\n', encoding="utf-8")
     (branch / "models.py").write_text('"""Model leaf."""\n', encoding="utf-8")
 
-    report = run_python_project_harness(tmp_path)
+    report = run_asp_python(tmp_path)
 
     assert [
         (finding.rule_id, finding.location.path) for finding in report.findings
@@ -68,20 +68,17 @@ def test_agent_policy_accepts_documented_reasoning_tree_branch(
     (branch / "service.py").write_text('"""Service leaf."""\n', encoding="utf-8")
     (branch / "models.py").write_text('"""Model leaf."""\n', encoding="utf-8")
 
-    report = run_python_project_harness(tmp_path)
+    report = run_asp_python(tmp_path)
 
     assert report.is_clean
 
 
 def test_reasoning_tree_policy_uses_parser_facts() -> None:
-    modularity = (
-        _PROJECT_ROOT / "src" / "python_lang_project_harness" / "_modularity.py"
-    ).read_text(encoding="utf-8")
+    modularity = (_PROJECT_ROOT / "src" / "asp_python" / "_modularity.py").read_text(
+        encoding="utf-8"
+    )
     agent_reasoning_tree = (
-        _PROJECT_ROOT
-        / "src"
-        / "python_lang_project_harness"
-        / "_agent_reasoning_tree.py"
+        _PROJECT_ROOT / "src" / "asp_python" / "_agent_reasoning_tree.py"
     ).read_text(encoding="utf-8")
 
     assert "python_reasoning_tree_facts(" in modularity

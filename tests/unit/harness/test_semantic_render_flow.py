@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from python_lang_project_harness._semantic_search_render_flow import finding_lines
+from asp_python._semantic_search_render_flow import finding_lines
 
 
 def test_semantic_search_findings_render_path_first() -> None:

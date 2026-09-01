@@ -5,8 +5,8 @@ import json
 import re
 from pathlib import Path
 
-from python_lang_project_harness._cli_args import ProtocolArgs
-from python_lang_project_harness._cli_protocol import run_protocol_cli
+from asp_python._cli_args import ProtocolArgs
+from asp_python._cli_protocol import run_protocol_cli
 
 
 def test_dependency_topology_cli_emits_canonical_packet(tmp_path: Path) -> None:

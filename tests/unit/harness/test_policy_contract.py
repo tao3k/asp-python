@@ -2,8 +2,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from python_lang_parser import PythonDiagnosticSeverity
-from python_lang_project_harness import (
+from asp_python import (
     default_python_harness_config,
     python_agent_policy_rules,
     python_modern_design_rules,
@@ -13,8 +12,9 @@ from python_lang_project_harness import (
     python_syntax_rules,
     python_test_layout_rules,
     render_python_lang_harness,
-    run_python_project_harness,
+    run_asp_python,
 )
+from python_lang_parser import PythonDiagnosticSeverity
 
 _PROJECT_ROOT = next(
     parent
@@ -242,7 +242,7 @@ def test_agent_facing_snapshots_avoid_redundant_render_preambles() -> None:
 
 
 def test_project_is_clean_under_its_own_harness() -> None:
-    report = run_python_project_harness(_PROJECT_ROOT)
+    report = run_asp_python(_PROJECT_ROOT)
     rendered = render_python_lang_harness(report)
 
     assert report.is_clean, rendered

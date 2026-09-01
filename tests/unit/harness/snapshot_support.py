@@ -6,7 +6,7 @@ import os
 from pathlib import Path
 
 SNAPSHOT_ROOT = Path(__file__).parent.parent / "snapshots"
-UPDATE_ENV_VAR = "PYTHON_HARNESS_UPDATE_SNAPSHOTS"
+UPDATE_ENV_VAR = "ASP_PYTHON_UPDATE_SNAPSHOTS"
 
 
 def assert_snapshot(

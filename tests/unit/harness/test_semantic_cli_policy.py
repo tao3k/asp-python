@@ -6,7 +6,7 @@ from pathlib import Path
 
 from semantic_search_fixture import compact_graph_renderer_available
 
-from python_lang_project_harness._cli import run_cli
+from asp_python._cli import run_cli
 
 
 def test_cli_agent_doctor_json_advertises_policy_search(
@@ -18,9 +18,8 @@ def test_cli_agent_doctor_json_advertises_policy_search(
     assert exit_code == 0
     registration = payload["registry"]["languages"][0]
     assert "search/policy" in registration["methods"]
-    assert any(
-        schema["schemaId"] == "agent.semantic-protocols.semantic-handle"
-        and schema["path"] == "schemas/semantic-handle.v1.schema.json"
+    assert all(
+        schema["schemaId"] != "agent.semantic-protocols.semantic-handle"
         for schema in registration["schemas"]
     )
     assert any(
@@ -100,10 +99,7 @@ def test_cli_search_policy_renders_semantic_handles(
     if compact_graph_renderer_available():
         assert seeds.startswith("[search-policy] q=PY-AGENT-PROJECT-001")
         assert "alg=policy-handle-catalog" in seeds
-        assert (
-            "O=owner:path(src/python_lang_project_harness/_project_policy_catalog.py)!owner"
-            in seeds
-        )
+        assert "O=owner:path(src/asp_python/_project_policy_catalog.py)!owner" in seeds
         assert "tests/unit/harness/project_policy/test_layout.py" in seeds
     assert (
         "|handle PY-AGENT-PROJECT-001 kind=policy-rule source=provider-policy"
@@ -114,7 +110,7 @@ def test_cli_search_policy_renders_semantic_handles(
     assert packet["view"] == "policy"
     assert packet["semanticHandles"][0]["id"] == "PY-AGENT-POLICY-008"
     assert packet["semanticHandles"][0]["ownerPath"] == (
-        "src/python_lang_project_harness/_agent_policy_catalog.py"
+        "src/asp_python/_agent_policy_catalog.py"
     )
     assert (
         "tests/unit/harness/test_agent_policy.py"
