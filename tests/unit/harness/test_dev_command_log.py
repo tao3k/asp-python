@@ -5,7 +5,7 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-from python_lang_project_harness._dev_command_log import start_dev_command_log
+from asp_python._dev_command_log import start_dev_command_log
 
 
 def test_dev_command_log_records_ordered_active_context_events(

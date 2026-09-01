@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from python_lang_project_harness import python_project_harness_test
+from asp_python import asp_python_test
 
 _PROJECT_ROOT = next(
     parent
@@ -11,6 +11,4 @@ _PROJECT_ROOT = next(
 )
 
 
-test_python_lang_project_harness_self_policy = python_project_harness_test(
-    _PROJECT_ROOT
-)
+test_asp_python_self_policy = asp_python_test(_PROJECT_ROOT)

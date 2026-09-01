@@ -8,14 +8,14 @@ from typing import TYPE_CHECKING, Any
 
 from syrupy.extensions.json import JSONSnapshotExtension
 
-from python_lang_project_harness import (
+from asp_python import (
     run_python_lang_harness,
 )
 
 if TYPE_CHECKING:
     from syrupy.assertion import SnapshotAssertion
 
-    from python_lang_project_harness import PythonHarnessReport
+    from asp_python import AspPythonReport
 
 
 _SCENARIO = (
@@ -126,8 +126,8 @@ def _copy_inputs(source_dir: Path, destination_dir: Path) -> None:
 
 
 def _filter_software_criterion_findings(
-    report: PythonHarnessReport,
-) -> PythonHarnessReport:
+    report: AspPythonReport,
+) -> AspPythonReport:
     return replace(
         report,
         findings=tuple(

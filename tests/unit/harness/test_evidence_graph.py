@@ -6,7 +6,7 @@ import io
 import json
 from pathlib import Path
 
-from python_lang_project_harness import run_cli
+from asp_python import run_cli
 
 
 def test_cli_evidence_graph_renders_json_contract(tmp_path: Path) -> None:
@@ -39,7 +39,8 @@ def test_cli_evidence_graph_renders_json_contract(tmp_path: Path) -> None:
     }
     assert any(node["kind"] == "owner" for node in payload["nodes"])
     assert any(edge["kind"] == "requires-evidence" for edge in payload["edges"])
-    assert payload["gaps"][0]["fields"]["nextCommand"] == "asp-python check --full ."
+    assert payload["gaps"][0]["fields"] == {"requiredReceiptId": "python.policy.api"}
+    assert all("command" not in node.get("fields", {}) for node in payload["nodes"])
 
 
 def test_cli_evidence_analyze_renders_graph_turbo_request(tmp_path: Path) -> None:

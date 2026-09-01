@@ -2,22 +2,22 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from python_lang_project_harness import (
+from asp_python import (
     PythonModularityRulePack,
     PythonTestLayoutRulePack,
-    assert_python_project_harness_clean,
+    asp_python_paths,
+    asp_python_scope,
+    assert_asp_python_clean,
     python_modularity_rules,
-    python_project_harness_paths,
-    python_project_harness_scope,
     python_test_layout_rules,
-    run_python_project_harness,
+    run_asp_python,
 )
 
 if TYPE_CHECKING:
     from pathlib import Path
 
 
-def test_python_project_harness_paths_use_project_root_by_default(
+def test_asp_python_paths_use_project_root_by_default(
     tmp_path: Path,
 ) -> None:
     src = tmp_path / "src"
@@ -25,11 +25,11 @@ def test_python_project_harness_paths_use_project_root_by_default(
     src.mkdir()
     tests.mkdir()
 
-    assert python_project_harness_paths(tmp_path) == (tmp_path,)
-    assert python_project_harness_paths(tmp_path, include_tests=False) == (src,)
+    assert asp_python_paths(tmp_path) == (tmp_path,)
+    assert asp_python_paths(tmp_path, include_tests=False) == (src,)
 
 
-def test_python_project_harness_scope_exposes_project_and_classification_paths(
+def test_asp_python_scope_exposes_project_and_classification_paths(
     tmp_path: Path,
 ) -> None:
     src = tmp_path / "src"
@@ -37,7 +37,7 @@ def test_python_project_harness_scope_exposes_project_and_classification_paths(
     src.mkdir()
     tests.mkdir()
 
-    scope = python_project_harness_scope(tmp_path)
+    scope = asp_python_scope(tmp_path)
 
     assert scope.source_paths == (src,)
     assert scope.test_paths == (tests,)
@@ -47,14 +47,14 @@ def test_python_project_harness_scope_exposes_project_and_classification_paths(
     assert scope.to_dict()["monitored_paths"] == [str(tmp_path)]
 
 
-def test_python_project_harness_paths_fall_back_to_root(tmp_path: Path) -> None:
+def test_asp_python_paths_fall_back_to_root(tmp_path: Path) -> None:
     module = tmp_path / "module.py"
     module.write_text("VALUE = 1\n", encoding="utf-8")
 
-    assert python_project_harness_paths(tmp_path) == (tmp_path,)
+    assert asp_python_paths(tmp_path) == (tmp_path,)
 
 
-def test_run_python_project_harness_uses_project_paths(tmp_path: Path) -> None:
+def test_run_asp_python_uses_project_paths(tmp_path: Path) -> None:
     src = tmp_path / "src"
     tests = tmp_path / "tests" / "unit"
     src.mkdir()
@@ -65,7 +65,7 @@ def test_run_python_project_harness_uses_project_paths(tmp_path: Path) -> None:
         encoding="utf-8",
     )
 
-    report = run_python_project_harness(tmp_path)
+    report = run_asp_python(tmp_path)
 
     assert report.is_clean
     assert report.file_count == 2
@@ -83,7 +83,7 @@ def test_run_python_project_harness_uses_project_paths(tmp_path: Path) -> None:
     }
 
 
-def test_run_python_project_harness_monitors_src_and_tests_by_default(
+def test_run_asp_python_monitors_src_and_tests_by_default(
     tmp_path: Path,
 ) -> None:
     src = tmp_path / "src" / "pkg"
@@ -95,7 +95,7 @@ def test_run_python_project_harness_monitors_src_and_tests_by_default(
     source_file.write_text("VALUE = 1\n", encoding="utf-8")
     test_file.write_text("def broken(:\n    pass\n", encoding="utf-8")
 
-    report = run_python_project_harness(tmp_path)
+    report = run_asp_python(tmp_path)
 
     assert [module.path for module in report.modules] == [
         str(source_file),
@@ -108,7 +108,7 @@ def test_run_python_project_harness_monitors_src_and_tests_by_default(
     ]
 
 
-def test_run_python_project_harness_can_exclude_tests_from_scope(
+def test_run_asp_python_can_exclude_tests_from_scope(
     tmp_path: Path,
 ) -> None:
     src = tmp_path / "src"
@@ -121,7 +121,7 @@ def test_run_python_project_harness_can_exclude_tests_from_scope(
         encoding="utf-8",
     )
 
-    report = run_python_project_harness(tmp_path, include_tests=False)
+    report = run_asp_python(tmp_path, include_tests=False)
 
     assert report.is_clean
     assert [module.path for module in report.modules] == [str(src / "library.py")]
@@ -130,7 +130,7 @@ def test_run_python_project_harness_can_exclude_tests_from_scope(
     assert report.project_resolution.monitored_paths == (src,)
 
 
-def test_run_python_project_harness_does_not_fallback_into_excluded_tests(
+def test_run_asp_python_does_not_fallback_into_excluded_tests(
     tmp_path: Path,
 ) -> None:
     package = tmp_path / "pkg"
@@ -140,7 +140,7 @@ def test_run_python_project_harness_does_not_fallback_into_excluded_tests(
     (package / "__init__.py").write_text('"""Package docs."""\n', encoding="utf-8")
     (tests / "test_bad.py").write_text("def broken(:\n    pass\n", encoding="utf-8")
 
-    report = run_python_project_harness(tmp_path, include_tests=False)
+    report = run_asp_python(tmp_path, include_tests=False)
 
     assert report.is_clean
     assert [module.path for module in report.modules] == [str(package / "__init__.py")]
@@ -161,7 +161,7 @@ def test_include_tests_false_skips_test_parsing_not_layout_policy(
         encoding="utf-8",
     )
 
-    report = run_python_project_harness(tmp_path, include_tests=False)
+    report = run_asp_python(tmp_path, include_tests=False)
 
     assert report.file_count == 1
     assert [finding.rule_id for finding in report.findings] == ["PY-TEST-R001"]
@@ -169,14 +169,14 @@ def test_include_tests_false_skips_test_parsing_not_layout_policy(
     assert report.project_resolution.monitored_paths == (src,)
 
 
-def test_assert_python_project_harness_clean_blocks_for_pytest(tmp_path: Path) -> None:
+def test_assert_asp_python_clean_blocks_for_pytest(tmp_path: Path) -> None:
     src = tmp_path / "src"
     src.mkdir()
     source = src / "library.py"
     source.write_text('def run() -> None:\n    print("debug")\n', encoding="utf-8")
 
     try:
-        assert_python_project_harness_clean(tmp_path)
+        assert_asp_python_clean(tmp_path)
     except AssertionError as error:
         message = str(error)
     else:
@@ -197,7 +197,7 @@ def test_project_harness_blocks_root_pytest_files(tmp_path: Path) -> None:
     )
 
     try:
-        assert_python_project_harness_clean(tmp_path)
+        assert_asp_python_clean(tmp_path)
     except AssertionError as error:
         message = str(error)
     else:
@@ -214,7 +214,7 @@ def test_project_harness_blocks_unexpected_tests_root_entries(tmp_path: Path) ->
     unexpected = tmp_path / "tests" / "misc"
     unexpected.mkdir(parents=True)
 
-    report = run_python_project_harness(tmp_path)
+    report = run_asp_python(tmp_path)
 
     assert [
         (finding.rule_id, finding.location.path) for finding in report.findings
@@ -229,7 +229,7 @@ def test_project_harness_blocks_bloated_unit_test_leaf(tmp_path: Path) -> None:
     source = unit / "test_large_policy.py"
     source.write_text(_large_unit_test_source(), encoding="utf-8")
 
-    report = run_python_project_harness(tmp_path)
+    report = run_asp_python(tmp_path)
 
     assert [
         (finding.rule_id, finding.location.path) for finding in report.findings
@@ -260,7 +260,7 @@ def test_modularity_rule_pack_blocks_bloated_multi_responsibility_module(
     source = src / "feature.py"
     source.write_text(_large_multi_responsibility_module_source(), encoding="utf-8")
 
-    report = run_python_project_harness(tmp_path)
+    report = run_asp_python(tmp_path)
 
     assert [
         (finding.rule_id, finding.location.path) for finding in report.findings
@@ -288,7 +288,7 @@ class Service:
         encoding="utf-8",
     )
 
-    report = run_python_project_harness(tmp_path)
+    report = run_asp_python(tmp_path)
 
     assert report.is_clean
 

@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from python_lang_project_harness import python_semantic_language_registration
+from asp_python import python_semantic_language_registration
 
 
 def test_python_registration_advertises_only_provider_owned_schemas() -> None:

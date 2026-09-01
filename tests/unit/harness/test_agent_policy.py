@@ -3,15 +3,15 @@ from __future__ import annotations
 from dataclasses import replace
 from typing import TYPE_CHECKING
 
-from python_lang_parser import PythonDiagnosticSeverity
-from python_lang_project_harness import (
+from asp_python import (
     PythonAgentPolicyRulePack,
     python_agent_policy_rules,
     render_python_lang_harness,
     render_python_lang_harness_advice,
+    run_asp_python,
     run_python_lang_harness,
-    run_python_project_harness,
 )
+from python_lang_parser import PythonDiagnosticSeverity
 
 if TYPE_CHECKING:
     from pathlib import Path
@@ -86,7 +86,7 @@ def test_agent_policy_blocks_duplicate_public_callable_names(
         encoding="utf-8",
     )
 
-    report = run_python_project_harness(tmp_path)
+    report = run_asp_python(tmp_path)
 
     assert [
         (finding.rule_id, finding.location.path) for finding in report.findings
@@ -111,7 +111,7 @@ def test_agent_policy_blocks_duplicate_public_type_names(
         encoding="utf-8",
     )
 
-    report = run_python_project_harness(tmp_path)
+    report = run_asp_python(tmp_path)
 
     assert [
         (finding.rule_id, finding.location.path) for finding in report.findings
@@ -136,7 +136,7 @@ def test_agent_policy_blocks_duplicate_public_value_names(
         encoding="utf-8",
     )
 
-    report = run_python_project_harness(tmp_path)
+    report = run_asp_python(tmp_path)
 
     assert [
         (finding.rule_id, finding.location.path) for finding in report.findings
@@ -157,7 +157,7 @@ def test_agent_policy_blocks_repeated_module_namespace_segments(
         '"""Domain service namespace."""\n\nVALUE = 1\n', encoding="utf-8"
     )
 
-    report = run_python_project_harness(tmp_path)
+    report = run_asp_python(tmp_path)
 
     assert [
         (finding.rule_id, finding.location.path) for finding in report.findings
@@ -179,7 +179,7 @@ def test_agent_policy_deduplicates_repeated_namespace_branches(
         encoding="utf-8",
     )
 
-    report = run_python_project_harness(tmp_path)
+    report = run_asp_python(tmp_path)
 
     assert [finding.rule_id for finding in report.findings] == ["PY-AGENT-POLICY-004"]
 
@@ -199,7 +199,7 @@ def test_agent_policy_reports_broad_branch_package_surface(tmp_path: Path) -> No
             encoding="utf-8",
         )
 
-    report = run_python_project_harness(tmp_path)
+    report = run_asp_python(tmp_path)
 
     assert [
         (finding.rule_id, finding.location.path) for finding in report.findings
@@ -230,7 +230,7 @@ def test_agent_policy_accepts_owner_map_documented_branch_package(
             encoding="utf-8",
         )
 
-    report = run_python_project_harness(tmp_path)
+    report = run_asp_python(tmp_path)
 
     assert not report.findings
 

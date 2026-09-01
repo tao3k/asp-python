@@ -4,7 +4,7 @@ import io
 import json
 from pathlib import Path
 
-from python_lang_project_harness import run_cli
+from asp_python import run_cli
 
 
 def test_ast_patch_dry_run_returns_provider_unsupported_operation_receipt(

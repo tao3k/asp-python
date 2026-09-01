@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from python_lang_project_harness import (
+from asp_python import (
     PythonOwnerResponsibility,
     PythonVerificationProfileHint,
     build_python_verification_profile_index_with_config,

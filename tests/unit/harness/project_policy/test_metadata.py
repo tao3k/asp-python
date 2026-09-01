@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from python_lang_project_harness._project_metadata import (
+from asp_python._project_metadata import (
     read_python_project_metadata,
 )
 

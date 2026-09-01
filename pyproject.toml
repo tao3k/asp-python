@@ -1,12 +1,12 @@
 [project]
-name = "python-lang-project-harness"
+name = "asp-python"
 version = "0.1.0"
-description = "Project-level Python language harness with compact diagnostics for agents"
+description = "Python-native policy and semantic tooling with compact diagnostics for agents"
 readme = "README.md"
 requires-python = ">=3.12"
 import-names = [
     "python_lang_parser",
-    "python_lang_project_harness",
+    "asp_python",
 ]
 dependencies = ["blake3>=1.0.8,<2"]
 
@@ -16,10 +16,10 @@ pytest = [
 ]
 
 [project.scripts]
-asp-python = "python_lang_project_harness:run_cli_from_env"
+asp-python = "asp_python:run_cli_from_env"
 
 [project.entry-points.pytest11]
-python_lang_project_harness = "python_lang_project_harness.pytest_plugin"
+asp_python = "asp_python.pytest_plugin"
 
 [dependency-groups]
 test = [
@@ -35,11 +35,11 @@ build-backend = "hatchling.build"
 [tool.hatch.build.targets.wheel]
 packages = [
     "src/python_lang_parser",
-    "src/python_lang_project_harness",
+    "src/asp_python",
 ]
 
 [tool.hatch.build.targets.wheel.force-include]
-"schemas/python-semantic-capabilities.v1.schema.json" = "python_lang_project_harness/schemas/python-semantic-capabilities.v1.schema.json"
+"schemas/python-semantic-capabilities.v1.schema.json" = "asp_python/schemas/python-semantic-capabilities.v1.schema.json"
 
 [tool.uv]
 package = true
@@ -47,26 +47,26 @@ package = true
 [tool.pytest.ini_options]
 pythonpath = ["src"]
 
-[[tool.python-lang-project-harness.verification.profile_hints]]
+[[tool.asp-python.verification.profile_hints]]
 owner_path = "pyproject.toml"
 responsibilities = ["pytest_gate"]
 verification_tasks_enabled = false
 rationale = "self pytest addopts and CI cover the harness gate contract"
 
-[[tool.python-lang-project-harness.verification.profile_hints]]
+[[tool.asp-python.verification.profile_hints]]
 owner_path = "src/python_lang_parser/__init__.py"
 responsibilities = ["public_api"]
 verification_tasks_enabled = false
 rationale = "self parser tests, CLI harness, and build cover the parser public facade"
 
-[[tool.python-lang-project-harness.verification.profile_hints]]
-owner_path = "src/python_lang_project_harness/__init__.py"
+[[tool.asp-python.verification.profile_hints]]
+owner_path = "src/asp_python/__init__.py"
 responsibilities = ["public_api", "cli"]
 verification_tasks_enabled = false
 rationale = "self public API tests, CLI tests, pytest gate, and build cover the harness facade"
 
-[[tool.python-lang-project-harness.verification.profile_hints]]
-owner_path = "src/python_lang_project_harness/pytest_plugin.py"
+[[tool.asp-python.verification.profile_hints]]
+owner_path = "src/asp_python/pytest_plugin.py"
 responsibilities = ["cli"]
 verification_tasks_enabled = false
 rationale = "self pytest addopts exercise the pytest plugin gate"

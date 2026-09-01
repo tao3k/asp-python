@@ -8,7 +8,7 @@ from pathlib import Path
 
 import pytest
 
-from python_lang_project_harness import run_cli
+from asp_python import run_cli
 
 FAST_SEARCH_BUDGET_SECONDS = 0.25
 
@@ -21,7 +21,7 @@ def test_cli_search_prime_seed_view_uses_fast_frontier(
     source_path.parent.mkdir(parents=True)
     source_path.write_text("def build():\n    return 1\n", encoding="utf-8")
 
-    from python_lang_project_harness import _cli_protocol
+    from asp_python import _cli_protocol
 
     def fail_full_harness(*_args: object, **_kwargs: object) -> object:
         raise AssertionError("full harness should not run for prime seed view")

@@ -85,7 +85,7 @@ work orders for the repair Agent, not immediate merge blockers.
 
 - `PY-AGENT-PROJECT-011`: projects that declare the harness as a test/dev dependency
   and expose parser-visible verification owners should configure
-  `[tool.python-lang-project-harness.verification].profile_hints`. The finding
+  `[tool.asp-python.verification].profile_hints`. The finding
   points the Agent to `asp-python --agent-snapshot`, whose compact
   `[verify-profile]` section is the config draft.
 
@@ -157,7 +157,7 @@ The harness turns those facts into a compact repair hint when a public function
 hides its algorithm behind nested `if`/loop structure. The rule stays advisory
 by default so teams can tune or promote it after seeing their project shape.
 
-The implementation lives under `python_lang_project_harness.agent_readability`
+The implementation lives under `asp_python.agent_readability`
 because the target reader is the repair agent, not a human style reviewer. The
 goal is short, explicit algorithm surfaces that an LLM can use from the
 reasoning tree: guard clauses instead of nested `else`, `match/case` or dispatch
@@ -221,7 +221,7 @@ run-summary noise. Use
 repair hints; it returns an empty string when there is no advice to act on.
 
 Structured consumers should use `render_python_lang_harness_json()` or the
-`PythonHarnessReport.to_dict()` shape instead of parsing compact text.
+`AspPythonReport.to_dict()` shape instead of parsing compact text.
 
 ## Parser-First Policy
 
@@ -231,11 +231,11 @@ text. `python_lang_parser` owns AST, compile, tokenize, symbol-table, source
 line, module-shape, public-name, public-surface, symbol-role, and import-root
 module identity facts, standard `pyproject.toml` project metadata, and package
 reasoning-tree facts.
-`python_lang_project_harness` owns rule catalogs, project/test layout,
+`asp_python` owns rule catalogs, project/test layout,
 reporting, and assertion behavior.
 
 Repository tests enforce this boundary by rejecting direct `ast` or `tokenize`
-usage under `src/python_lang_project_harness`. File and metadata checks may
+usage under `src/asp_python`. File and metadata checks may
 still read non-Python policy inputs such as
 `python-project-harness-rules.toml`; Python project metadata should flow
 through parser-owned `pyproject.toml` facts.
@@ -245,8 +245,8 @@ through parser-owned `pyproject.toml` facts.
 The compact text and JSON render contracts are covered by repository snapshots
 under `tests/unit/snapshots`:
 
-- `python_project_harness_compact_text.snap`
-- `python_project_harness_json.snap`
+- `asp_python_compact_text.snap`
+- `asp_python_json.snap`
 
 Policy snapshots are generated from real harness fixtures and normalized to
 `$TEMP` paths. Every current `PY-AGENT-*` rule has a compact advice snapshot.
@@ -258,7 +258,7 @@ ordinary snapshot diffs.
 Refresh snapshots explicitly:
 
 ```shell
-PYTHON_HARNESS_UPDATE_SNAPSHOTS=1 direnv exec . uv run --group test pytest \
+ASP_PYTHON_UPDATE_SNAPSHOTS=1 direnv exec . uv run --group test pytest \
   tests/unit/harness/test_render_snapshots.py \
   tests/unit/harness/test_agent_policy_snapshots.py \
   tests/unit/harness/test_policy_snapshots.py -q

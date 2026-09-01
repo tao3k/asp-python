@@ -5,7 +5,7 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-from python_lang_project_harness._runtime import _response_frame
+from asp_python._runtime import _response_frame
 
 
 def request(candidate_paths: list[str]) -> dict[str, object]:
@@ -230,12 +230,14 @@ def test_provider_registration_advertises_project_resolution() -> None:
         for operation in manifest["runtimeContract"]["operations"]
     }
     project_resolution = operations["project-resolution"]
-    assert project_resolution["requestSchemaId"].endswith(
-        "/provider-project-resolution-request.schema.json"
+    assert project_resolution["requestSchema"]["schemaId"] == (
+        "agent.semantic-protocols.provider-project-resolution-request"
     )
-    assert project_resolution["responseSchemaId"].endswith(
-        "/provider-project-resolution-response.schema.json"
+    assert project_resolution["requestSchema"]["schemaVersion"] == "1"
+    assert project_resolution["responseSchema"]["schemaId"] == (
+        "agent.semantic-protocols.provider-project-resolution-response"
     )
+    assert project_resolution["responseSchema"]["schemaVersion"] == "1"
 
 
 def test_explicit_owner_collection_scope_is_required_and_normalized(

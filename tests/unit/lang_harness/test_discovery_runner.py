@@ -2,20 +2,20 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+from asp_python import (
+    AspPythonConfig,
+    AspPythonFinding,
+    PythonSyntaxRulePack,
+    discover_python_files,
+    render_python_lang_harness,
+    run_asp_python,
+    run_python_lang_harness,
+)
 from python_lang_parser import (
     PythonDiagnostic,
     PythonDiagnosticSeverity,
     PythonModuleReport,
     SourceLocation,
-)
-from python_lang_project_harness import (
-    PythonHarnessConfig,
-    PythonHarnessFinding,
-    PythonSyntaxRulePack,
-    discover_python_files,
-    render_python_lang_harness,
-    run_python_lang_harness,
-    run_python_project_harness,
 )
 
 if TYPE_CHECKING:
@@ -66,7 +66,7 @@ def test_asp_toml_can_include_hidden_python_dirs(tmp_path: Path) -> None:
         encoding="utf-8",
     )
 
-    report = run_python_project_harness(tmp_path)
+    report = run_asp_python(tmp_path)
 
     assert report.file_count == 1
     assert report.modules[0].path == str(fixture)
@@ -141,7 +141,7 @@ def test_run_python_lang_harness_uses_configured_discovery(tmp_path: Path) -> No
 
     report = run_python_lang_harness(
         [tmp_path],
-        config=PythonHarnessConfig(ignored_dir_names=frozenset({"generated"})),
+        config=AspPythonConfig(ignored_dir_names=frozenset({"generated"})),
     )
 
     assert report.file_count == 0
@@ -181,7 +181,7 @@ def test_run_python_lang_harness_uses_configured_blocking_severities(
 ) -> None:
     source = tmp_path / "module.py"
     source.write_text("VALUE = 1\n", encoding="utf-8")
-    config = PythonHarnessConfig(
+    config = AspPythonConfig(
         blocking_severities=frozenset({PythonDiagnosticSeverity.ERROR}),
         rule_packs=(_WarningRulePack(),),
     )
@@ -200,9 +200,9 @@ def test_run_python_lang_harness_uses_configured_blocking_severities(
 class _WarningRulePack:
     pack_id = "test.warning"
 
-    def evaluate(self, report: PythonModuleReport) -> tuple[PythonHarnessFinding, ...]:
+    def evaluate(self, report: PythonModuleReport) -> tuple[AspPythonFinding, ...]:
         return (
-            PythonHarnessFinding(
+            AspPythonFinding(
                 rule_id="python.project.warning",
                 pack_id=self.pack_id,
                 severity=PythonDiagnosticSeverity.WARNING,

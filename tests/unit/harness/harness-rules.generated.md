@@ -1,8 +1,8 @@
-# python-lang-project-harness
+# asp-python
 
 ## Harness Rules
 
-Generated from embedded `src/python_lang_project_harness/harness-rules.md`.
+Generated from embedded `src/asp_python/harness-rules.md`.
 
 - **PY-AGENT-POLICY-001**: Requires library modules to declare concise intent docstrings for agent search and repair.
 - **PY-AGENT-POLICY-002**: Requires public callable boundaries to carry type annotations for native syntax reasoning.

@@ -6,7 +6,7 @@ import io
 import json
 from pathlib import Path
 
-from python_lang_project_harness import python_semantic_language_registration, run_cli
+from asp_python import python_semantic_language_registration, run_cli
 
 
 def test_cli_agent_doctor_advertises_provider(tmp_path: Path) -> None:

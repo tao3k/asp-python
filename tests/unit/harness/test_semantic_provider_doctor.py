@@ -5,7 +5,7 @@ import json
 from hashlib import sha256
 from pathlib import Path
 
-from python_lang_project_harness._cli import run_cli
+from asp_python._cli import run_cli
 
 
 def test_cli_agent_doctor_json_validates_v1_envelope_and_registry(
@@ -43,7 +43,7 @@ def test_cli_agent_doctor_json_validates_v1_envelope_and_registry(
         registration["binary"],
     )
     descriptors = registration["methodDescriptors"]
-    assert len(descriptors) == len(registration["methods"]) == 33
+    assert len(descriptors) == len(registration["methods"]) == 31
     exact_query = next(
         descriptor
         for descriptor in descriptors

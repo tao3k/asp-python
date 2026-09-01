@@ -11,7 +11,7 @@ The harness exposes two runner modes with shared configuration.
 
 ## Project Runner
 
-Use `run_python_project_harness()` or `assert_python_project_harness_clean()`
+Use `run_asp_python()` or `assert_asp_python_clean()`
 when a caller has a project root. The project runner scans the whole Python
 project root by default, attaches `PythonProjectHarnessScope`, and runs the
 full default rule surface:
@@ -28,12 +28,12 @@ and produce CLI exit code `2`.
 
 ## Configuration
 
-`PythonHarnessConfig` owns project-resolution classification and parser inclusion:
+`AspPythonConfig` owns project-resolution classification and parser inclusion:
 
 ```python
-from python_lang_project_harness import PythonHarnessConfig
+from asp_python import AspPythonConfig
 
-config = PythonHarnessConfig(
+config = AspPythonConfig(
     include_tests=False,
     source_dir_names=("lib",),
     test_dir_names=("checks",),
@@ -83,9 +83,9 @@ visible advice.
 Policy can also be configured by stable rule id:
 
 ```python
-from python_lang_project_harness import PythonHarnessConfig
+from asp_python import AspPythonConfig
 
-config = PythonHarnessConfig(
+config = AspPythonConfig(
     disabled_rule_ids=frozenset({"PY-MOD-R002"}),
     blocking_rule_ids=frozenset({"PY-AGENT-POLICY-007"}),
 )
@@ -97,10 +97,10 @@ blockers without changing their catalog severity, which keeps advisory rules
 visible as advice while allowing a project to enforce chosen agent policy.
 
 Project runners also read the same policy from `pyproject.toml` when no
-explicit `PythonHarnessConfig` is passed:
+explicit `AspPythonConfig` is passed:
 
 ```toml
-[tool.python-lang-project-harness]
+[tool.asp-python]
 disabled_rule_ids = ["PY-MOD-R002"]
 blocking_rule_ids = ["PY-AGENT-POLICY-007"]
 source_dir_names = ["lib"]
@@ -109,7 +109,7 @@ include_tests = false
 ```
 
 Explicit function parameters still win for one-call source/test/extra path
-classification. Passing an explicit `PythonHarnessConfig` from Python code
+classification. Passing an explicit `AspPythonConfig` from Python code
 opts out of project-local config loading for that call.
 
 ## Explicit-Path Runner

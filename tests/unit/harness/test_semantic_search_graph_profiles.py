@@ -6,7 +6,7 @@ from typing import Any
 
 import pytest
 
-from python_lang_project_harness._semantic_search_graph_render import (
+from asp_python._semantic_search_graph_render import (
     compact_graph_seed_packet_text,
 )
 

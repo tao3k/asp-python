@@ -2,13 +2,13 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from python_lang_project_harness import run_python_project_harness
+from asp_python import run_asp_python
 
 if TYPE_CHECKING:
     from pathlib import Path
 
 
-def test_run_python_project_harness_uses_pyproject_package_scope(
+def test_run_asp_python_uses_pyproject_package_scope(
     tmp_path: Path,
 ) -> None:
     default_src = tmp_path / "src"
@@ -47,7 +47,7 @@ packages = ["packages/python/src/tools"]
         encoding="utf-8",
     )
 
-    report = run_python_project_harness(tmp_path)
+    report = run_asp_python(tmp_path)
 
     assert report.is_clean
     assert [module.path for module in report.modules] == [

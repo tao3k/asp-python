@@ -3,14 +3,14 @@ from __future__ import annotations
 import json
 from typing import TYPE_CHECKING
 
-from python_lang_parser import PythonDiagnosticSeverity
-from python_lang_project_harness import (
+from asp_python import (
     default_python_harness_config,
     python_rule_pack_descriptors,
     python_syntax_rules,
     render_python_lang_harness_json,
     run_python_lang_harness,
 )
+from python_lang_parser import PythonDiagnosticSeverity
 
 if TYPE_CHECKING:
     from pathlib import Path

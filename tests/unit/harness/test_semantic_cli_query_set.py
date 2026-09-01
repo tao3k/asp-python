@@ -9,7 +9,7 @@ from pathlib import Path
 
 from semantic_search_fixture import write_search_fixture
 
-from python_lang_project_harness import run_cli
+from asp_python import run_cli
 
 
 def test_cli_search_text_prefilter_large_project_records_runtime_cost(

@@ -7,7 +7,7 @@ from pathlib import Path
 
 from semantic_search_fixture import require_compact_graph_renderer, write_search_fixture
 
-from python_lang_project_harness._cli import run_cli
+from asp_python._cli import run_cli
 
 
 def test_cli_search_lexical_query_set(tmp_path: Path) -> None:
@@ -75,8 +75,8 @@ def test_cli_search_lexical_matches_path_only_candidate(tmp_path: Path) -> None:
 def test_protocol_search_lexical_query_uses_fast_frontier(
     tmp_path: Path,
 ) -> None:
-    from python_lang_project_harness._cli_args import ProtocolArgs
-    from python_lang_project_harness._cli_protocol import run_protocol_cli
+    from asp_python._cli_args import ProtocolArgs
+    from asp_python._cli_protocol import run_protocol_cli
 
     write_search_fixture(tmp_path)
     path_owner = tmp_path / "src" / "pkg" / "hook_runtime.py"
@@ -127,12 +127,12 @@ def test_protocol_search_lexical_query_uses_native_prefilter_without_tools(
     tmp_path: Path,
     monkeypatch,
 ) -> None:
-    from python_lang_project_harness import (
+    from asp_python import (
         _semantic_search_prefilter,
         _semantic_search_prefilter_file_scan,
     )
-    from python_lang_project_harness._cli_args import ProtocolArgs
-    from python_lang_project_harness._cli_protocol import run_protocol_cli
+    from asp_python._cli_args import ProtocolArgs
+    from asp_python._cli_protocol import run_protocol_cli
 
     monkeypatch.setattr(_semantic_search_prefilter.shutil, "which", lambda _name: None)
     monkeypatch.setattr(
@@ -188,12 +188,12 @@ def test_protocol_search_lexical_source_query_uses_rglob_source_without_tools(
     tmp_path: Path,
     monkeypatch,
 ) -> None:
-    from python_lang_project_harness import (
+    from asp_python import (
         _semantic_search_prefilter,
         _semantic_search_prefilter_file_scan,
     )
-    from python_lang_project_harness._cli_args import ProtocolArgs
-    from python_lang_project_harness._cli_protocol import run_protocol_cli
+    from asp_python._cli_args import ProtocolArgs
+    from asp_python._cli_protocol import run_protocol_cli
 
     monkeypatch.setattr(_semantic_search_prefilter.shutil, "which", lambda _name: None)
     monkeypatch.setattr(

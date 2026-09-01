@@ -1,11 +1,11 @@
-# python-lang-project-harness
+# asp-python
 
-`python-lang-project-harness` is a standalone Python project harness library for
+`asp-python` is a standalone Python policy and semantic tooling library for
 modern Python packages. It ships two library boundaries in one repo:
 
 - `python_lang_parser`: Python-native AST, compiler, tokenize, symbol-table,
   module-shape, public-surface, and symbol-role facts.
-- `python_lang_project_harness`: project discovery, deterministic rule
+- `asp_python`: project discovery, deterministic rule
   packs, compact rendered diagnostics, and pytest-friendly assertions.
 
 The harness is library-first. Callers pass a project root or explicit paths,
@@ -23,26 +23,26 @@ the harness.
 ```python
 from pathlib import Path
 
-from python_lang_project_harness import (
+from asp_python import (
     __version__,
     PythonOwnerResponsibility,
     PythonVerificationProfileHint,
     PythonVerificationTaskKind,
-    assert_python_project_harness_clean,
+    assert_asp_python_clean,
     default_python_harness_config,
     plan_python_project_verification_with_config,
     render_python_lang_harness,
     render_python_reasoning_tree,
     render_python_verification_plan,
-    run_python_project_harness,
+    run_asp_python,
 )
 
 
-def test_python_project_harness_policy() -> None:
-    assert_python_project_harness_clean(Path("."))
+def test_asp_python_policy() -> None:
+    assert_asp_python_clean(Path("."))
 
 
-report = run_python_project_harness(Path("."))
+report = run_asp_python(Path("."))
 print(__version__)
 print(render_python_lang_harness(report))
 print(render_python_reasoning_tree(report))
@@ -54,11 +54,11 @@ tool/cache/build directories such as `.venv`, `__pycache__`, `build`, and
 they do not narrow parser coverage. The explicit path runner,
 `run_python_lang_harness([...])`, is useful for focused parser and syntax
 checks.
-Use `PythonHarnessConfig` to change source-root classification, test-root
+Use `AspPythonConfig` to change source-root classification, test-root
 classification, extra external project paths, test inclusion, or blocking
 severities without hardcoding project-specific policy into the library.
-Project runners also read `[tool.python-lang-project-harness]` from
-`pyproject.toml` when no explicit `PythonHarnessConfig` is passed, including
+Project runners also read `[tool.asp-python]` from
+`pyproject.toml` when no explicit `AspPythonConfig` is passed, including
 `disabled_rule_ids` and `blocking_rule_ids` for stable rule-id policy.
 Standard `[project]` metadata such as `name`, `requires-python`,
 `import-names`, scripts, and pytest entry points is parsed by
@@ -75,32 +75,26 @@ shadows without forcing an LLM to consume the full JSON report first. In
 project-scoped runs, tree paths are rendered relative to the project root to
 avoid repeating long absolute prefixes.
 
-`render_python_project_harness_agent_snapshot(".")` and the
-`--agent-snapshot` CLI mode bundle compact policy findings, reasoning-tree
-facts, verification-profile reminders, and active verification tasks into one
-low-noise Agent repair surface. The snapshot uses capped module summaries,
-branches, public owners, import edges, and branch-first profile candidates; it
-does not print clean-run file counts or empty section summaries.
+`render_asp_python_agent_snapshot(".")` bundles compact policy
+findings, reasoning-tree facts, verification-profile reminders, and active
+verification tasks into one low-noise library response. The snapshot uses
+capped module summaries, branches, public owners, import edges, and
+branch-first profile candidates.
 
-The semantic-language console script exposes search, registry, and check
-surfaces aligned with the Rust and TypeScript harnesses:
+The semantic-language console script exposes search and registry surfaces.
+Policy remains a dependency API consumed by pytest/build ownership:
 
 ```shell
 asp-python search workspace .
 asp-python search prime .
-asp-python search lexical PythonHarnessReport owner tests .
-asp-python search lexical --query-set PythonHarnessReport --query-set PythonSemanticSearchOptions owner tests .
+asp-python search lexical AspPythonReport owner tests .
+asp-python search lexical --query-set AspPythonReport --query-set PythonSemanticSearchOptions owner tests .
 asp-python search public-external-types pytest .
-asp-python search callsite PythonHarnessReport .
+asp-python search callsite AspPythonReport .
 asp-python search deps pytest .
 asp-python agent doctor --json .
 asp-python agent guide .
-asp-python check --full .
-asp-python .
-asp-python --json .
-asp-python --agent-snapshot .
-asp-python --source-dir lib --extra-path tools --no-tests .
-python -m python_lang_project_harness .
+python -c 'from asp_python import assert_asp_python_clean; assert_asp_python_clean(".")'
 ```
 
 ## Verification Planning
@@ -124,7 +118,7 @@ print(render_python_verification_plan(plan))
 
 Profile hints, dependency signals, receipts, waivers, task-kind mappings, and
 skill bindings are configurable through `PythonVerificationPolicy` or
-`[tool.python-lang-project-harness.verification]`. Parser facts win over config
+`[tool.asp-python.verification]`. Parser facts win over config
 hints; mismatches become `responsibility_review` tasks instead of silent trust.
 `build_python_verification_profile_index(...)` exposes `active_profile_hints()`
 so Agents can turn parser-suggested owners into config-ready verification
@@ -146,7 +140,7 @@ group:
 [dependency-groups]
 test = [
   "pytest>=8",
-  "python-lang-project-harness[pytest]>=0.1.0",
+  "asp-python[pytest]>=0.1.0",
 ]
 
 [tool.pytest.ini_options]
@@ -159,9 +153,9 @@ harness when `--python-project-harness` is enabled. Projects that prefer an
 explicit test file can use the public helper:
 
 ```python
-from python_lang_project_harness.pytest import python_project_harness_test
+from asp_python.pytest import asp_python_test
 
-test_python_project_harness_policy = python_project_harness_test()
+test_asp_python_policy = asp_python_test()
 ```
 
 ## Rule Packs

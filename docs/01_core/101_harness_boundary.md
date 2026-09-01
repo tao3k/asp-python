@@ -7,7 +7,7 @@
 :LAST_SYNC: 2026-04-30
 :END:
 
-`python-lang-project-harness` owns a standalone, library-first Python project
+`asp-python` owns a standalone, library-first Python project
 harness. It keeps parser facts and project policy in separate import packages,
 but ships them from the same repo so downstream users do not depend on the old
 monorepo workspace layout.
@@ -47,7 +47,7 @@ For class surfaces it owns data/type shape facts such as annotated class
 fields, `__init__` self-field storage, method counts, and visible anchors like
 `dataclass`, `Enum`, `Protocol`, `TypedDict`, `NamedTuple`, or model bases.
 
-`python_lang_project_harness` consumes those reports. It owns rule
+`asp_python` consumes those reports. It owns rule
 catalogs, project discovery, report aggregation, rendering, and pytest
 embedding. Rule packs should depend on parser facts rather than ad hoc source
 text matching when a structured fact exists.
@@ -89,11 +89,11 @@ before choosing a repair surface.
 
 ## Runner Modes
 
-Use `run_python_project_harness()` or `assert_python_project_harness_clean()`
+Use `run_asp_python()` or `assert_asp_python_clean()`
 when a caller has a project root. The project runner scans all Python files
 under the project root by default, with cache/build/environment directories
 excluded. `src/` and `tests/` remain source/test classification roots for
-project policy; they do not narrow parser coverage. `PythonHarnessConfig` can
+project policy; they do not narrow parser coverage. `AspPythonConfig` can
 change source-root classification, test-root classification, extra external
 project paths, and test inclusion behavior.
 
@@ -110,16 +110,16 @@ when configured-blocking findings exist:
 ```python
 from pathlib import Path
 
-from python_lang_project_harness import assert_python_project_harness_clean
+from asp_python import assert_asp_python_clean
 
 
-def test_python_project_harness_policy() -> None:
-    assert_python_project_harness_clean(Path("."))
+def test_asp_python_policy() -> None:
+    assert_asp_python_clean(Path("."))
 ```
 
-`python_project_harness_test()` returns a pytest-collectable callable for
+`asp_python_test()` returns a pytest-collectable callable for
 projects that prefer a one-line mount. Downstream projects can import it from
-`python_lang_project_harness.pytest` and assign it to a test name.
+`asp_python.pytest` and assign it to a test name.
 
 The package also exposes a pytest plugin through the `pytest11` entry point.
 When installed as a test/dev dependency, pytest loads the plugin and accepts
@@ -127,14 +127,12 @@ When installed as a test/dev dependency, pytest loads the plugin and accepts
 option is enabled, so installing the package does not silently add a policy
 gate.
 
-## CLI Embedding
+## Dependency API
 
-`asp-python check [--json] [PROJECT_ROOT]` runs the same default project
-runner. Compact text is the default output. `--json` emits the structured
-`PythonHarnessReport` payload. `asp-python search ...` renders bounded
-semantic-search packets from parser-owned facts. The CLI is a thin adapter over
-library APIs: it does not own workflow orchestration or project-specific
-policy.
+`assert_asp_python_clean(PROJECT_ROOT)` is the sole project-policy
+entry. The pytest plugin and downstream build/test owners import that API;
+`asp-python` exposes search/evidence/agent protocol commands only and never
+creates a second policy-check authority.
 
 ## Blocking And Advice
 

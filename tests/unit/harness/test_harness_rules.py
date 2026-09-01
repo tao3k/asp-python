@@ -4,20 +4,20 @@ import os
 import tempfile
 from pathlib import Path
 
-from python_lang_project_harness._agent_policy_catalog import python_agent_policy_rules
-from python_lang_project_harness._harness_rules import (
+from asp_python._agent_policy_catalog import python_agent_policy_rules
+from asp_python._harness_rules import (
     python_harness_rules_markdown,
     render_python_harness_rules_markdown,
     write_python_harness_rules_to_unit_tests,
 )
-from python_lang_project_harness._modern_design_catalog import (
+from asp_python._modern_design_catalog import (
     python_modern_design_rules,
 )
-from python_lang_project_harness._modularity import python_modularity_rules
-from python_lang_project_harness._project_policy_catalog import (
+from asp_python._modularity import python_modularity_rules
+from asp_python._project_policy_catalog import (
     python_project_policy_rules,
 )
-from python_lang_project_harness._test_layout_catalog import python_test_layout_rules
+from asp_python._test_layout_catalog import python_test_layout_rules
 
 
 def _harness_rules_rule_ids() -> list[str]:

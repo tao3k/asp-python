@@ -1,8 +1,8 @@
 from __future__ import annotations
 
+import asp_python as harness_api
+import asp_python.harness as harness_facade
 import python_lang_parser as parser_api
-import python_lang_project_harness as harness_api
-import python_lang_project_harness.harness as harness_facade
 
 
 def test_root_package_reexports_parser_fact_models() -> None:
@@ -120,8 +120,8 @@ def test_root_package_reexports_parser_fact_models() -> None:
 
 
 def test_root_package_reexports_embedding_harness_surface() -> None:
-    assert harness_api.PythonHarnessConfig is harness_facade.PythonHarnessConfig
-    assert harness_api.PythonHarnessReport is harness_facade.PythonHarnessReport
+    assert harness_api.AspPythonConfig is harness_facade.AspPythonConfig
+    assert harness_api.AspPythonReport is harness_facade.AspPythonReport
     assert (
         harness_api.PythonVerificationPolicy is harness_facade.PythonVerificationPolicy
     )
@@ -141,10 +141,7 @@ def test_root_package_reexports_embedding_harness_surface() -> None:
         harness_api.default_python_harness_config
         is harness_facade.default_python_harness_config
     )
-    assert (
-        harness_api.python_project_harness_test
-        is harness_facade.python_project_harness_test
-    )
+    assert harness_api.asp_python_test is harness_facade.asp_python_test
     assert (
         harness_api.python_project_policy_rules
         is harness_facade.python_project_policy_rules
@@ -166,17 +163,14 @@ def test_root_package_reexports_embedding_harness_surface() -> None:
         is harness_facade.render_python_reasoning_tree
     )
     assert (
-        harness_api.render_python_project_harness_agent_snapshot
-        is harness_facade.render_python_project_harness_agent_snapshot
+        harness_api.render_asp_python_agent_snapshot
+        is harness_facade.render_asp_python_agent_snapshot
     )
     assert (
-        harness_api.render_python_project_harness_agent_snapshot_with_config
-        is harness_facade.render_python_project_harness_agent_snapshot_with_config
+        harness_api.render_asp_python_agent_snapshot_with_config
+        is harness_facade.render_asp_python_agent_snapshot_with_config
     )
-    assert (
-        harness_api.read_python_project_harness_config
-        is harness_facade.read_python_project_harness_config
-    )
+    assert harness_api.read_asp_python_config is harness_facade.read_asp_python_config
     assert (
         harness_api.python_rule_pack_descriptors
         is harness_facade.python_rule_pack_descriptors
@@ -194,13 +188,10 @@ def test_root_package_reexports_embedding_harness_surface() -> None:
     )
     assert "render_python_lang_harness_advice" in harness_api.__all__
     assert "render_python_lang_harness_json" in harness_api.__all__
-    assert "render_python_project_harness_agent_snapshot" in harness_api.__all__
-    assert (
-        "render_python_project_harness_agent_snapshot_with_config"
-        in harness_api.__all__
-    )
+    assert "render_asp_python_agent_snapshot" in harness_api.__all__
+    assert "render_asp_python_agent_snapshot_with_config" in harness_api.__all__
     assert "render_python_reasoning_tree" in harness_api.__all__
-    assert "read_python_project_harness_config" in harness_api.__all__
+    assert "read_asp_python_config" in harness_api.__all__
     assert "run_cli_from_env" in harness_api.__all__
     assert "python_syntax_rules" in harness_api.__all__
     assert "PythonVerificationPolicy" in harness_api.__all__

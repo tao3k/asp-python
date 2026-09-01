@@ -4,8 +4,8 @@ from __future__ import annotations
 
 import http.client
 import json
-import shutil
 import subprocess
+import sys
 from concurrent.futures import ThreadPoolExecutor
 from concurrent.futures import TimeoutError as FutureTimeoutError
 from pathlib import Path
@@ -21,7 +21,7 @@ from provider_runtime_live_support import (
     post,
 )
 
-from python_lang_project_harness._runtime import _health, _response_frame
+from asp_python._runtime import _health, _response_frame
 
 
 def _read_bootstrap(process: subprocess.Popen[str]) -> dict[str, object]:
@@ -71,8 +71,10 @@ def test_resident_runtime_publishes_manifest_operations_and_structured_frames(
 
 
 def test_http_json_live_corpus_stream_query_concurrency_and_latency() -> None:
-    provider = shutil.which("asp-python")
-    assert provider is not None, "uv project environment omitted asp-python"
+    provider = Path(sys.executable).with_name("asp-python")
+    assert provider.is_file(), (
+        "asp-python entrypoint is absent beside the active Python"
+    )
     process = subprocess.Popen(
         [provider, "serve"],
         cwd=Path(__file__).parents[3],

@@ -11,7 +11,7 @@ from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 from urllib.parse import SplitResult
 
-from python_lang_project_harness._runtime import _response_frame
+from asp_python._runtime import _response_frame
 
 
 def environment() -> dict[str, str]:
@@ -24,18 +24,36 @@ def environment() -> dict[str, str]:
             [
                 {
                     "operation": "projection-batch",
-                    "requestSchemaId": "schema:projection-request",
-                    "responseSchemaId": "schema:projection-response",
+                    "requestSchema": {
+                        "schemaId": "schema:projection-request",
+                        "schemaVersion": "1",
+                    },
+                    "responseSchema": {
+                        "schemaId": "schema:projection-response",
+                        "schemaVersion": "1",
+                    },
                 },
                 {
                     "operation": "project-resolution",
-                    "requestSchemaId": "schema:resolution-request",
-                    "responseSchemaId": "schema:resolution-response",
+                    "requestSchema": {
+                        "schemaId": "schema:resolution-request",
+                        "schemaVersion": "1",
+                    },
+                    "responseSchema": {
+                        "schemaId": "schema:resolution-response",
+                        "schemaVersion": "1",
+                    },
                 },
                 {
                     "operation": "query",
-                    "requestSchemaId": "schema:query-request",
-                    "responseSchemaId": "schema:query-response",
+                    "requestSchema": {
+                        "schemaId": "schema:query-request",
+                        "schemaVersion": "1",
+                    },
+                    "responseSchema": {
+                        "schemaId": "schema:query-response",
+                        "schemaVersion": "1",
+                    },
                 },
             ],
             separators=(",", ":"),

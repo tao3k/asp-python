@@ -4,6 +4,8 @@ import subprocess
 import sys
 from typing import TYPE_CHECKING
 
+from asp_python._pytest_plugin_project import _package_scoped_root
+
 if TYPE_CHECKING:
     from pathlib import Path
 
@@ -92,6 +94,64 @@ def test_pytest_plugin_reports_compact_harness_failure(
     )
 
 
+def test_pytest_plugin_scopes_package_target_to_nearest_project(
+    tmp_path: Path,
+) -> None:
+    package_root = tmp_path / "packages" / "python" / "graphs"
+    test_path = package_root / "tests" / "test_graphs.py"
+    test_path.parent.mkdir(parents=True)
+    (package_root / "pyproject.toml").write_text(
+        """
+[project]
+name = "graphs"
+version = "0.1.0"
+""".lstrip(),
+        encoding="utf-8",
+    )
+    test_path.write_text(
+        "def test_graphs() -> None:\n    assert True\n",
+        encoding="utf-8",
+    )
+
+    assert (
+        _package_scoped_root(
+            tmp_path,
+            ("packages/python/graphs/tests",),
+            invocation_dir=tmp_path,
+        )
+        == package_root
+    )
+
+
+def test_pytest_plugin_keeps_workspace_scope_for_mixed_projects(
+    tmp_path: Path,
+) -> None:
+    first = tmp_path / "packages" / "python" / "first"
+    second = tmp_path / "packages" / "python" / "second"
+    for package in (first, second):
+        (package / "tests").mkdir(parents=True)
+        (package / "pyproject.toml").write_text(
+            '[project]\nname = "package"\nversion = "0.1.0"\n',
+            encoding="utf-8",
+        )
+        (package / "tests" / "test_package.py").write_text(
+            "def test_package() -> None:\n    assert True\n",
+            encoding="utf-8",
+        )
+
+    assert (
+        _package_scoped_root(
+            tmp_path,
+            (
+                "packages/python/first/tests",
+                "packages/python/second/tests",
+            ),
+            invocation_dir=tmp_path,
+        )
+        is None
+    )
+
+
 def test_pytest_plugin_honors_dev_dependency_options(
     tmp_path: Path,
 ) -> None:
@@ -157,7 +217,7 @@ def test_pytest_plugin_loads_project_policy_config_from_pyproject(
     tests.mkdir(parents=True)
     (tmp_path / "pyproject.toml").write_text(
         """
-[tool.python-lang-project-harness]
+[tool.asp-python]
 disabled_rule_ids = ["PY-MOD-R002"]
 """.lstrip(),
         encoding="utf-8",

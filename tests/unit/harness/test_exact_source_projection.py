@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import base64
 
-from python_lang_project_harness._exact_source_projection import (
+from asp_python._exact_source_projection import (
     project_provider_native_exact_request,
 )
 

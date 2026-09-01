@@ -3,7 +3,7 @@ from __future__ import annotations
 import re
 from pathlib import Path
 
-from python_lang_project_harness._dependency_topology import (
+from asp_python._dependency_topology import (
     build_dependency_topology_packet,
 )
 

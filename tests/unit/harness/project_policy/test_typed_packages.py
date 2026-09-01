@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from python_lang_project_harness import run_python_project_harness
+from asp_python import run_asp_python
 
 if TYPE_CHECKING:
     from pathlib import Path
@@ -19,7 +19,7 @@ def test_project_policy_blocks_missing_py_typed_for_public_package(
     )
     _write_pyproject(tmp_path, packages='["src/example_pkg"]')
 
-    report = run_python_project_harness(tmp_path)
+    report = run_asp_python(tmp_path)
 
     assert [
         (finding.rule_id, finding.location.path) for finding in report.findings
@@ -43,7 +43,7 @@ def test_project_policy_blocks_missing_py_typed_for_public_facade_imports(
     )
     _write_pyproject(tmp_path, packages='["src/example_pkg"]')
 
-    report = run_python_project_harness(tmp_path)
+    report = run_asp_python(tmp_path)
 
     assert [
         (finding.rule_id, finding.location.path) for finding in report.findings
@@ -64,7 +64,7 @@ def test_project_policy_allows_private_package_without_py_typed(
     )
     _write_pyproject(tmp_path, packages='["src/example_pkg"]')
 
-    report = run_python_project_harness(tmp_path)
+    report = run_asp_python(tmp_path)
 
     assert report.is_clean
 
@@ -79,7 +79,7 @@ def test_project_policy_accepts_src_package_with_py_typed(tmp_path: Path) -> Non
     (package / "py.typed").write_text("", encoding="utf-8")
     _write_pyproject(tmp_path, packages='["src/example_pkg"]')
 
-    report = run_python_project_harness(tmp_path)
+    report = run_asp_python(tmp_path)
 
     assert report.is_clean
 
@@ -96,7 +96,7 @@ def test_project_policy_accepts_nested_src_package_with_py_typed(
     (package / "py.typed").write_text("", encoding="utf-8")
     _write_pyproject(tmp_path, packages='["packages/python/src/example_pkg"]')
 
-    report = run_python_project_harness(tmp_path)
+    report = run_asp_python(tmp_path)
 
     assert report.is_clean
 
@@ -116,7 +116,7 @@ def test_project_policy_blocks_unannotated_public_callable_in_typed_package(
     (package / "py.typed").write_text("", encoding="utf-8")
     _write_pyproject(tmp_path, packages='["src/example_pkg"]')
 
-    report = run_python_project_harness(tmp_path)
+    report = run_asp_python(tmp_path)
 
     assert [
         (finding.rule_id, finding.location.path) for finding in report.findings
@@ -141,7 +141,7 @@ def test_project_policy_blocks_unannotated_public_method_in_typed_package(
     (package / "py.typed").write_text("", encoding="utf-8")
     _write_pyproject(tmp_path, packages='["src/example_pkg"]')
 
-    report = run_python_project_harness(tmp_path)
+    report = run_asp_python(tmp_path)
 
     assert [
         (finding.rule_id, finding.location.path) for finding in report.findings
@@ -166,7 +166,7 @@ def test_project_policy_allows_private_callable_without_annotations_in_typed_pac
     (package / "py.typed").write_text("", encoding="utf-8")
     _write_pyproject(tmp_path, packages='["src/example_pkg"]')
 
-    report = run_python_project_harness(tmp_path)
+    report = run_asp_python(tmp_path)
 
     assert report.is_clean
 
@@ -186,7 +186,7 @@ def test_project_policy_accepts_annotated_method_in_typed_package(
     (package / "py.typed").write_text("", encoding="utf-8")
     _write_pyproject(tmp_path, packages='["src/example_pkg"]')
 
-    report = run_python_project_harness(tmp_path)
+    report = run_asp_python(tmp_path)
 
     assert report.is_clean
 
