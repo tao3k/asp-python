@@ -8,7 +8,7 @@ import binascii
 from dataclasses import dataclass
 
 from ._callable_skeleton_projection import callable_skeleton_payload, collect_segments
-from ._exact_projection_model import ExactSelector
+from ._exact_projection_model import parse_selector
 
 _REQUEST_SCHEMA_ID = (
     "agent.semantic-protocols.provider-language-projection-batch-request"
@@ -150,15 +150,7 @@ def _project_item(
     selector = f"python://{owner.path}#item/{kind}/{node.name}{scope_path}"
     projections: list[dict[str, object]] = []
     if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
-        exact_selector = ExactSelector(
-            requested=selector,
-            root=selector,
-            owner_path=owner.path,
-            kind=kind,
-            symbol=node.name,
-            segment_kind=None,
-            segment_identity=None,
-        )
+        exact_selector = parse_selector(selector)
         projection_request = {
             "generationIdentityDigest": header["generationRootDigest"],
             "parserIdentityDigest": header["parserIdentityDigest"],

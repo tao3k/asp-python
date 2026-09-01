@@ -138,12 +138,25 @@ def _projection_packet(
         "schemaVersion": "1",
         "languageId": "python",
         "providerId": "asp-python",
+        "ownerPath": selector.owner_path,
         "projectionMode": projection_kind,
         "requestedStructuralSelector": selector.requested,
         "structuralSelector": selector.requested,
         "sourceContentDigest": required_text(request, "sourceDigest"),
         "sourceByteStart": byte_start,
         "sourceByteEnd": max(byte_start, byte_end - 1),
+        "normalizedParserFacts": {
+            "itemKind": selector.kind,
+            "itemName": selector.symbol,
+            "scopes": [
+                {
+                    "role": role,
+                    "ownerKind": owner_kind,
+                    "ownerName": owner_name,
+                }
+                for role, owner_kind, owner_name in selector.scopes
+            ],
+        },
     }
     if projection_text is not None:
         packet["projectionText"] = projection_text

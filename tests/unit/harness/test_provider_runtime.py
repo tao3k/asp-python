@@ -19,6 +19,7 @@ from provider_runtime_live_support import (
     frame,
     latency_receipt,
     post,
+    projection_payload,
 )
 
 from asp_python._runtime import _health, _response_frame
@@ -68,6 +69,21 @@ def test_resident_runtime_publishes_manifest_operations_and_structured_frames(
         response["error"]
         == "resident Python provider operation is not admitted: not-admitted"
     )
+
+
+def test_runtime_converts_live_edit_syntax_errors_to_error_frames() -> None:
+    response = _response_frame(
+        frame(
+            "syntax-error-1",
+            "projection-batch",
+            projection_payload("def broken(:\n    pass\n"),
+        ),
+        Path("."),
+    )
+
+    assert response["requestId"] == "syntax-error-1"
+    assert response["outcome"] == "error"
+    assert "invalid syntax" in response["error"]
 
 
 def test_http_json_live_corpus_stream_query_concurrency_and_latency() -> None:

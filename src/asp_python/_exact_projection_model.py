@@ -21,6 +21,7 @@ class ExactSelector:
     owner_path: str
     kind: str
     symbol: str
+    scopes: tuple[tuple[str, str, str], ...]
     segment_kind: str | None
     segment_identity: str | None
 
@@ -43,8 +44,17 @@ def parse_selector(selector: str) -> ExactSelector:
         raise ValueError("exact selector must include owner and item fragment")
     root_fragment, segment_separator, descendant = fragment.partition("/segment/")
     parts = root_fragment.split("/")
-    if len(parts) < 3 or parts[0] != "item":
+    if len(parts) < 3 or parts[0] != "item" or not all(parts[:3]):
         raise ValueError("exact selector item fragment is invalid")
+    scope_parts = parts[3:]
+    scopes: list[tuple[str, str, str]] = []
+    if len(scope_parts) % 4 != 0:
+        raise ValueError("exact selector item scope is invalid")
+    for offset in range(0, len(scope_parts), 4):
+        scope = scope_parts[offset : offset + 4]
+        if scope[0] != "scope" or not all(scope[1:]):
+            raise ValueError("exact selector item scope is invalid")
+        scopes.append((scope[1], scope[2], unquote(scope[3])))
     root = f"python://{owner_path}#{root_fragment}"
     segment_kind = None
     segment_identity = None
@@ -57,8 +67,9 @@ def parse_selector(selector: str) -> ExactSelector:
         requested=selector,
         root=root,
         owner_path=owner_path,
-        kind=parts[-2],
-        symbol=unquote(parts[-1]),
+        kind=parts[1],
+        symbol=unquote(parts[2]),
+        scopes=tuple(scopes),
         segment_kind=segment_kind,
         segment_identity=segment_identity,
     )
@@ -69,9 +80,21 @@ def find_function(
 ) -> ast.FunctionDef | ast.AsyncFunctionDef:
     if selector.kind not in {"function", "method"}:
         raise ValueError("callable projection requires function or method selector")
+    search_root = tree
+    for _role, owner_kind, owner_name in selector.scopes:
+        if owner_kind != "type":
+            raise ValueError("exact callable scope owner kind is unsupported")
+        owners = [
+            node
+            for node in ast.iter_child_nodes(search_root)
+            if isinstance(node, ast.ClassDef) and node.name == owner_name
+        ]
+        if len(owners) != 1:
+            raise ValueError("exact callable scope owner is missing or ambiguous")
+        search_root = owners[0]
     matches = [
         node
-        for node in ast.walk(tree)
+        for node in ast.walk(search_root)
         if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef))
         and node.name == selector.symbol
     ]

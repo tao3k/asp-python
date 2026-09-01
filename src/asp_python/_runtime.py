@@ -115,7 +115,7 @@ def _response_frame(request: dict[str, Any], cwd: Path) -> dict[str, Any]:
             if not isinstance(payload, dict):
                 raise RuntimeError("provider runtime payload is not an object")
             result = _execute(operation, payload, cwd)
-        except (RuntimeError, ValueError) as execution_error:
+        except (RuntimeError, SyntaxError, ValueError) as execution_error:
             error = str(execution_error)
         else:
             return {
