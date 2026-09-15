@@ -1,0 +1,38 @@
+# asp-python
+
+## ASP Python Rules
+
+Generated from embedded `src/asp_python/asp-rules.md`.
+
+- **PY-AGENT-POLICY-001**: Requires library modules to declare concise intent docstrings for agent search and repair.
+- **PY-AGENT-POLICY-002**: Requires public callable boundaries to carry type annotations for native syntax reasoning.
+- **PY-AGENT-POLICY-003**: Detects public callable name conflicts that make project-level intent ambiguous.
+- **PY-AGENT-POLICY-004**: Detects repeated Python module path segments that obscure ownership paths.
+- **PY-AGENT-POLICY-005**: Detects public type name conflicts that make project-level type intent ambiguous.
+- **PY-AGENT-POLICY-006**: Detects public value name conflicts that make configuration or value intent ambiguous.
+- **PY-AGENT-POLICY-007**: Requires branch packages to document reasoning-tree intent before agents choose an owner subtree.
+- **PY-AGENT-POLICY-008**: Flags broad mixed branch packages that need focused subpackages or facade owner maps.
+- **PY-AGENT-POLICY-009**: Requires nested Python algorithms to expose shape through guards, dispatch, matches, or named steps.
+- **PY-AGENT-POLICY-010**: Splits broad public Python functions into named helpers or pipeline steps.
+- **PY-AGENT-POLICY-011**: Replaces manual Python transforms with comprehensions, built-ins, counters, defaults, or named iterator helpers.
+- **PY-AGENT-POLICY-012**: Requires public data-shaped classes to use visible dataclass, typed, protocol, enum, or model anchors.
+- **PY-MOD-R001**: Replaces wildcard imports with explicit imported names.
+- **PY-MOD-R002**: Replaces bare library prints with logging, return values, or explicit test assertions.
+- **PY-MOD-R003**: Requires package facade re-exports to declare an explicit public export contract.
+- **PY-MOD-R004**: Removes debugger breakpoints from library modules.
+- **PY-MOD-R006**: Splits large multi-responsibility Python modules behind explicit package facades.
+- **PY-MOD-R007**: Keeps one source owner for each Python import namespace branch.
+- **PY-AGENT-PROJECT-001**: Requires Python projects to use src layout for installed package import resolution.
+- **PY-AGENT-PROJECT-002**: Requires declared wheel package roots to be importable package directories.
+- **PY-AGENT-PROJECT-003**: Requires typed public packages to ship py typed markers.
+- **PY-AGENT-PROJECT-004**: Requires public callables in typed packages to carry annotations.
+- **PY-AGENT-PROJECT-005**: Requires project metadata to declare the package name.
+- **PY-AGENT-PROJECT-006**: Requires project metadata to declare supported Python versions.
+- **PY-AGENT-PROJECT-007**: Requires build-system tables to declare build requirements.
+- **PY-AGENT-PROJECT-008**: Requires declared import names to resolve to parser-visible project modules.
+- **PY-AGENT-PROJECT-009**: Requires entry point targets to resolve to parser-visible project modules.
+- **PY-AGENT-PROJECT-010**: Requires ASP Python dev dependencies to mount an actual pytest gate.
+- **PY-AGENT-PROJECT-011**: Requires verification profile hints or agent snapshot guidance for parser-suggested owners.
+- **PY-TEST-R001**: Moves pytest modules out of the tests root and into owned suites.
+- **PY-TEST-R002**: Keeps tests root limited to ASP Python configuration and owned suite directories.
+- **PY-TEST-R003**: Splits oversized unit test leaves into focused folder-first suites.

@@ -1,10 +1,10 @@
 ---
-source: tests/unit/harness/test_policy_snapshots.py
+source: tests/unit/asp_python/test_policy_snapshots.py
 expression: rendered
 ---
 [fail] python blockingFindings=1 parsed=0/0
 |failureFrontier rule=PY-AGENT-PROJECT-010 severity=warning path=pyproject.toml line=1 column=1
-|message Harness dev dependency should mount a pytest gate
-|summary pyproject.toml declares the Python project harness surface without a parser-visible pytest gate.
-|repair mount the parser-backed harness in pytest
+|message ASP Python dev dependency should mount a pytest gate
+|summary pyproject.toml declares the ASP Python surface without a parser-visible pytest gate.
+|repair mount the parser-backed ASP Python in pytest
 |hotBlock selector=pyproject.toml:1:1 reason=blocking-finding

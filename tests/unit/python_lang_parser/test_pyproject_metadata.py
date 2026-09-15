@@ -37,12 +37,12 @@ docs = [
     { package = "mkdocs>=1.6" },
 ]
 test = [
-    "python-lang-project-harness[pytest]>=0.1.0",
+    "asp-python[pytest]>=0.1.0",
     { dependency = "ruff>=0.13" },
 ]
 
 [tool.pytest.ini_options]
-addopts = ["--import-mode=importlib", "--python-project-harness"]
+addopts = ["--import-mode=importlib", "--asp-python"]
 
 [build-system]
 requires = ["hatchling"]
@@ -84,8 +84,8 @@ packages = ["src/example_pkg"]
             "extra": None,
         },
         {
-            "requirement": "python-lang-project-harness[pytest]>=0.1.0",
-            "name": "python-lang-project-harness",
+            "requirement": "asp-python[pytest]>=0.1.0",
+            "name": "asp-python",
             "source": "dependency-groups",
             "group": "test",
             "extra": None,
@@ -100,9 +100,9 @@ packages = ["src/example_pkg"]
     ]
     assert metadata.pytest_options.addopts == (
         "--import-mode=importlib",
-        "--python-project-harness",
+        "--asp-python",
     )
-    assert metadata.pytest_options.enables_python_project_harness is True
+    assert metadata.pytest_options.enables_asp_python is True
     assert metadata.wheel_packages == ("src/example_pkg",)
     assert metadata.package_roots == (package,)
     assert [item.to_dict() for item in metadata.import_names] == [
