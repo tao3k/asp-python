@@ -1,4 +1,4 @@
-# Python Lang Project Harness: Map Of Content
+# ASP Python: Map Of Content
 
 :PROPERTIES:
 :ID: efd68dc9011b23c38164eb503920b77bdfdd6c68
@@ -7,14 +7,14 @@
 :LAST_SYNC: 2026-04-30
 :END:
 
-Documentation surface for the standalone Python language project harness. The
+Documentation surface for ASP Python. The
 README stays compact; durable package details live here so runner modes, rule
 catalogs, and embedding contracts can evolve without turning the package
 entrypoint into a catch-all reference page.
 
 ## 01_core: Architecture And Foundation
 
-- [Harness Boundary](01_core/101_harness_boundary.md): package ownership,
+- [ASP Python Boundary](01_core/101_asp_python_boundary.md): package ownership,
   parser boundary, project runner, explicit-path runner, pytest embedding, and
   non-goals.
 
@@ -33,7 +33,7 @@ entrypoint into a catch-all reference page.
   verification tasks, profile hints, receipts, waivers, and report artifacts.
 
 :RELATIONS:
-:LINKS: [Harness Boundary](01_core/101_harness_boundary.md), [Rule Catalog](03_features/201_rule_catalog.md), [Runner Modes](03_features/202_runner_modes.md), [CLI](03_features/203_cli.md), [Pytest Dev Dependency](03_features/204_pytest.md), [Verification Planning](03_features/205_verification.md)
+:LINKS: [ASP Python Boundary](01_core/101_asp_python_boundary.md), [Rule Catalog](03_features/201_rule_catalog.md), [Runner Modes](03_features/202_runner_modes.md), [CLI](03_features/203_cli.md), [Pytest Dev Dependency](03_features/204_pytest.md), [Verification Planning](03_features/205_verification.md)
 :END:
 
 ---

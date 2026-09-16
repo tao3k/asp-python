@@ -1,5 +1,5 @@
 ---
-source: tests/unit/harness/test_policy_snapshots.py
+source: tests/unit/asp_python/test_policy_snapshots.py
 expression: rendered
 ---
 [fail] python blockingFindings=1 parsed=0/0

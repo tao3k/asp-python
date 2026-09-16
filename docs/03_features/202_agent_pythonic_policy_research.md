@@ -8,7 +8,7 @@ Python idioms that keep code small enough for an LLM to edit reliably.
 
 ## Target Reader Shift
 
-The harness target reader has changed. The primary reader is no longer a human
+ASP Python target reader has changed. The primary reader is no longer a human
 reviewer looking for pleasant style; it is an Agent or large language model
 that must choose a small, correct edit surface from a whole Python project. A
 human can tolerate incidental ceremony and remember local context outside the
@@ -32,7 +32,7 @@ edits:
 - verification anchors: compact snapshot sections, task contracts, receipts,
   waivers, and responsibility-review tasks.
 
-The harness should therefore reject policy ideas that are merely aesthetic. A
+ASP Python should therefore reject policy ideas that are merely aesthetic. A
 new Agent rule needs four properties: it must be backed by parser-owned facts,
 it must reduce the model's search or edit surface, it must render as compact
 actionable advice rather than redundant explanation, and it must self-apply to
@@ -100,13 +100,13 @@ Modern Python also has native constructs that remove common LLM boilerplate:
 GitHub practice shows the adjacent tool baseline. Current mature Python repos
 such as `pydantic/pydantic`, `pytest-dev/pytest`, `encode/httpx`, and
 `psf/black` centralize project metadata in `pyproject.toml` and commonly wire
-pytest, ruff, mypy, or pyright. That means this harness should not duplicate
+pytest, ruff, mypy, or pyright. That means ASP Python should not duplicate
 style or type-check rules. Its useful scope is the parser-backed project and
 algorithm contract that an LLM sees before it edits code.
 
-## Harness Thesis
+## ASP Python Thesis
 
-The harness should classify Python quality in three layers:
+ASP Python should classify Python quality in three layers:
 
 1. Tool substrate: packaging metadata, pytest gate, ruff, and type-checker
    configuration. Parser facts expose this layer, but normal tools enforce it.
@@ -141,7 +141,7 @@ The next policy step is not another size threshold. It is native-idiom advice:
 when the parser sees a simple module-level function or public method manually
 building a list, set, or dict in a loop, manually counting/grouping into a
 dictionary, manually summing numeric values, or returning a boolean through a
-trivial predicate loop, the harness should ask the agent to use a comprehension,
+trivial predicate loop, ASP Python should ask the agent to use a comprehension,
 generator expression, built-in such as `sum`/`any`/`all`,
 `collections.Counter`, `collections.defaultdict`, or named iterator pipeline.
 This is advisory because explicit loops remain correct for side effects,
@@ -150,7 +150,7 @@ measured.
 
 ## Candidate Matrix
 
-| Candidate | Evidence | Harness action |
+| Candidate | Evidence | ASP Python action |
 | --- | --- | --- |
 | Map/filter/list/set/dict build loops | Python Functional HOWTO on comprehensions and generator expressions | Implemented by parser fact `manual_collection_loop_count` |
 | Predicate search loops | Python built-ins and Functional HOWTO predicate guidance | Implemented by parser fact `manual_predicate_loop_count` |
