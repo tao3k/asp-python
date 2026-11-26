@@ -14,11 +14,6 @@ from ._cli_query_flow_lite_args import (
     flow_lite_query_protocol_args,
     is_flow_lite_query_state,
 )
-from ._cli_query_tree_sitter_args import (
-    is_tree_sitter_query_state,
-    tree_sitter_query_args_error,
-    tree_sitter_query_protocol_args,
-)
 
 if TYPE_CHECKING:
     from ._cli_args import ProtocolArgs
@@ -50,8 +45,6 @@ def _query_args_result(
         return args_type("error", error=error)
     if is_flow_lite_query_state(state):
         return flow_lite_query_protocol_args(args_type, state)
-    if is_tree_sitter_query_state(state):
-        return tree_sitter_query_protocol_args(args_type, state)
     return args_type(
         "error",
         error=(
@@ -69,8 +62,6 @@ def _query_args_error(state: QueryParseState) -> str | None:
         return "query does not accept positional WORKSPACE; use --workspace <workspace-root>"
     if is_flow_lite_query_state(state):
         return flow_lite_query_args_error(state)
-    if is_tree_sitter_query_state(state):
-        return tree_sitter_query_args_error(state)
     if not state.selector and not state.positionals:
         return "query requires an owner path"
     if not state.terms and state.selector is None:
@@ -89,4 +80,4 @@ def _query_has_positional_workspace(state: QueryParseState) -> bool:
 
 
 def _query_allows_positional_workspace(state: QueryParseState) -> bool:
-    return state.catalog is not None and state.tree_sitter_query is None
+    return state.catalog is not None

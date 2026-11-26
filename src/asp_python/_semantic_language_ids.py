@@ -6,9 +6,6 @@ SEMANTIC_LANGUAGE_PROTOCOL_ID = "agent.semantic-protocols.semantic-language"
 SEMANTIC_LANGUAGE_PROTOCOL_VERSION = "1"
 SEMANTIC_QUERY_PACKET_SCHEMA_ID = "agent.semantic-protocols.semantic-query-packet"
 SEMANTIC_SOURCE_LOCATION_SCHEMA_ID = "agent.semantic-protocols.semantic-source-location"
-SEMANTIC_TREE_SITTER_PROVENANCE_SCHEMA_ID = (
-    "agent.semantic-protocols.semantic-tree-sitter-provenance"
-)
 SEMANTIC_GRAPH_SCHEMA_ID = "agent.semantic-protocols.semantic-graph"
 SEMANTIC_TYPE_SURFACE_SCHEMA_ID = "agent.semantic-protocols.semantic-type-surface"
 SEMANTIC_FACT_GRAPH_SCHEMA_ID = "agent.semantic-protocols.semantic-fact-graph"
@@ -25,12 +22,8 @@ SEMANTIC_AST_PATCH_SCHEMA_ID = "agent.semantic-protocols.semantic-ast-patch"
 SEMANTIC_AST_PATCH_RECEIPT_SCHEMA_ID = (
     "agent.semantic-protocols.semantic-ast-patch-receipt"
 )
-SEMANTIC_TREE_SITTER_QUERY_SCHEMA_ID = (
-    "agent.semantic-protocols.semantic-tree-sitter-query"
-)
-SEMANTIC_TREE_SITTER_GRAMMAR_PROFILE_SCHEMA_ID = (
-    "agent.semantic-protocols.semantic-tree-sitter-grammar-profile"
-)
+AST_INSPECT_SCHEMA_ID = "agent.semantic-protocols.ast-inspect"
+AST_VERIFY_SCHEMA_ID = "agent.semantic-protocols.ast-verify"
 PYTHON_CAPABILITIES_SCHEMA_ID = (
     "agent.semantic-protocols.languages.python.asp-python.capabilities"
 )

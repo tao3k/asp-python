@@ -9,13 +9,11 @@ from ._cli_query_hook_args import (
     normalize_query_surfaces,
     normalize_query_view,
 )
-from ._cli_query_predicates import parse_asp_syntax_query_predicates
-from ._tree_sitter_query_predicates import SyntaxQueryPredicate
 
 QUERY_USAGE = (
-    "usage: asp-python query (--catalog ID | --treesitter-query EXPR) "
-    "[<workspace-root>] [--workspace <workspace-root>] [--json]; "
-    "or asp-python query --catalog flow-lite --where 'source.call=NAME sink.constructs=TYPE scope.fn=FUNCTION' [<workspace-root>] [--json] [--workspace <workspace-root>]"
+    "usage: asp-python query --catalog flow-lite "
+    "--where 'source.call=NAME sink.constructs=TYPE scope.fn=FUNCTION' "
+    "[<workspace-root>] [--json] [--workspace <workspace-root>]"
 )
 
 
@@ -35,13 +33,6 @@ class QueryParseState:
     selector: str | None = None
     catalog: str | None = None
     flow_lite_where: str | None = None
-    tree_sitter_query: str | None = None
-    asp_syntax_query_captures: list[str] = field(default_factory=list)
-    asp_syntax_query_node_types: list[str] = field(default_factory=list)
-    asp_syntax_query_fields: list[str] = field(default_factory=list)
-    asp_syntax_query_predicates: list[SyntaxQueryPredicate] = field(
-        default_factory=list
-    )
     render_mode: str | None = None
     source_version: str = "worktree"
     terms: list[str] = field(default_factory=list)
@@ -87,11 +78,6 @@ def consume_query_arg(
         "--catalog",
         "--where",
         "--source",
-        "--treesitter-query",
-        "--asp-syntax-query-captures",
-        "--asp-syntax-query-node-types",
-        "--asp-syntax-query-fields",
-        "--asp-syntax-query-predicates-json",
     }:
         return _consume_query_option(state, args, index, arg)
     if arg in {"--help", "-h"}:
@@ -139,21 +125,6 @@ def _consume_query_option(
             if error is not None:
                 return ProtocolArgError(error)
             state.source_version = source_version
-        case "--treesitter-query":
-            state.tree_sitter_query = value
-        case "--asp-syntax-query-captures":
-            state.asp_syntax_query_captures = _split_asp_syntax_query_plan_list(value)
-        case "--asp-syntax-query-node-types":
-            state.asp_syntax_query_node_types = _split_asp_syntax_query_plan_list(value)
-        case "--asp-syntax-query-fields":
-            state.asp_syntax_query_fields = _split_asp_syntax_query_plan_list(value)
-        case "--asp-syntax-query-predicates-json":
-            try:
-                state.asp_syntax_query_predicates = parse_asp_syntax_query_predicates(
-                    value
-                )
-            except ValueError as error:
-                return ProtocolArgError(f"invalid ASP syntax query predicates: {error}")
         case _:
             state.package_path = Path(value)
     return index + 2
@@ -166,11 +137,6 @@ def _query_option_value_name(arg: str) -> str:
         "--catalog": "a catalog id",
         "--where": "flow-lite constraints",
         "--source": "worktree, index, or head",
-        "--treesitter-query": "a tree-sitter query expression",
-        "--asp-syntax-query-captures": "an ASP query capture list",
-        "--asp-syntax-query-node-types": "an ASP query node-type list",
-        "--asp-syntax-query-fields": "an ASP query field list",
-        "--asp-syntax-query-predicates-json": "an ASP query predicate JSON array",
     }[arg]
 
 
@@ -181,10 +147,6 @@ def normalize_query_source_version(value: str | None) -> tuple[str, str | None]:
         "worktree",
         f"unknown query --source value: {value}; expected worktree, index, or head",
     )
-
-
-def _split_asp_syntax_query_plan_list(value: str) -> list[str]:
-    return sorted({item.strip() for item in value.split(",") if item.strip()})
 
 
 def _optional_arg(args: list[str] | tuple[str, ...], index: int) -> str | None:

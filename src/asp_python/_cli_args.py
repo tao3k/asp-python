@@ -5,8 +5,6 @@ from __future__ import annotations
 from dataclasses import dataclass
 from pathlib import Path
 
-from ._tree_sitter_query_predicates import SyntaxQueryPredicate
-
 
 @dataclass(slots=True)
 class ProtocolArgs:
@@ -25,11 +23,6 @@ class ProtocolArgs:
     selector: str | None = None
     catalog: str | None = None
     flow_lite_where: str | None = None
-    tree_sitter_query: str | None = None
-    asp_syntax_query_captures: tuple[str, ...] = ()
-    asp_syntax_query_node_types: tuple[str, ...] = ()
-    asp_syntax_query_fields: tuple[str, ...] = ()
-    asp_syntax_query_predicates: tuple[SyntaxQueryPredicate, ...] = ()
     packet_path: str | None = None
     query_set: tuple[str, ...] = ()
     pipes: tuple[str, ...] = ()

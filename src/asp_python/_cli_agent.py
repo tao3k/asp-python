@@ -15,22 +15,14 @@ def render_agent_guide(project_root: Path) -> str:
         "\n".join(
             (
                 f"[asp-python-guide] project={project}",
-                "|catalog provider=native-facts routes=syntax-locate,exact-source,callable-skeleton",
+                "|catalog provider=native-facts routes=ast-inspect,exact-source,callable-skeleton",
                 (
-                    "|route syntax-locate selectors=S:tree-sitter-query,Scope:owner-or-structural "
-                    "returns=locator,capture,frontier cmd=asp search playbook "
-                    "--language python --rg -n -e '<symbol>' . "
-                    "--tantivy 'title:<symbol>^2 OR body:<symbol>' --syntax python "
-                    "'(function_definition name: (identifier) @function.name)'"
+                    "|route ast-inspect selectors=S:native-ast,Scope:owner-or-structural "
+                    "returns=locator,span,syntax-surface cmd=asp-python serve"
                 ),
                 f"|route exact-source selectors=R:exact-selector returns=source cmd=asp query playbook --language python --selector <exact-structural-selector> --projection source {workspace}",
                 f"|route callable-skeleton selectors=R:exact-callable-selector returns=callable-skeleton cmd=asp query playbook --language python --selector <exact-structural-selector> --projection callable-skeleton {workspace}",
                 "|cmd playbook=asp search playbook --language python --rg -n -e <query> . --tantivy 'title:<query>^2 OR body:<query>'",
-                (
-                    "|cmd syntax-locate=asp search playbook --language python "
-                    "--rg -n -e '<symbol>' . --tantivy 'title:<symbol>^2 OR body:<symbol>' "
-                    "--syntax python '(function_definition name: (identifier) @function.name)'"
-                ),
                 f"|cmd exact-source=asp query playbook --language python --selector <exact-structural-selector> --projection source {workspace}",
                 f"|cmd callable-skeleton=asp query playbook --language python --selector <exact-structural-selector> --projection callable-skeleton {workspace}",
                 "|cmd ast-patch=asp python ast-patch dry-run --packet <semantic-ast-patch.json|->",
@@ -41,13 +33,8 @@ def render_agent_guide(project_root: Path) -> str:
                     "--workspace <workspace-root> is the independent workspace override"
                 ),
                 (
-                    "|rule syntax query ABI is compiled by asp; provider projects "
-                    "native parser facts into tree-sitter-compatible captures"
-                ),
-                (
-                    "|rule syntax predicates supported=#eq?,#any-eq?,#any-of?,"
-                    "#match?,#any-match?,#not-eq?,#not-match? "
-                    "unsupported=none unsupportedReported=true"
+                    "|rule provider exposes native Python ast-inspect, ast-verify, and "
+                    "semantic-open-edb over HTTP-JSON; high-order language ontology lives in Scheme"
                 ),
                 "|rule exact query requires a parser-owned selector and an explicit source or callable-skeleton projection",
                 (

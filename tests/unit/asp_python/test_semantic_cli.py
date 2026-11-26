@@ -22,7 +22,7 @@ def test_cli_agent_guide_uses_asp_owned_exact_projection(tmp_path: Path) -> None
     stdout = io.StringIO()
     assert run_cli(["agent", "guide", str(tmp_path)], stdout=stdout) == 0
     rendered = stdout.getvalue()
-    assert "routes=syntax-locate,exact-source,callable-skeleton" in rendered
+    assert "routes=ast-inspect,exact-source,callable-skeleton" in rendered
     assert "|route exact-source selectors=R:exact-selector returns=source" in rendered
     assert "|route callable-skeleton selectors=R:exact-callable-selector" in rendered
     assert "no raw Python source reads" in rendered

@@ -28,17 +28,6 @@ def run_query_command(
         )
         return 0
 
-    if args.catalog is not None or args.tree_sitter_query is not None:
-        from ._tree_sitter_query import write_tree_sitter_query_response
-
-        write_tree_sitter_query_response(
-            args,
-            report=report,
-            project_root=project_root,
-            stdout=stdout,
-        )
-        return 0
-
     raise ValueError(
         "exact source projection is ASP-owned; use `asp query playbook --language python "
         "--selector <exact-structural-selector> --projection "
