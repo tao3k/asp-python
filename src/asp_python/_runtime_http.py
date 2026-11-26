@@ -184,10 +184,17 @@ def _parse_host(value: str) -> tuple[str, int]:
     return host.removeprefix("[").removesuffix("]"), parsed_port
 
 
+class _ProviderThreadingHTTPServer(ThreadingHTTPServer):
+    """Ensure concurrent loopback clients do not overflow the default 5-slot listen queue."""
+
+    request_queue_size = 64
+    allow_reuse_address = True
+
+
 def serve_provider_runtime_http(cwd: Path, health: dict[str, Any]) -> int:
     """Publish bootstrap only after the loopback HTTP socket is bound."""
 
-    server = ThreadingHTTPServer(
+    server = _ProviderThreadingHTTPServer(
         _parse_host(_required_env("ASP_CLIENT_SERVER_HOST")), _handler(cwd, health)
     )
     server.daemon_threads = True
