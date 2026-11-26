@@ -30,10 +30,24 @@ def _query_exact_source(payload: dict[str, Any], cwd: Path) -> dict[str, Any]:
     return project_provider_native_exact_request(payload, cwd=cwd)
 
 
+def _ast_inspect(payload: dict[str, Any], _cwd: Path) -> dict[str, Any]:
+    from ._ast_ops import handle_ast_inspect
+
+    return handle_ast_inspect(payload)
+
+
+def _ast_verify(payload: dict[str, Any], _cwd: Path) -> dict[str, Any]:
+    from ._ast_ops import handle_ast_verify
+
+    return handle_ast_verify(payload)
+
+
 _OPERATION_HANDLERS = {
     "projection-batch": _project_projection,
     "project-resolution": _resolve_project,
     "query": _query_exact_source,
+    "ast-inspect": _ast_inspect,
+    "ast-verify": _ast_verify,
 }
 
 
@@ -57,7 +71,7 @@ def _runtime_operations() -> list[dict[str, str]]:
     ):
         raise RuntimeError(f"resident Python provider received invalid {name}")
     operation_names = {operation.get("operation") for operation in operations}
-    if operation_names != set(_OPERATION_HANDLERS) or len(operations) != len(
+    if not operation_names.issubset(set(_OPERATION_HANDLERS)) or len(operations) != len(
         operation_names
     ):
         raise RuntimeError(
