@@ -49,12 +49,70 @@ def _outer_span(offsets: list[int], node: ast.AST) -> dict[str, int]:
     return inner
 
 
+def _decorator_name(expr: ast.expr) -> str | None:
+    if isinstance(expr, ast.Name):
+        return expr.id
+    if isinstance(expr, ast.Attribute):
+        return expr.attr
+    if isinstance(expr, ast.Call):
+        return _decorator_name(expr.func)
+    return None
+
+
+def _python_visibility(name: str) -> str:
+    if name.startswith("_") and not (name.startswith("__") and name.endswith("__")):
+        return "private"
+    return "public"
+
+
+def _collect_body_calls_and_errors(
+    caller_locator: str,
+    stmts: list[ast.stmt],
+    edges: list[dict[str, Any]],
+) -> list[str]:
+    seen_calls: set[tuple[str, int]] = set()
+    error_literals: list[str] = []
+    for stmt in stmts:
+        for node in ast.walk(stmt):
+            if isinstance(node, ast.Call):
+                callee = None
+                if isinstance(node.func, ast.Name):
+                    callee = node.func.id
+                elif isinstance(node.func, ast.Attribute):
+                    callee = node.func.attr
+                if callee:
+                    line = getattr(node, "lineno", 1) or 1
+                    key = (callee, line)
+                    if key not in seen_calls:
+                        seen_calls.add(key)
+                        edges.append(
+                            {
+                                "src": caller_locator,
+                                "dst": callee,
+                                "relation": "calls",
+                                "line": line,
+                            }
+                        )
+            elif isinstance(node, ast.Raise) and isinstance(node.exc, ast.Call):
+                if node.exc.args and isinstance(node.exc.args[0], ast.Constant):
+                    val = node.exc.args[0].value
+                    if (
+                        isinstance(val, str)
+                        and 3 <= len(val) <= 120
+                        and val not in error_literals
+                        and len(error_literals) < 8
+                    ):
+                        error_literals.append(val)
+    return error_literals
+
+
 def _collect_nodes(
     path: str,
     offsets: list[int],
     stmts: list[ast.stmt],
     parent: str | None,
     out: list[dict[str, Any]],
+    edges: list[dict[str, Any]],
 ) -> None:
     for stmt in stmts:
         if isinstance(stmt, (ast.FunctionDef, ast.AsyncFunctionDef)):
@@ -74,9 +132,17 @@ def _collect_nodes(
             if stmt.body:
                 b_start = _node_span(offsets, stmt.body[0])["start"]
                 body_span = {"start": b_start, "end": inner["end"]}
-            attrs: list[dict[str, str]] = []
+            attrs: list[dict[str, str]] = [
+                {"key": "visibility", "value": _python_visibility(stmt.name)}
+            ]
             if isinstance(stmt, ast.AsyncFunctionDef):
                 attrs.append({"key": "async", "value": "true"})
+            for dec in stmt.decorator_list:
+                d_name = _decorator_name(dec)
+                if d_name:
+                    attrs.append({"key": "decorator", "value": d_name})
+            for err_lit in _collect_body_calls_and_errors(locator, stmt.body, edges):
+                attrs.append({"key": "error_literal", "value": err_lit})
             out.append(
                 {
                     "locator": locator,
@@ -101,6 +167,25 @@ def _collect_nodes(
             if stmt.body:
                 b_start = _node_span(offsets, stmt.body[0])["start"]
                 body_span = {"start": b_start, "end": inner["end"]}
+            class_attrs: list[dict[str, str]] = [
+                {"key": "visibility", "value": _python_visibility(stmt.name)}
+            ]
+            for dec in stmt.decorator_list:
+                d_name = _decorator_name(dec)
+                if d_name:
+                    class_attrs.append({"key": "decorator", "value": d_name})
+            for base in stmt.bases:
+                b_name = _decorator_name(base)
+                if b_name:
+                    class_attrs.append({"key": "implements", "value": b_name})
+                    edges.append(
+                        {
+                            "src": locator,
+                            "dst": b_name,
+                            "relation": "implements",
+                            "line": stmt.lineno,
+                        }
+                    )
             out.append(
                 {
                     "locator": locator,
@@ -112,14 +197,42 @@ def _collect_nodes(
                     "innerSpan": inner,
                     "bodySpan": body_span,
                     "parent": parent,
-                    "attrs": [],
+                    "attrs": class_attrs,
                 }
             )
-            _collect_nodes(path, offsets, stmt.body, locator, out)
+            _collect_nodes(path, offsets, stmt.body, locator, out, edges)
         elif isinstance(stmt, (ast.Import, ast.ImportFrom)):
             span = _node_span(offsets, stmt)
             label = f"import_line_{stmt.lineno}"
             locator = f"{parent}#import:{label}" if parent else f"{path}#import:{label}"
+            import_attrs: list[dict[str, str]] = []
+            if isinstance(stmt, ast.Import):
+                for alias in stmt.names:
+                    edges.append(
+                        {
+                            "src": path,
+                            "dst": alias.name,
+                            "relation": "imports",
+                            "line": stmt.lineno,
+                        }
+                    )
+                if stmt.names:
+                    import_attrs.append(
+                        {"key": "import_target", "value": stmt.names[0].name}
+                    )
+            else:
+                mod = stmt.module or "."
+                for alias in stmt.names:
+                    target = f"{mod}.{alias.name}" if mod != "." else alias.name
+                    edges.append(
+                        {
+                            "src": path,
+                            "dst": target,
+                            "relation": "imports",
+                            "line": stmt.lineno,
+                        }
+                    )
+                import_attrs.append({"key": "import_target", "value": mod})
             out.append(
                 {
                     "locator": locator,
@@ -133,7 +246,7 @@ def _collect_nodes(
                     "innerSpan": span,
                     "bodySpan": None,
                     "parent": parent,
-                    "attrs": [],
+                    "attrs": import_attrs,
                 }
             )
 
@@ -181,15 +294,18 @@ def handle_ast_inspect(payload: dict[str, Any]) -> dict[str, Any]:
         return {
             "accepted": False,
             "nodes": [],
+            "edges": [],
             "diagnostics": [_syntax_error_diagnostic(source, error)],
             "syntaxSurface": PYTHON_SYNTAX_SURFACE,
         }
     offsets = _line_utf8_offsets(source)
     nodes: list[dict[str, Any]] = []
-    _collect_nodes(path, offsets, tree.body, None, nodes)
+    edges: list[dict[str, Any]] = []
+    _collect_nodes(path, offsets, tree.body, None, nodes, edges)
     return {
         "accepted": True,
         "nodes": nodes,
+        "edges": edges,
         "diagnostics": [],
         "syntaxSurface": PYTHON_SYNTAX_SURFACE,
     }
