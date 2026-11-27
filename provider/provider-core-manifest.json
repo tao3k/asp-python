@@ -6,6 +6,12 @@
   "displayName": "Python",
   "extensions": [".py", ".pyi"],
   "projectMarkers": ["pyproject.toml"],
+  "project": {
+    "markers": ["pyproject.toml", "setup.py"],
+    "entryFiles": ["__init__.py", "__main__.py"],
+    "workspaceFiles": ["pyproject.toml", "uv.lock"],
+    "configFiles": ["ruff.toml", "mypy.ini", "pytest.ini"]
+  },
   "syntaxSurface": {
     "lineComment": "#",
     "delimiterPairs": [["(", ")"], ["[", "]"], ["{", "}"]],
@@ -23,5 +29,30 @@
     "astVerify": true,
     "openEdb": true,
     "projectResolution": true
+  },
+  "special": {
+    "kindMappings": [
+      { "nativeLanguageKind": "function_def", "generalKind": "function", "description": "Python function definition" },
+      { "nativeLanguageKind": "function_def", "generalKind": "method", "description": "Python class method definition" },
+      { "nativeLanguageKind": "async_function_def", "generalKind": "function", "description": "Python async function definition" },
+      { "nativeLanguageKind": "async_function_def", "generalKind": "method", "description": "Python async class method definition" },
+      { "nativeLanguageKind": "class_def", "generalKind": "struct", "description": "Python class definition" },
+      { "nativeLanguageKind": "import", "generalKind": "import", "description": "Python import statement" },
+      { "nativeLanguageKind": "import_from", "generalKind": "import", "description": "Python from-import statement" }
+    ],
+    "specialRelations": ["py_fn", "py_class"],
+    "schema": {
+      "type": "object",
+      "properties": {
+        "decorator": {
+          "type": "string",
+          "description": "Filter Python functions or classes by @decorator name"
+        },
+        "async": {
+          "type": "boolean",
+          "description": "Filter Python async def coroutines"
+        }
+      }
+    }
   }
 }
