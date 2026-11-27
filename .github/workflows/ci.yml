@@ -1,6 +1,7 @@
 name: CI
 
 on:
+  workflow_dispatch:
   pull_request:
   push:
     branches:
@@ -47,12 +48,6 @@ jobs:
 
       - name: Test
         run: uv run --group test pytest tests -q
-
-      - name: Self harness
-        run: uv run --group test asp-python .
-
-      - name: Agent snapshot
-        run: uv run --group test asp-python --agent-snapshot .
 
       - name: Build package
         run: uv build

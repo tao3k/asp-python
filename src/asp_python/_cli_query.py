@@ -1,0 +1,35 @@
+"""Execute provider-native Python query protocol commands."""
+
+from __future__ import annotations
+
+from pathlib import Path
+from typing import TYPE_CHECKING, Any, TextIO
+
+if TYPE_CHECKING:
+    from ._cli_args import ProtocolArgs
+
+
+def run_query_command(
+    args: ProtocolArgs,
+    *,
+    report: Any,
+    project_root: Path,
+    stdout: TextIO,
+) -> int:
+    """Run a parsed query command against parser-owned report facts."""
+
+    if args.catalog == "flow-lite":
+        from ._flow_lite_query import write_flow_lite_query_response
+
+        write_flow_lite_query_response(
+            args,
+            project_root=project_root,
+            stdout=stdout,
+        )
+        return 0
+
+    raise ValueError(
+        "exact source projection is ASP-owned; use `asp query playbook --language python "
+        "--selector <exact-structural-selector> --projection "
+        "source|callable-skeleton --workspace <workspace-root>`"
+    )

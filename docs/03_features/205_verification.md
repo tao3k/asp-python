@@ -7,22 +7,22 @@
 :LAST_SYNC: 2026-05-03
 :END:
 
-Python verification planning is a library-first Agent contract. The harness
+Python verification planning is a library-first Agent contract. ASP Python
 does not run benchmark, security, stress, or chaos tools. It uses parser-owned
 project facts to produce external obligations that an Agent skill can satisfy
 with receipts or complete waivers.
 
 ```python
-from python_lang_project_harness import (
+from asp_python import (
     PythonOwnerResponsibility,
     PythonVerificationProfileHint,
     PythonVerificationTaskKind,
-    default_python_harness_config,
+    default_asp_python_config,
     plan_python_project_verification_with_config,
     render_python_verification_plan,
 )
 
-config = default_python_harness_config().with_verification_profile_hint(
+config = default_asp_python_config().with_verification_profile_hint(
     PythonVerificationProfileHint(
         "src/pkg/api.py",
         (PythonOwnerResponsibility.PUBLIC_API,),
@@ -73,21 +73,21 @@ can patch the policy from the profile index without reparsing `pyproject.toml`.
 The verification policy supports profile hints, dependency signals, receipts,
 waivers, responsibility task-kind mappings, task contracts, skill bindings, and
 skill descriptors through `PythonVerificationPolicy` or
-`[tool.python-lang-project-harness.verification]`.
+`[tool.asp-python.verification]`.
 
 ```toml
-[tool.python-lang-project-harness.verification]
+[tool.asp-python.verification]
 profile_hints = [
   { owner_path = "src/pkg/api.py", responsibilities = ["public_api"], task_kinds = ["security"], rationale = "authz-sensitive public API" },
 ]
 
-[tool.python-lang-project-harness.verification.task_contracts]
+[tool.asp-python.verification.task_contracts]
 security = { phase = "before_release", summary = "security skill must report authz evidence", requirements = [{ label = "authz", detail = "tenant authorization result" }] }
 
-[tool.python-lang-project-harness.verification.skill_bindings]
+[tool.asp-python.verification.skill_bindings]
 security = { skill = "python-security-review", adapter = "bandit" }
 
-[tool.python-lang-project-harness.verification.skill_descriptors]
+[tool.asp-python.verification.skill_descriptors]
 python-security-review = { task_kind = "security", adapter = "bandit", summary = "run bandit plus tenant authz probes", requirements = [{ label = "bandit", detail = "bandit report artifact" }] }
 ```
 
@@ -97,5 +97,5 @@ Agents can call `render_python_verification_skill_contracts(plan)` only when
 they need to expand the referenced contract.
 
 :RELATIONS:
-:LINKS: [Harness Boundary](../01_core/101_harness_boundary.md), [CLI](203_cli.md)
+:LINKS: [ASP Python Boundary](../01_core/101_asp_python_boundary.md), [CLI](203_cli.md)
 :END:

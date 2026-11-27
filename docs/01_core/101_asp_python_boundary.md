@@ -1,0 +1,145 @@
+# ASP Python Boundary
+
+:PROPERTIES:
+:ID: 5fa0fe2dac2c4668b1ad949a8590d0098679cb1b
+:TYPE: CORE
+:STATUS: ACTIVE
+:LAST_SYNC: 2026-04-30
+:END:
+
+`asp-python` owns a standalone, library-first Python project
+ASP Python. It keeps parser facts and project policy in separate import packages,
+but ships them from the same repo so downstream users do not depend on the old
+monorepo workspace layout.
+
+## Ownership
+
+This repository may:
+
+1. parse Python modules through Python-native standard-library surfaces
+2. discover whole-project Python files with conventional roots as
+   classification inputs
+3. evaluate deterministic rule packs over parser reports and project scope
+4. render compact diagnostics for humans and repair-oriented agents
+5. expose structured reports and JSON rendering for tooling
+6. expose pytest-friendly assertion helpers and collectable ASP Python callables
+7. expose a thin CLI over the default project runner
+
+This repository must not own:
+
+1. Python runtime orchestration
+2. workflow execution
+3. routing, memory, indexing, or transport
+4. CI-provider-specific policy
+5. project-specific allowlists hidden inside the library
+6. long-running daemon behavior
+
+## Parser Boundary
+
+`python_lang_parser` owns Python-native facts. It uses `ast`, `compile`,
+`tokenize`, and `symtable` rather than `tree-sitter`. It emits compact module
+reports with imports, symbols, scopes, bindings, references, calls,
+assignments, export contracts, shape summaries, and diagnostics.
+It also parses standard `pyproject.toml` project metadata such as
+`[project].name`, `requires-python`, `import-names`, scripts, entry points,
+build-system requirements, and declared package roots.
+For class surfaces it owns data/type shape facts such as annotated class
+fields, `__init__` self-field storage, method counts, and visible anchors like
+`dataclass`, `Enum`, `Protocol`, `TypedDict`, `NamedTuple`, or model bases.
+
+`asp_python` consumes those reports. It owns rule
+catalogs, project discovery, report aggregation, rendering, and pytest
+embedding. Rule packs should depend on parser facts rather than ad hoc source
+text matching when a structured fact exists.
+
+Parser-backed policy is the default architectural rule. Python semantic checks
+must not re-parse source inside ASP Python layer; they should use
+`PythonModuleReport` facts such as imports, calls, symbols, assignments, export
+contracts, source lines, and module shape. Standard Python project metadata
+should flow through parser-owned `pyproject.toml` facts. ASP Python-owned policy
+inputs such as tests-root policy TOML may still be read in ASP Python layer,
+but they must not infer Python semantics from raw text.
+
+`PY-TEST-R003` follows the same boundary: unit-test bloat is calculated from
+parser-owned module shape and parser-classified test symbols. ASP Python owns
+the pytest layout contract, while `python_lang_parser` owns Python syntax,
+tokenization, AST, compile validation, source-line capture, public-name policy,
+module public-surface classification, symbol-role classification, and
+import-root module identity helpers. It also owns `pyproject.toml` metadata
+facts used by project policy and reasoning-tree renderers.
+
+Reasoning-tree policy follows that boundary as well. `python_lang_parser`
+derives package tree facts from parsed module reports: import-owner shadows
+such as `domain.py` beside `domain/__init__.py`, and branch packages whose
+immediate child modules need an intent docstring for agent navigation. It also
+resolves project-internal import edges from parser import records and import
+roots, so agents can see which modules depend on a subtree before editing. The
+tree nodes carry parser-owned export candidates and `__all__` contract kind, so
+the agent sees public API names without re-reading source text. The
+ASP Python turns those facts into `PY-MOD-R007` and `PY-AGENT-POLICY-007` findings; it
+does not re-parse Python source to infer tree shape or dependency direction.
+Project policy uses the same parser metadata to keep declared import names
+and entry point targets aligned with parser-visible project owners.
+
+The same parser facts back `render_python_reasoning_tree()`, a compact
+agent-facing tree snapshot. That render is intentionally separate from JSON:
+agents can inspect package branches, public leaves, child names, and owner
+shadows, plus compact exports, internal imports, and declared project metadata,
+before choosing a repair surface.
+
+## Runner Modes
+
+Use `run_asp_python()` or `assert_asp_python_clean()`
+when a caller has a project root. The project runner scans all Python files
+under the project root by default, with cache/build/environment directories
+excluded. `src/` and `tests/` remain source/test classification roots for
+project policy; they do not narrow parser coverage. `AspPythonConfig` can
+change source-root classification, test-root classification, extra external
+project paths, and test inclusion behavior.
+
+Use `run_asp_python_paths()` or `assert_asp_python_paths_clean()` for
+explicit files or directories. This runner is useful for focused parser checks
+and editor integrations; project-scoped rule packs only emit findings when a
+project scope is available.
+
+## Pytest Embedding
+
+The assertion helper raises `AssertionError` with the compact rendered report
+when configured-blocking findings exist:
+
+```python
+from pathlib import Path
+
+from asp_python import assert_asp_python_clean
+
+
+def test_asp_python_policy() -> None:
+    assert_asp_python_clean(Path("."))
+```
+
+`asp_python_test()` returns a pytest-collectable callable for
+projects that prefer a one-line mount. Downstream projects can import it from
+`asp_python.pytest` and assign it to a test name.
+
+The package also exposes a pytest plugin through the `pytest11` entry point.
+When installed as a test/dev dependency, pytest loads the plugin and accepts
+`--asp-python`. The plugin only inserts the ASP Python item when that
+option is enabled, so installing the package does not silently add a policy
+gate.
+
+## Dependency API
+
+`assert_asp_python_clean(PROJECT_ROOT)` is the sole project-policy
+entry. The pytest plugin and downstream build/test owners import that API;
+`asp-python` exposes search/evidence/agent protocol commands only and never
+creates a second policy-check authority.
+
+## Blocking And Advice
+
+`Warning` and `Error` findings are blocking by default. `Info` findings are
+advisory. `PY-AGENT-*` rules are intentionally `Info` so agents receive repair
+hints without making every legibility concern a hard gate.
+
+:RELATIONS:
+:LINKS: [Rule Catalog](../03_features/201_rule_catalog.md), [Runner Modes](../03_features/202_runner_modes.md), [CLI](../03_features/203_cli.md)
+:END:

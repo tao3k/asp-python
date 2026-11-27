@@ -29,7 +29,7 @@ jobs:
           - os: macos-latest
             target: aarch64-apple-darwin
     env:
-      BINARY: py-harness
+      BINARY: asp-python
       GH_TOKEN: ${{ github.token }}
       RELEASE_TAG: ${{ github.event.release.tag_name || inputs.tag || github.ref_name }}
       TARGET: ${{ matrix.target }}
@@ -73,7 +73,7 @@ jobs:
           set -euo pipefail
           rm -rf build dist package py_harness_entry.py
           cat > py_harness_entry.py <<'PY'
-          from python_lang_project_harness import run_cli_from_env
+          from asp_python import run_cli_from_env
 
           raise SystemExit(run_cli_from_env())
           PY
@@ -82,7 +82,7 @@ jobs:
             --name "$BINARY" \
             --paths src \
             --collect-submodules python_lang_parser \
-            --collect-submodules python_lang_project_harness \
+            --collect-submodules asp_python \
             py_harness_entry.py
           mkdir -p package
           cp -R "dist/${BINARY}/." package/

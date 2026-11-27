@@ -1,0 +1,27 @@
+harness = "pytest"
+test = "tests/unit/asp_python/test_software_criterion_snapshots.py"
+snapshot = "software_criteria/control_flow_v1"
+phase = "cold"
+target_total = "25ms"
+max_total = "100ms"
+observed_total = "19ms"
+regression_budget = "20ms"
+memory_budget_bytes = 16777216
+observed_memory_bytes = 8388608
+route_source = "parser-scenario"
+max_provider_process_count = 0
+max_stdout_bytes = 8192
+fallback_reason = "none"
+target_rationale = "Python control-flow policy fixtures should stay small enough for snapshot-level agent quality gates."
+
+[observed_timings]
+parse = "6ms"
+policy = "9ms"
+snapshot = "4ms"
+
+[input_expected_comparison]
+input_total = "19ms"
+expected_total = "8ms"
+input_memory_bytes = 8388608
+expected_memory_bytes = 6291456
+interpretation = "expected fixture exposes branch shape and native transforms before agent edits; observed policy receipts catch five low-quality input patterns."

@@ -7,7 +7,7 @@
 :LAST_SYNC: 2026-05-05
 :END:
 
-The harness exposes deterministic rule metadata through compact library
+ASP Python exposes deterministic rule metadata through compact library
 functions:
 
 - `python_rule_pack_descriptors()`
@@ -52,7 +52,7 @@ policy can also emit `Info` configuration work orders for Agents.
   resolve to parser-visible project module owners.
 - `PY-AGENT-PROJECT-009`: console script, GUI script, and entry point targets should
   resolve to parser-visible project modules.
-- `PY-AGENT-PROJECT-010`: projects that declare the harness as a test/dev dependency
+- `PY-AGENT-PROJECT-010`: projects that declare ASP Python as a test/dev dependency
   should mount a parser-visible pytest gate.
 - `PY-MOD-R001`: wildcard imports must become explicit imports.
 - `PY-MOD-R002`: library modules should not use bare `print`.
@@ -64,11 +64,11 @@ policy can also emit `Info` configuration work orders for Agents.
   avoiding `module.py` plus `module/__init__.py` reasoning-tree shadows.
 - `PY-TEST-R001`: pytest modules should not be scattered in the tests root.
 - `PY-TEST-R002`: tests root entries should be owned suite directories or
-  harness configuration files.
+  ASP Python configuration files.
 - `PY-TEST-R003`: large unit-test leaves should split into folder-first suites.
 
 Project-local pytest-layout exceptions live in
-`tests/python-project-harness-rules.toml`; each exception needs a non-empty
+`tests/asp-python-rules.toml`; each exception needs a non-empty
 explanation before it suppresses `PY-TEST-*` findings.
 
 `PY-MOD-R006` is a mixed-signal modularity gate, not a line-count gate. The
@@ -83,9 +83,9 @@ not fail only because they are long.
 Some project-policy findings are intentionally `Info`: they are configuration
 work orders for the repair Agent, not immediate merge blockers.
 
-- `PY-AGENT-PROJECT-011`: projects that declare the harness as a test/dev dependency
+- `PY-AGENT-PROJECT-011`: projects that declare ASP Python as a test/dev dependency
   and expose parser-visible verification owners should configure
-  `[tool.python-lang-project-harness.verification].profile_hints`. The finding
+  `[tool.asp-python.verification].profile_hints`. The finding
   points the Agent to `asp-python --agent-snapshot`, whose compact
   `[verify-profile]` section is the config draft.
 
@@ -129,7 +129,7 @@ enough to use as the first repair prompt.
 
 ## Reasoning Tree Policy
 
-The harness treats a Python project as an agent reasoning tree: import roots
+ASP Python treats a Python project as an agent reasoning tree: import roots
 lead to package branches, package branches lead to modules, and modules expose
 the parser-owned public surface. `python_lang_parser` owns the tree facts:
 tree nodes, child names, public/internal surface flags, module/package owner
@@ -150,19 +150,19 @@ Packages that already expose an explicit public facade are treated as having
 an owner map.
 
 `PY-AGENT-POLICY-009` is backed by parser-owned function control-flow facts, not by
-harness string scanning. The parser records branch count, loop count, maximum
+ASP Python string scanning. The parser records branch count, loop count, maximum
 nesting, loop nesting, terminal `else` opportunities, and repeated literal
 dispatch chains for each function symbol during the normal AST collection pass.
-The harness turns those facts into a compact repair hint when a public function
+ASP Python turns those facts into a compact repair hint when a public function
 hides its algorithm behind nested `if`/loop structure. The rule stays advisory
 by default so teams can tune or promote it after seeing their project shape.
 
-The implementation lives under `python_lang_project_harness.agent_readability`
+The implementation lives under `asp_python.agent_readability`
 because the target reader is the repair agent, not a human style reviewer. The
 goal is short, explicit algorithm surfaces that an LLM can use from the
 reasoning tree: guard clauses instead of nested `else`, `match/case` or dispatch
 tables instead of literal branch ladders, and small named pipeline steps instead
-of one broad loop body. Performance remains parser-first: the harness only
+of one broad loop body. Performance remains parser-first: ASP Python only
 consumes `PythonFunctionControlFlow` facts and does not run a second AST parse.
 `PY-AGENT-POLICY-010` complements `PY-AGENT-POLICY-009`: the former catches long flat
 procedure-like public functions, while the latter catches nested control-flow
@@ -170,7 +170,7 @@ shape. This keeps the advice compact and avoids telling the agent the same
 thing twice.
 
 `PY-AGENT-POLICY-011` is the native-Python idiom layer. It is backed by parser-owned
-function facts for simple accumulator loops and predicate loops, so the harness
+function facts for simple accumulator loops and predicate loops, so ASP Python
 can advise comprehensions, generator expressions, built-ins, or iterator
 pipeline helpers without parsing source in the policy layer. The rule is
 conservative: it targets module-level functions and public methods where a loop
@@ -214,14 +214,14 @@ the file/parsed count needed for CI confidence. In project-scoped reports,
 compact text renders paths relative to the project root; JSON keeps the
 structured original paths for tooling.
 
-`render_python_lang_harness()` includes advice by default. A report with only
+`render_asp_python_report()` includes advice by default. A report with only
 `Info` findings is still clean, but its advice remains visible without
 run-summary noise. Use
-`render_python_lang_harness_advice()` when a caller wants only non-blocking
+`render_asp_python_report_advice()` when a caller wants only non-blocking
 repair hints; it returns an empty string when there is no advice to act on.
 
-Structured consumers should use `render_python_lang_harness_json()` or the
-`PythonHarnessReport.to_dict()` shape instead of parsing compact text.
+Structured consumers should use `render_asp_python_report_json()` or the
+`AspPythonReport.to_dict()` shape instead of parsing compact text.
 
 ## Parser-First Policy
 
@@ -231,13 +231,13 @@ text. `python_lang_parser` owns AST, compile, tokenize, symbol-table, source
 line, module-shape, public-name, public-surface, symbol-role, and import-root
 module identity facts, standard `pyproject.toml` project metadata, and package
 reasoning-tree facts.
-`python_lang_project_harness` owns rule catalogs, project/test layout,
+`asp_python` owns rule catalogs, project/test layout,
 reporting, and assertion behavior.
 
 Repository tests enforce this boundary by rejecting direct `ast` or `tokenize`
-usage under `src/python_lang_project_harness`. File and metadata checks may
+usage under `src/asp_python`. File and metadata checks may
 still read non-Python policy inputs such as
-`python-project-harness-rules.toml`; Python project metadata should flow
+`asp-python-rules.toml`; Python project metadata should flow
 through parser-owned `pyproject.toml` facts.
 
 ## Snapshot Coverage
@@ -245,10 +245,10 @@ through parser-owned `pyproject.toml` facts.
 The compact text and JSON render contracts are covered by repository snapshots
 under `tests/unit/snapshots`:
 
-- `python_project_harness_compact_text.snap`
-- `python_project_harness_json.snap`
+- `asp_python_compact_text.snap`
+- `asp_python_json.snap`
 
-Policy snapshots are generated from real harness fixtures and normalized to
+Policy snapshots are generated from real ASP Python fixtures and normalized to
 `$TEMP` paths. Every current `PY-AGENT-*` rule has a compact advice snapshot.
 The blocking policy surface also has snapshots for native syntax,
 `PY-MOD-*`, `PY-PROJ-*`, and `PY-TEST-*` findings. This keeps rule titles,
@@ -258,12 +258,12 @@ ordinary snapshot diffs.
 Refresh snapshots explicitly:
 
 ```shell
-PYTHON_HARNESS_UPDATE_SNAPSHOTS=1 direnv exec . uv run --group test pytest \
-  tests/unit/harness/test_render_snapshots.py \
-  tests/unit/harness/test_agent_policy_snapshots.py \
-  tests/unit/harness/test_policy_snapshots.py -q
+ASP_PYTHON_UPDATE_SNAPSHOTS=1 direnv exec . uv run --group test pytest \
+  tests/unit/asp_python/test_render_snapshots.py \
+  tests/unit/asp_python/test_agent_policy_snapshots.py \
+  tests/unit/asp_python/test_policy_snapshots.py -q
 ```
 
 :RELATIONS:
-:LINKS: [Harness Boundary](../01_core/101_harness_boundary.md)
+:LINKS: [ASP Python Boundary](../01_core/101_asp_python_boundary.md)
 :END:

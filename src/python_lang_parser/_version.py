@@ -5,7 +5,7 @@ from __future__ import annotations
 from importlib.metadata import PackageNotFoundError, version
 from typing import Final
 
-_DISTRIBUTION_NAME: Final = "python-lang-project-harness"
+_DISTRIBUTION_NAME: Final = "asp-python"
 
 
 def _installed_version() -> str:
